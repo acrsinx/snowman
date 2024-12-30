@@ -13,7 +13,7 @@ public class Plot {
             ui.ShowCaption((Dictionary) Json.ParseString(fileAccess.GetAsText()));
             fileAccess.Close();
         } else {
-            GD.Print("未找到文件: " + paths[n]);
+            ui.Log("未找到文件: " + paths[n]);
         }
     }
     public void Open(Ui ui) {
