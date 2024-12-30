@@ -1,0 +1,96 @@
+[gd_scene load_steps=13 format=3 uid="uid://cfuse5s8ctik2"]
+
+[ext_resource type="Script" path="res://script/Camera.cs" id="1_tonl0"]
+[ext_resource type="PackedScene" uid="uid://degmpjkkosrky" path="res://model/snowball.gltf" id="3_dgxip"]
+[ext_resource type="Shader" path="res://shader/toon.gdshader" id="3_sh47m"]
+[ext_resource type="PackedScene" uid="uid://drjav71v74o68" path="res://scene/ui.tscn" id="4_8tfp8"]
+[ext_resource type="PackedScene" uid="uid://b2t0mcjjmhw4s" path="res://model/0_0street.gltf" id="5_si3mt"]
+[ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="5_vtop7"]
+[ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="8_hj53j"]
+[ext_resource type="ArrayOccluder3D" uid="uid://qwc40miuvegp" path="res://scene/occluder.occ" id="8_u2wn2"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y08rh"]
+size = Vector3(2.27527, 3.65153, 2.025)
+
+[sub_resource type="QuadMesh" id="QuadMesh_u6jo2"]
+size = Vector2(20, 20)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4t0to"]
+render_priority = 0
+shader = ExtResource("3_sh47m")
+shader_parameter/range = 2.0
+shader_parameter/threshold = 0.9
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_atgam"]
+
+[node name="Node" type="Node"]
+
+[node name="Node3D" type="Node3D" parent="."]
+
+[node name="sunLight" type="DirectionalLight3D" parent="Node3D"]
+transform = Transform3D(-0.8011, -0.00264122, -0.598524, -0.431951, 0.694765, 0.575083, 0.414314, 0.719232, -0.557717, 3.89103, 9.6729, 0)
+light_color = Color(0.728749, 0.719017, 0.608124, 1)
+light_energy = 16.0
+light_bake_mode = 1
+shadow_enabled = true
+shadow_opacity = 0.88
+directional_shadow_mode = 0
+
+[node name="player" type="CharacterBody3D" parent="Node3D" node_paths=PackedStringArray("cameraMarker", "screenShader", "player", "cameraRay", "camera", "ui", "backgroundMusic")]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 2.21974, 0)
+disable_mode = 2
+script = ExtResource("1_tonl0")
+cameraMarker = NodePath("CameraMarker")
+screenShader = NodePath("CameraMarker/Camera3D/screenShader")
+player = NodePath("character")
+cameraRay = NodePath("CameraMarker/Camera3D/RayCast3D")
+camera = NodePath("CameraMarker/Camera3D")
+snowball = ExtResource("3_dgxip")
+ui = NodePath("../../ui")
+backgroundMusic = NodePath("../../AudioStreamPlayer")
+
+[node name="character" type="CollisionShape3D" parent="Node3D/player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 2.357, 0)
+shape = SubResource("BoxShape3D_y08rh")
+
+[node name="CameraMarker" type="Marker3D" parent="Node3D/player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.633, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Node3D/player/CameraMarker"]
+transform = Transform3D(5, 0, 0, 0, 5, -2.38419e-07, 0, 2.38419e-07, 5, 1, 0, 3)
+
+[node name="screenShader" type="MeshInstance3D" parent="Node3D/player/CameraMarker/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
+layers = 2
+cast_shadow = 0
+ignore_occlusion_culling = true
+mesh = SubResource("QuadMesh_u6jo2")
+surface_material_override/0 = SubResource("ShaderMaterial_4t0to")
+
+[node name="RayCast3D" type="RayCast3D" parent="Node3D/player/CameraMarker/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+target_position = Vector3(-0.2, 0, 0)
+
+[node name="map" type="AnimatableBody3D" parent="Node3D"]
+
+[node name="0_0street" parent="Node3D/map" instance=ExtResource("5_si3mt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.89, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.8272, 0)
+shape = SubResource("WorldBoundaryShape3D_atgam")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Node3D"]
+environment = ExtResource("5_vtop7")
+
+[node name="OccluderInstance3D" type="OccluderInstance3D" parent="Node3D"]
+occluder = ExtResource("8_u2wn2")
+bake_mask = 4294967289
+
+[node name="ui" parent="." node_paths=PackedStringArray("playerCamera") instance=ExtResource("4_8tfp8")]
+playerCamera = NodePath("../Node3D/player")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_hj53j")
+autoplay = true
+mix_target = 1
