@@ -12,6 +12,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         set {
             switch (value) {
                 case State.move: {
+                    canTurn = false;
                     ui.rightUp.Visible = true;
                     ui.captionContainer.Visible = false;
                     ui.speakerLabel.Text = "";
@@ -244,6 +245,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     right = -moveVector.X;
                     front = moveVector.Y;
                 } else {
+                    canTurn = true;
                     mouseMove = -drag.Relative * mouseSpeed;
                 }
                 return;
