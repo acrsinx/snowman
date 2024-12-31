@@ -183,12 +183,12 @@ public partial class Ui : Control {
             captions[captionIndex].todoAfterChoose[index]?.Do();
         }
     }
-    public void ShowCaption(Dictionary dict) {
+    public void ShowCaption(Dictionary dict, Plot plot) {
         if (playerCamera.PlayerState != State.caption) {
             int i = 0;
             captions = new CaptionResource[dict.Count];
             while(dict.ContainsKey(i.ToString())) {
-                captions[i] = new(this, (Dictionary) dict[i.ToString()], i);
+                captions[i] = new(this, (Dictionary) dict[i.ToString()], i, plot);
                 i++;
             }
             ShowCaption(0);
@@ -197,6 +197,7 @@ public partial class Ui : Control {
     public void ShowCaption(int id) {
         captionIndex = id;
         SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
+        captions[id].plot.Animate(id, this);
     }
     public void ShowCaptionChoose(int id) {
         chooseBox.Visible = true;

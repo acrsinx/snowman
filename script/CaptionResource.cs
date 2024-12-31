@@ -10,9 +10,11 @@ public class CaptionResource : object {
     public DoSomething next;
     public DoSomething[] todoAfterChoose;
     public Ui ui;
-    public CaptionResource(Ui ui, Dictionary dict, int id) {
+    public Plot plot;
+    public CaptionResource(Ui ui, Dictionary dict, int id, Plot plot) {
         this.id = id;
         this.ui = ui;
+        this.plot = plot;
         actorName = (string) dict["actorName"];
         caption = (string) dict["caption"];
         time = caption.Length * 200;
