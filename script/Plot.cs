@@ -16,7 +16,7 @@ public class Plot {
             ui.Log("未找到文件: " + paths[n]);
         }
     }
-    public virtual void Animate(int id, Ui ui) { }
+    public virtual void Animate(int id, Ui ui, bool isEnd, int code) { }
     public void Open(Ui ui, Plot plot) {
         Open(ui, 0, plot);
     }

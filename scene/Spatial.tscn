@@ -36,15 +36,13 @@ shadow_enabled = true
 shadow_opacity = 0.88
 directional_shadow_mode = 0
 
-[node name="player" type="CharacterBody3D" parent="Node3D" node_paths=PackedStringArray("cameraMarker", "screenShader", "player", "cameraRay", "camera", "ui", "backgroundMusic")]
+[node name="player" type="CharacterBody3D" parent="Node3D" node_paths=PackedStringArray("cameraMarker", "screenShader", "player", "ui", "backgroundMusic")]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 2.21974, 0)
 disable_mode = 2
 script = ExtResource("1_tonl0")
 cameraMarker = NodePath("CameraMarker")
 screenShader = NodePath("CameraMarker/Camera3D/screenShader")
 player = NodePath("character")
-cameraRay = NodePath("CameraMarker/Camera3D/RayCast3D")
-camera = NodePath("CameraMarker/Camera3D")
 snowball = ExtResource("3_dgxip")
 ui = NodePath("../../ui")
 backgroundMusic = NodePath("../../AudioStreamPlayer")

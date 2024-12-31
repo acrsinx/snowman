@@ -11,6 +11,7 @@ public partial class Ui : Control {
     public Label captionLabel;
     public VBoxContainer chooseBox;
     public Button[] chooseButtons;
+    public Plot plot;
     public Control phoneControl;
     public Panel ControlPanel;
     public Button phoneJump;
@@ -171,7 +172,7 @@ public partial class Ui : Control {
             if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完
                 return;
             }
-            captions[captionIndex].next?.Do();
+            captions[captionIndex].next?.Do(plot, captionIndex);
         }
     }
     public void Choose(int index) {
@@ -180,11 +181,12 @@ public partial class Ui : Control {
         }
         if (captions[captionIndex].canChoose && chooseButtons[0].Visible && index < captions[captionIndex].choose.Length && index >= 0) {
             ClearChoose();
-            captions[captionIndex].todoAfterChoose[index]?.Do();
+            captions[captionIndex].todoAfterChoose[index]?.Do(plot, captionIndex);
         }
     }
     public void ShowCaption(Dictionary dict, Plot plot) {
         if (playerCamera.PlayerState != State.caption) {
+            this.plot = plot;
             int i = 0;
             captions = new CaptionResource[dict.Count];
             while(dict.ContainsKey(i.ToString())) {
@@ -197,7 +199,7 @@ public partial class Ui : Control {
     public void ShowCaption(int id) {
         captionIndex = id;
         SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
-        captions[id].plot.Animate(id, this);
+        captions[id].plot.Animate(id, this, false, 0);
     }
     public void ShowCaptionChoose(int id) {
         chooseBox.Visible = true;

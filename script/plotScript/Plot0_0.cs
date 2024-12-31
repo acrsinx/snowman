@@ -9,7 +9,7 @@ public class Plot0_0 : Plot {
             "res://plotJson/plot0/plot0_2.json",
         };
     }
-    public override void Animate(int id, Ui ui) {
+    public override void Animate(int id, Ui ui, bool isEnd, int code) {
         switch (id) {
             case 0: {
                 PackedScene snowdog = ResourceLoader.Load<PackedScene>("res://model/snowdog.gltf");
