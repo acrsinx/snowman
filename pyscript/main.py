@@ -30,14 +30,28 @@ if __name__ == '__main__':
     for file in files:
         this_plot_dir: str = plot_json_dir+file[:-3]+"\\"
         os.makedirs(this_plot_dir, exist_ok=True)
-        with open(plot_dir+file, "r", encoding='utf-8') as f:
+        markdown_file: str = plot_dir+file
+        with open(markdown_file, "r", encoding='utf-8') as f:
             data: str = f.read()
             tookens: list[str] = decode_mdplot(data)
             i: int = 0
             while i < len(tookens):
                 if tookens[i] != "file":
                     break
-                with open(this_plot_dir+tookens[i+1], "w", encoding='utf-8') as f:
+                fileName: str = this_plot_dir+tookens[i+1]
+                print(fileName)
+                if os.path.exists(fileName):
+                    # 比较生成文件时间，如果生成文件时间比原文件晚，则跳过，这样可以避免重复生成
+                    if os.path.getmtime(fileName) > os.path.getmtime(markdown_file):
+                        print("跳过生成json文件。")
+                        i += 1
+                        while tookens[i] != "file":
+                            i += 1
+                            if i >= len(tookens):
+                                break
+                        continue
+                print("生成json文件。")
+                with open(fileName, "w", encoding='utf-8') as f:
                     i += 2
                     json_file_data = {}
                     json_line = {}
@@ -80,9 +94,7 @@ if __name__ == '__main__':
                                     i += 1
                                     break
                             texts_json = {}
-                            print("texts", texts)
                             for j in range(len(texts) // 3):
-                                print("texts_json", texts_json)
                                 texts_json.update({
                                     j: {
                                         "text": texts[j*3],
@@ -99,11 +111,7 @@ if __name__ == '__main__':
                             json_line = {
                                 caption_index: a_json
                             }
-                            print("before", json_line)
-                            print("texts_json", texts_json)
-                            print("after", json_line)
                         else:
                             break
                         json_file_data.update(json_line)
-                    print(json_file_data)
                     json.dump(json_file_data, f, ensure_ascii=False, indent=4)
