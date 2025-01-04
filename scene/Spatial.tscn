@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://script/Camera.cs" id="1_tonl0"]
 [ext_resource type="PackedScene" uid="uid://degmpjkkosrky" path="res://model/snowball.gltf" id="3_dgxip"]
 [ext_resource type="Shader" path="res://shader/toon.gdshader" id="3_sh47m"]
-[ext_resource type="PackedScene" path="res://scene/ui.tscn" id="4_8tfp8"]
+[ext_resource type="PackedScene" uid="uid://d1ag14jieptrf" path="res://scene/ui.tscn" id="4_8tfp8"]
 [ext_resource type="PackedScene" uid="uid://b2t0mcjjmhw4s" path="res://model/0_0street.gltf" id="5_si3mt"]
 [ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="5_vtop7"]
 [ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="8_hj53j"]

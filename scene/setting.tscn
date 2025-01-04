@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://co4xekcdk035s"]
+[gd_scene load_steps=2 format=3 uid="uid://d1vaitru08e1g"]
 
 [ext_resource type="Script" path="res://script/Setting.cs" id="1_7n0w5"]
 
@@ -62,6 +62,10 @@ popup/item_7/id = 7
 [node name="useScreenShader" type="CheckButton" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 text = "使用屏幕着色器"
+
+[node name="shadow" type="CheckButton" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "开启阴影"
 
 [node name="exit" type="Button" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
