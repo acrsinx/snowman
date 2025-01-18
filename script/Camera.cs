@@ -71,6 +71,10 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     }
     public Vector2 mouseMove;
     public bool jump = false;
+    // 跳跃键上次被按下的时间
+    public long lastJumpTime;
+    // 跳跃延迟
+    public const long jumpDelay = 100;
     public bool isSlow = false;
     public float distance = 5.0f;
     public static Vector3 cameraVector = new(0.31f, 0, 1);
@@ -167,6 +171,12 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                 front = this.front;
                 right = this.right;
             }
+            // 规格化(right, front)
+            float length = (float) Math.Sqrt(right*right+front*front);
+            if (length != 0) {
+                right /= length;
+                front /= length;
+            }
             isSlow = ui.phoneSlow.ButtonPressed || Input.IsMouseButtonPressed(MouseButton.Right);
             front *= isSlow?moveSpeed:runSpeed;
             right *= isSlow?moveSpeed:runSpeed;
@@ -177,7 +187,10 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             float sin = MathF.Sin(cameraMarker.GlobalRotation.Y);
             float cos = MathF.Cos(cameraMarker.GlobalRotation.Y);
             thisVelocity += new Vector3(front*sin-right*cos, 0, front*cos+right*sin);
-            thisVelocity += new Vector3(0, jump?jumpSpeed:0.0f, 0);
+            // 在跳跃缓冲时间内可以跳跃
+            if (lastJumpTime + jumpDelay > ui.totalGameTime) {
+                thisVelocity += new Vector3(0, jumpSpeed, 0);
+            }
             if (front!=0||right!=0) {
                 direction = new Vector2(-right, front).AngleTo(new(0, -1));
             } else {
@@ -185,12 +198,14 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     direction = FloatTo1(direction, mouseMove.X, fDelta*10.0f);
                 }
             }
+            // 在地板上时有阻力
+            thisVelocity *= 0.95f;
         } else {
             thisVelocity += gravity * fDelta;
+            // 不在地板上时也有阻力，但阻力更小
+            thisVelocity *= 0.99f;
         }
         player.Rotation = new Vector3(player.Rotation.X, FloatTo1(player.Rotation.Y, direction, fDelta*10.0f), player.Rotation.Z);
-        // 阻力
-        thisVelocity *= 0.95f;
         // 限速
         if (thisVelocity.Length() > 10.0f) {
             thisVelocity = thisVelocity.Normalized() * 10.0f;
@@ -241,7 +256,8 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         if (@event is InputEventScreenDrag drag) {
             if (ui.uiType == UiType.phone) {
                 if (IsInArea(ControlPanel, drag.Position)) {
-                    Vector2 moveVector = (drag.Position-ControlPanel.GetGlobalRect().Position-ControlPanel.GetGlobalRect().Size/2).Normalized();
+                    // 此处不用规格化，在移动时会规格化
+                    Vector2 moveVector = drag.Position-ControlPanel.GetGlobalRect().Position-ControlPanel.GetGlobalRect().Size/2;
                     right = -moveVector.X;
                     front = moveVector.Y;
                 } else {
@@ -331,6 +347,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     }
     public void Jump() {
         if (PlayerState is State.move) {
+            lastJumpTime = ui.totalGameTime;
             jump = true;
         }
     }
