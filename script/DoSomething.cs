@@ -4,7 +4,7 @@ using Godot.Collections;
 
 public abstract class DoSomething {
     public Ui ui;
-    public virtual void Do() {}
+    public virtual void Do(Plot plot, int captionIndex) {}
     public abstract Dictionary ToDictionary();
     public static DoSomething ToDoSomething(Dictionary dict, Ui ui) {
         if (dict.ContainsKey("caption")) {

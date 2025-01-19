@@ -76,15 +76,12 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     // 跳跃延迟
     public const long jumpDelay = 100;
     public bool isSlow = false;
-    public float distance = 5.0f;
-    public static Vector3 cameraVector = new(0.31f, 0, 1);
     public Shake cameraShake = new();
     [Export] public Marker3D cameraMarker;
     [Export] public MeshInstance3D screenShader;
     [Export] public CollisionShape3D player;
     public GameCharacter playerCharacter;
-    [Export] public RayCast3D cameraRay;
-    [Export] public Camera3D camera;
+    public CameraManager cameraManager;
     [Export] public PackedScene snowball;
     [Export] public Vector3 gravity = new(0, -30f, 0);
     [Export] public float jumpSpeed = 15.0f;
@@ -94,30 +91,10 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     [Export] public float maxMouseMove = 0.1f;
     [Export] public Ui ui;
     [Export] public AudioStreamPlayer backgroundMusic;
-    public Vector3[] checkList = {
-        new(-0.2f, 0, 0),
-        new(0.2f, 0, 0),
-        new(0, -0.2f, 0),
-        new(0, 0.2f, 0),
-        new(0, 0, -0.2f),
-        new(0, 0, 0.2f),
-        new(-0.2f, -0.2f, 0),
-        new(-0.2f, 0.2f, 0),
-        new(0.2f, -0.2f, 0),
-        new(0.2f, 0.2f, 0),
-        new(-0.2f, 0, -0.2f),
-        new(-0.2f, 0, 0.2f),
-        new(0.2f, 0, -0.2f),
-        new(0.2f, 0, 0.2f),
-        new(0, -0.2f, -0.2f),
-        new(0, -0.2f, 0.2f),
-        new(0, 0.2f, -0.2f),
-        new(0, 0.2f, 0.2f)
-    };
     public override void _Ready() {
         ui.Log("_Ready");
-        SetCameraPosition();
-        SetFov();
+        Camera3D c = GetChild<Node3D>(1).GetChild<Camera3D>(0);
+        cameraManager = new(c, c.GetChild<RayCast3D>(1));
     }
     public override void _PhysicsProcess(double delta) {
         if (PlayerState == State.load) {
@@ -213,35 +190,9 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         Velocity = thisVelocity;
         // 移动
         MoveAndSlide();
-        if (distance > 5) {
-            distance = 5;
-            SetCameraPosition();
-        } else if (distance < 0) {
-            distance = 1;
-            SetCameraPosition();
+        if (playerState == State.move) {
+            cameraManager.UpdateCamera(fDelta, player);
         }
-        if (IsCameraTouching()) {
-            camera.Position = Vector3.Zero;
-            while (camera.Position.Y < 5) {
-                camera.Position += cameraVector*0.2f;
-                if (IsCameraTouching()) {
-                    camera.Position -= cameraVector*0.2f;
-                    distance = camera.Position.Z;
-                    break;
-                }
-            }
-        } else if (distance < 5) {
-            float record = distance;
-            distance += fDelta;
-            distance = Math.Min(distance, 5);
-            SetCameraPosition();
-            if (IsCameraTouching()) {
-                distance = record;
-                SetCameraPosition();
-            }
-        }
-        SetFov();
-        player.Visible = camera.Position.Z > 2;
         cameraMarker.Position = cameraShake.GetShakeOffset(ui.totalGameTime) + CameraMarkerOrigin;
         mouseMove = Vector2.Zero;
         right = 0;
@@ -288,17 +239,11 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                                 return;
                             }
                             case MouseButton.WheelUp: {
-                                distance -= 0.2f;
-                                distance = MathF.Max(distance, 0.1f);
-                                SetCameraPosition();
-                                SetFov();
+                                cameraManager.WheelUp();
                                 return;
                             }
                             case MouseButton.WheelDown: {
-                                distance += 0.2f;
-                                distance = MathF.Min(distance, 5);
-                                SetCameraPosition();
-                                SetFov();
+                                cameraManager.WheelDown();
                                 return;
                             }
                         }
@@ -332,30 +277,11 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public GameCharacter GetCharacter() {
         return playerCharacter;
     }
-    public bool IsCameraTouching() {
-        for (int i = 0; i < checkList.Length; i++) {
-            cameraRay.TargetPosition = checkList[i];
-            cameraRay.ForceRaycastUpdate();
-            GodotObject collider = cameraRay.GetCollider();
-            if (collider != null) {
-                if (collider.GetType().FullName != "Camera") {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     public void Jump() {
         if (PlayerState is State.move) {
             lastJumpTime = ui.totalGameTime;
             jump = true;
         }
-    }
-    public void SetCameraPosition() {
-        camera.Position = cameraVector*distance;
-    }
-    public void SetFov() {
-        camera.Fov = 75 + (distance - 5) * 5;
     }
     public void Shake() {
         cameraShake.StartShake(ui.totalGameTime, 200);

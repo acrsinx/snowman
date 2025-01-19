@@ -38,6 +38,7 @@ _subresources={
 },
 "nodes": {
 "PATH:bone/Skeleton3D/snowdog": {
+"generate/physics": true,
 "mesh_instance/layers": 4
 }
 }

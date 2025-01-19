@@ -6,8 +6,9 @@ public class DoCaption : DoSomething {
         this.ui = ui;
         id = (int) dict["caption"];
     }
-    public override void Do() {
+    public override void Do(Plot plot, int captionIndex) {
         ui.ShowCaption(id);
+        plot.Animate(captionIndex, ui, true, 0);
     }
     public override Dictionary ToDictionary() {
         return new() {

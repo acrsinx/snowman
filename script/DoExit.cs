@@ -6,8 +6,9 @@ public class DoExit : DoSomething {
         this.ui = ui;
         exitCode = (int) dict["exit"];
     }
-    public override void Do() {
+    public override void Do(Plot plot, int captionIndex) {
         ui.playerCamera.PlayerState = State.move;
+        plot.Animate(captionIndex, ui, true, exitCode);
     }
     public override Dictionary ToDictionary() {
         return new() {

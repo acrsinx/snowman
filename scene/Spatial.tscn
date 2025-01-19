@@ -36,15 +36,13 @@ shadow_enabled = true
 shadow_opacity = 0.88
 directional_shadow_mode = 0
 
-[node name="player" type="CharacterBody3D" parent="Node3D" node_paths=PackedStringArray("cameraMarker", "screenShader", "player", "cameraRay", "camera", "ui", "backgroundMusic")]
+[node name="player" type="CharacterBody3D" parent="Node3D" node_paths=PackedStringArray("cameraMarker", "screenShader", "player", "ui", "backgroundMusic")]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 2.21974, 0)
 disable_mode = 2
 script = ExtResource("1_tonl0")
 cameraMarker = NodePath("CameraMarker")
 screenShader = NodePath("CameraMarker/Camera3D/screenShader")
 player = NodePath("character")
-cameraRay = NodePath("CameraMarker/Camera3D/RayCast3D")
-camera = NodePath("CameraMarker/Camera3D")
 snowball = ExtResource("3_dgxip")
 ui = NodePath("../../ui")
 backgroundMusic = NodePath("../../AudioStreamPlayer")
@@ -57,7 +55,7 @@ shape = SubResource("BoxShape3D_y08rh")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.633, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Node3D/player/CameraMarker"]
-transform = Transform3D(5, 0, 0, 0, 5, -2.38419e-07, 0, 2.38419e-07, 5, 1, 0, 3)
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 1, 0, 3)
 
 [node name="screenShader" type="MeshInstance3D" parent="Node3D/player/CameraMarker/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
