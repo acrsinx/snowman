@@ -4,7 +4,7 @@ using Godot;
 public class CameraManager : object {
 	private Camera3D camera;
     public RayCast3D cameraRay;
-    public static Vector3 cameraVector = new(0.31f, 0, 1);
+    private static Vector3 cameraVector = new(0.31f, 0, 1);
     public Vector3[] checkList = {
         new(-0.2f, 0, 0),
         new(0.2f, 0, 0),
@@ -39,6 +39,10 @@ public class CameraManager : object {
         }
         camera.Fov = fov;
     }
+    // 获取相机全局位置
+    public Vector3 GetCameraGlobalPosition() {
+        return camera.GlobalPosition;
+    }
     private bool IsCameraTouching() {
         for (int i = 0; i < checkList.Length; i++) {
             cameraRay.TargetPosition = checkList[i];
@@ -52,8 +56,10 @@ public class CameraManager : object {
         }
         return false;
     }
+    // 将相机位置与方向重置
     public void SetCameraPosition() {
         camera.Position = cameraVector*distance;
+        camera.Rotation = Vector3.Zero;
     }
 	public void UpdateCamera(float fDelta, Node3D player) {
 		if (distance > 5) {
@@ -98,7 +104,16 @@ public class CameraManager : object {
 		SetCameraPosition();
 		SetFov();
 	}
+    // 单人机位
+	public void LookAtCharacter(Node3D character, float distance) {
+        camera.GlobalPosition = character.GlobalPosition - GetDirection(character.Rotation)*distance;
+        camera.GlobalRotation = new Vector3(0, character.Rotation.Y-0.5f*MathF.PI, 0);
+	}
 	public void MoveCamera(Vector3 globalPosition) {
 		camera.Position = globalPosition;
 	}
+    // 把方向旋转转换为方向向量
+    public static Vector3 GetDirection(Vector3 rotation) {
+        return new Vector3(MathF.Cos(rotation.Y), 0, MathF.Sin(rotation.Y));
+    }
 }
