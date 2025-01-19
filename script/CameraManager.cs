@@ -105,8 +105,8 @@ public class CameraManager : object {
 		SetFov();
 	}
     // 单人机位
-	public void LookAtCharacter(Node3D character, float distance) {
-        camera.GlobalPosition = character.GlobalPosition - GetDirection(character.Rotation)*distance;
+	public void LookAtCharacter(Node3D character, float height, float distance) {
+        camera.GlobalPosition = character.GlobalPosition + Vector3.Up * height - GetDirection(character.Rotation)*distance;
         camera.GlobalRotation = new Vector3(0, character.Rotation.Y-0.5f*MathF.PI, 0);
 	}
 	public void MoveCamera(Vector3 globalPosition) {

@@ -17,11 +17,11 @@ public class Plot0_0 : Plot {
                 }
                 PackedScene snowdog = ResourceLoader.Load<PackedScene>("res://model/snowdog.gltf");
                 dog = snowdog.Instantiate<Node3D>();
-                dog.Position = new Vector3(-4, -1.57f, -6);
+                dog.Position = new Vector3(-4, -1.6f, -6);
                 ui.playerCamera.GetParent().AddChild(dog);
                 AnimationPlayer animation = dog.GetChild<AnimationPlayer>(1);
                 animation.Play("talk");
-                ui.playerCamera.cameraManager.LookAtCharacter(dog, 3);
+                ui.playerCamera.cameraManager.LookAtCharacter(dog, 0.3f, 1);
                 break;
             }
             case 1: {
