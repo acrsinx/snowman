@@ -36,6 +36,18 @@ _subresources={
 "use_external/path": "res://material/snow.tres"
 }
 },
+"meshes": {
+"snowdog_snowdog": {
+"generate/lightmap_uv": 0,
+"generate/lods": 1,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 60.0,
+"lods/normal_split_angle": 25.0,
+"save_to_file/enabled": false,
+"save_to_file/make_streamable": "",
+"save_to_file/path": ""
+}
+},
 "nodes": {
 "PATH:bone/Skeleton3D/snowdog": {
 "generate/physics": true,
