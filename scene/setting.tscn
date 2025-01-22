@@ -67,6 +67,11 @@ text = "使用屏幕着色器"
 layout_mode = 2
 text = "开启阴影"
 
+[node name="LOD" type="SpinBox" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+
 [node name="exit" type="Button" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 text = "退出"
