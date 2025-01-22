@@ -4,6 +4,6 @@
 可以在Gitee的[这一页](https://gitee.com/acrsinx/snowman/issues)上报告。  
 可以直接Gitee上使用Web IDE直接修改源文件并生成提交PR。  
 ## Godot版本
-Godot版本参见[project.godot](.\project.godot)文件，目前是v4.2，未来可能会使用更高版本。  
+Godot版本参见[project.godot](project.godot)文件，目前是v4.2，未来可能会使用更高版本。  
 ## 剧情文件
 剧情写在markdown文件中，位于plot/文件夹下，并需要运行pyscript/main.py以生成可用于游戏内的json文件。  
