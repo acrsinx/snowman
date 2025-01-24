@@ -1,7 +1,6 @@
 using Godot;
 
 public class Plot0_0 : Plot {
-    Node3D dog;
     static Plot0_0(){
         paths = new string[] {
             "res://plotJson/plot0/plot0_0.json",
@@ -15,19 +14,14 @@ public class Plot0_0 : Plot {
                 if (isEnd) {
                     return;
                 }
-                PackedScene snowdog = ResourceLoader.Load<PackedScene>("res://model/snowdog.gltf");
-                dog = snowdog.Instantiate<Node3D>();
-                dog.Position = new Vector3(-4, -1.6f, -6);
-                ui.playerCamera.GetParent().AddChild(dog);
-                AnimationPlayer animation = dog.GetChild<AnimationPlayer>(1);
-                animation.Play("talk");
-                ui.playerCamera.cameraManager.LookAtCharacter(dog, 0.3f, 1);
+                LoadCharacter("snowdog", "dog", new Vector3(-4, -1.6f, -6));
+                PlayAnimation("dog", "talk");
+                LookAtCharacter("dog", 0.3f, 1);
                 break;
             }
             case 1: {
-                AnimationPlayer animation = dog.GetChild<AnimationPlayer>(1);
-                animation.Pause();
-                ui.playerCamera.cameraManager.SetCameraPosition();
+                PauseAnimation("dog");
+                SetCameraPosition();
                 break;
             }
         }
