@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 
@@ -18,6 +19,9 @@ public class Plot {
     /// <param name="instanceName">角色名字</param>
     /// <returns>返回角色名字</returns>
     public static PlotCharacter GetPlotCharacter(string instanceName) {
+        if (!InstanceName.ContainsKey(instanceName)) {
+            camera.ui.Log("未找到剧情角色："+instanceName);
+        }
         return (PlotCharacter) InstanceName[instanceName];
     }
     /// <summary>
@@ -31,7 +35,8 @@ public class Plot {
         Node3D characterIns = character.Instantiate<Node3D>();
         characterIns.Position = position;
         camera.GetParent().AddChild(characterIns);
-        InstanceName.Add(instanceName, characterIns);
+        PlotCharacter plotCharacter = new(characterIns);
+        InstanceName.Add(instanceName, plotCharacter);
     }
     /// <summary>
     /// 播放动画
@@ -62,6 +67,57 @@ public class Plot {
     /// </summary>
     public static void SetCameraPosition() {
         camera.cameraManager.SetCameraPosition();
+    }
+    /// <summary>
+    /// 解析剧情脚本
+    /// </summary>
+    public void ParseScriptLine(string scriptLine) {
+        // 去除多余的空格
+        scriptLine = scriptLine.Trim();
+        // 将","，"("，")"替换为空格
+        scriptLine = scriptLine.Replace(",", " ");
+        scriptLine = scriptLine.Replace("(", " ");
+        scriptLine = scriptLine.Replace(")", " ");
+        // 分词
+        string[] words = scriptLine.Split(' ');
+        // 去除空字符串
+
+        for (int i = 0; i < words.Length; i++) {
+            GD.Print(words[i]);
+        }
+
+        List<string> wordsList = new();
+        foreach (string word in words) {
+            if (word != "") {
+                wordsList.Add(word);
+            }
+        }
+
+        for (int i = 0; i < words.Length; i++) {
+            GD.Print(words[i]);
+        }
+
+        // 解析核心词
+        switch (wordsList[0]) {
+            case "LoadCharacter":
+                LoadCharacter(wordsList[1], wordsList[2], new Vector3(float.Parse(wordsList[3]), float.Parse(wordsList[4]), float.Parse(wordsList[5])));
+                break;
+            case "PlayAnimation":
+                PlayAnimation(wordsList[1], wordsList[2]);
+                break;
+            case "PauseAnimation":
+                PauseAnimation(wordsList[1]);
+                break;
+            case "LookAtCharacter":
+                LookAtCharacter(wordsList[1], float.Parse(wordsList[2]), float.Parse(wordsList[3]));
+                break;
+            case "SetCameraPosition":
+                SetCameraPosition();
+                break;
+            default:
+                camera.ui.Log("未知的剧情指令: " + wordsList[0]);
+                break;
+        }
     }
     public void Open(Ui ui, int n, Plot plot) {
         if (FileAccess.FileExists(paths[n])) {

@@ -1,5 +1,3 @@
-using Godot;
-
 public class Plot0_0 : Plot {
     static Plot0_0(){
         paths = new string[] {
@@ -14,14 +12,14 @@ public class Plot0_0 : Plot {
                 if (isEnd) {
                     return;
                 }
-                LoadCharacter("snowdog", "dog", new Vector3(-4, -1.6f, -6));
-                PlayAnimation("dog", "talk");
-                LookAtCharacter("dog", 0.3f, 1);
+                ParseScriptLine("LoadCharacter(snowdog, dog, (-4, -1.6, -6))");
+                ParseScriptLine("PlayAnimation(dog, talk)");
+                ParseScriptLine("LookAtCharacter(dog, 0.3, 1)");
                 break;
             }
             case 1: {
-                PauseAnimation("dog");
-                SetCameraPosition();
+                ParseScriptLine("PauseAnimation(dog)");
+                ParseScriptLine("SetCameraPosition()");
                 break;
             }
         }
