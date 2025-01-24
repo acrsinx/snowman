@@ -1,7 +1,7 @@
 [gd_resource type="Theme" load_steps=7 format=3 uid="uid://brwqadtig5tg1"]
 
-[ext_resource type="StyleBox" path="res://config/buttonTheme.tres" id="1_puqif"]
-[ext_resource type="StyleBox" path="res://config/buttonThemeNormal.tres" id="2_a0t1d"]
+[ext_resource type="StyleBox" uid="uid://bfc8s368rmuow" path="res://config/buttonTheme.tres" id="1_puqif"]
+[ext_resource type="StyleBox" uid="uid://db2dbf7kepiq0" path="res://config/buttonThemeNormal.tres" id="2_a0t1d"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s8pox"]
 bg_color = Color(0, 0, 0, 0.203922)
@@ -64,6 +64,12 @@ Label/colors/font_color = Color(0.169245, 0.169245, 0.169245, 1)
 Label/colors/font_outline_color = Color(1, 1, 1, 0.85098)
 Label/constants/outline_size = 3
 Label/font_sizes/font_size = 25
+LineEdit/colors/font_color = Color(0, 0, 0, 1)
+LineEdit/colors/font_outline_color = Color(1, 1, 1, 0.827451)
+LineEdit/constants/outline_size = 1
+LineEdit/font_sizes/font_size = 25
+LineEdit/styles/focus = ExtResource("1_puqif")
+LineEdit/styles/normal = ExtResource("2_a0t1d")
 Panel/styles/panel = SubResource("StyleBoxFlat_jdk2e")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_s7d8f")
 screen/base_type = &"PanelContainer"

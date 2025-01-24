@@ -25,7 +25,6 @@ void fragment() {
     float diff2 = dot(normalize(depthU - depth), normalize(depth - depthD));
     float a = (diff1 < threshold || diff2 < threshold)&&length(depth)<100.0?1.0:0.0;
     vec3 color = texture(screen_texture, uv).rgb;
-    color = color - 0.1 * sin(2.0 * PI * color);
     a = 1.0 - a;
     ALBEDO = color.rgb * vec3(a);
 }

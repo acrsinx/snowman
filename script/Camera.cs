@@ -142,8 +142,8 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         if (IsOnFloor()&&PlayerState==State.move) {
             float front, right;
             if (ui.uiType == UiType.computer) {
-                front = Input.GetAxis("ui_up", "ui_down");
-                right = Input.GetAxis("ui_right", "ui_left");
+                front = Input.GetAxis("up", "down");
+                right = Input.GetAxis("right", "left");
             } else {
                 front = this.front;
                 right = this.right;

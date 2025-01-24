@@ -133,6 +133,7 @@ public partial class Ui : Control {
          + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")"
          + ", state: " + playerCamera.PlayerState.ToString()
          + ", uiType: " + uiType.ToString()
+         + ", LOD: " + GetTree().Root.MeshLodThreshold
          + "\ntime: " + totalGameTime
          + ", health: " + playerCamera.playerCharacter?.health;
         totalGameTime += (long)(delta * 1e3);
