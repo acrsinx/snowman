@@ -10,8 +10,12 @@ public class Plot {
     public static string[] paths;
     public static Camera camera;
     public static void Check(Ui ui) {
-        Plot plot = new Plot0_0();
-        plot.Open(ui, plot);
+        paths = new string[] {
+            "res://plotJson/plot0/plot0_0.json",
+            "res://plotJson/plot0/plot0_1.json",
+            "res://plotJson/plot0/plot0_2.json",
+        };
+        Open(ui);
     }
     /// <summary>
     /// 通过名字获取角色
@@ -71,7 +75,7 @@ public class Plot {
     /// <summary>
     /// 解析剧情脚本
     /// </summary>
-    public void ParseScriptLine(string scriptLine) {
+    public static void ParseScriptLine(string scriptLine) {
         // 去除多余的空格
         scriptLine = scriptLine.Trim();
         // 将","，"("，")"替换为空格
@@ -104,22 +108,35 @@ public class Plot {
             case "SetCameraPosition":
                 SetCameraPosition();
                 break;
+            case "Goto":
+                camera.ui.ShowCaption(int.Parse(wordsList[1]));
+                break;
+            case "Exit":
+                camera.PlayerState = State.move;
+                break;
             default:
                 camera.ui.Log("未知的剧情指令: " + wordsList[0]);
                 break;
         }
     }
-    public void Open(Ui ui, int n, Plot plot) {
-        if (FileAccess.FileExists(paths[n])) {
-            FileAccess fileAccess = FileAccess.Open(paths[n], FileAccess.ModeFlags.Read);
-            ui.ShowCaption((Dictionary) Json.ParseString(fileAccess.GetAsText()), plot);
-            fileAccess.Close();
-        } else {
-            ui.Log("未找到文件: " + paths[n]);
+    public static void ParseScript(string script) {
+        string[] lines = script.Split(';');
+        foreach (string line in lines) {
+            ParseScriptLine(line);
         }
     }
-    public virtual void Animate(int id, Ui ui, bool isEnd, int code) { }
-    public void Open(Ui ui, Plot plot) {
-        Open(ui, 0, plot);
+    public static void Open(Ui ui, int n) {
+        if (!FileAccess.FileExists(paths[n])) {
+            ui.Log("未找到文件: " + paths[n]);
+        }
+        if (paths == null) {
+            ui.Log("未设置剧情文件路径");
+        }
+        FileAccess fileAccess = FileAccess.Open(paths[n], FileAccess.ModeFlags.Read);
+        ui.ShowCaption((Dictionary) Json.ParseString(fileAccess.GetAsText()));
+        fileAccess.Close();
+    }
+    public static void Open(Ui ui) {
+        Open(ui, 0);
     }
 }
