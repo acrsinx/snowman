@@ -11,6 +11,7 @@ PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```
+PauseAnimation(dog);
 Goto(1)
 ```
 ### `1`
