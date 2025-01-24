@@ -102,6 +102,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             new Robot(this).Position = new Vector3(15, -2.0f, 15);
             new Robot(this).Position = new Vector3(21, -2.0f, 12);
             PlayerState = State.move;
+            Plot.camera = this;
             Plot.Check(ui);
             return;
         }

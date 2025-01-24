@@ -5,14 +5,20 @@ def decode_mdplot(data: str) -> list[str]:
     in_tooken: bool = False
     tookens: list[str] = []
     current_tooken: str = ""
-    for i in range(len(data)):
+    i = 0
+    while i < len(data):
         if data[i] == "`":
             if in_tooken:
                 tookens.append(current_tooken)
             in_tooken = not in_tooken
             current_tooken = ""
+            if data[i:i+3] == "```":
+                i += 3
+                continue
+            i += 1
             continue
         current_tooken += data[i]
+        i += 1
     return tookens
 
 if __name__ == '__main__':
@@ -57,61 +63,51 @@ if __name__ == '__main__':
                     json_line = {}
                     while i < len(tookens) and tookens[i] != "file":
                         caption_index = tookens[i]
-                        actorName = tookens[i+1]
-                        caption = tookens[i+2]
-                        if tookens[i+3] == "caption":
+                        actorName: str = tookens[i+1]
+                        caption: str = tookens[i+2]
+                        captionType: str = tookens[i+3]
+                        startCode: str = tookens[i+4]
+                        if captionType == "caption": # 对话
                             json_line = {
                                 caption_index: {
                                     "actorName": actorName,
                                     "caption": caption,
-                                    "next": {
-                                        "caption": int(tookens[i+4]),
-                                    }
+                                    "type": captionType,
+                                    "startCode": startCode,
+                                    "endCode": tookens[i+5]
                                 }
                             }
-                            i += 5
-                        elif tookens[i+3] == "exit":
-                            json_line = {
-                                caption_index: {
-                                    "actorName": actorName,
-                                    "caption": caption,
-                                    "next": {
-                                        "exit": int(tookens[i+4])
-                                    }
-                                }
-                            }
-                            i += 5
-                        elif tookens[i+3] == "choose":
-                            i = i + 4
+                            i += 6
+                        elif captionType == "choose": # 选择
+                            i = i + 5
                             texts = []
                             # 读取选项
                             while True:
                                 texts.append(tookens[i])
                                 texts.append(tookens[i+1])
-                                texts.append(tookens[i+2])
-                                i += 3
+                                i += 2
                                 if tookens[i] == "endChoose":
                                     i += 1
                                     break
                             texts_json = {}
-                            for j in range(len(texts) // 3):
+                            for j in range(len(texts) // 2):
                                 texts_json.update({
                                     j: {
-                                        "text": texts[j*3],
-                                        "next": {
-                                            texts[j*3+1]: int(texts[j*3+2])
-                                        }
+                                        texts[j*2]: texts[j*2+1]
                                     }
                                 })
                             a_json = {
                                     "actorName": actorName,
-                                    "caption": caption
+                                    "caption": caption,
+                                    "type": captionType,
+                                    "startCode": startCode,
                                 }
                             a_json.update(texts_json)
                             json_line = {
                                 caption_index: a_json
                             }
                         else:
+                            print("未知对话类型: ", captionType)
                             break
                         json_file_data.update(json_line)
                     json.dump(json_file_data, f, ensure_ascii=False, indent=4)

@@ -11,7 +11,6 @@ public partial class Ui : Control {
     public Label captionLabel;
     public VBoxContainer chooseBox;
     public Button[] chooseButtons;
-    public Plot plot;
     public Control phoneControl;
     public Panel ControlPanel;
     public Button phoneJump;
@@ -173,25 +172,26 @@ public partial class Ui : Control {
             if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完
                 return;
             }
-            captions[captionIndex].next?.Do(plot, captionIndex);
+            Plot.ParseScript(captions[captionIndex].endCode);
         }
     }
     public void Choose(int index) {
-        if (playerCamera.PlayerState != State.caption) {
+        if (playerCamera.PlayerState != State.caption) { // 如果不在对话态，提前返回
             return;
         }
-        if (captions[captionIndex].canChoose && chooseButtons[0].Visible && index < captions[captionIndex].choose.Length && index >= 0) {
+        if (captions[captionIndex].canChoose && chooseButtons[0].Visible && index < captions[captionIndex].choose.Length && index >= 0) { // 可选
+            // 清空选项
             ClearChoose();
-            captions[captionIndex].todoAfterChoose[index]?.Do(plot, captionIndex);
+            // 执行选择后的脚本
+            Plot.ParseScript(captions[captionIndex].chooseEndCode[index]);
         }
     }
-    public void ShowCaption(Dictionary dict, Plot plot) {
+    public void ShowCaption(Dictionary dict) {
         if (playerCamera.PlayerState != State.caption) {
-            this.plot = plot;
             int i = 0;
             captions = new CaptionResource[dict.Count];
             while(dict.ContainsKey(i.ToString())) {
-                captions[i] = new(this, (Dictionary) dict[i.ToString()], i, plot);
+                captions[i] = new(this, (Dictionary) dict[i.ToString()], i);
                 i++;
             }
             ShowCaption(0);
@@ -200,7 +200,7 @@ public partial class Ui : Control {
     public void ShowCaption(int id) {
         captionIndex = id;
         SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
-        captions[id].plot.Animate(id, this, false, 0);
+        Plot.ParseScript(captions[id].startCode);
     }
     public void ShowCaptionChoose(int id) {
         chooseBox.Visible = true;
