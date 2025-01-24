@@ -81,22 +81,12 @@ public class Plot {
         // 分词
         string[] words = scriptLine.Split(' ');
         // 去除空字符串
-
-        for (int i = 0; i < words.Length; i++) {
-            GD.Print(words[i]);
-        }
-
         List<string> wordsList = new();
         foreach (string word in words) {
             if (word != "") {
                 wordsList.Add(word);
             }
         }
-
-        for (int i = 0; i < words.Length; i++) {
-            GD.Print(words[i]);
-        }
-
         // 解析核心词
         switch (wordsList[0]) {
             case "LoadCharacter":
