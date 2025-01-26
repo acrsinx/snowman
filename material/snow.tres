@@ -8,6 +8,5 @@ normal_enabled = true
 normal_scale = 0.5
 normal_texture = ExtResource("1_d5anj")
 uv1_scale = Vector3(2, 2, 2)
-uv1_triplanar = true
 proximity_fade_distance = 0.5
 distance_fade_max_distance = 5.0

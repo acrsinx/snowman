@@ -5,7 +5,7 @@ public partial class Snowman : GameCharacter {
     public static PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
     public ObjectPool snowballPool = new(10);
     public Snowman(Node parent, Camera playerCamera) : base(SnowmanScene, playerCamera, parent) {
-        Position += new Vector3(0, -0.5f, 0);
+        Position += new Vector3(0, -1, 0);
         Rotate(Vector3.Up, 0.5f*MathF.PI);
         health.MaxHealth = 1000;
         health.SetFullHealth();
@@ -27,7 +27,7 @@ public partial class Snowman : GameCharacter {
         // 设置雪球位置
         snowball.GlobalPosition = playerCamera.player.GlobalPosition;
         snowball.GlobalRotation = new(playerCamera.cameraMarker.Rotation.X, playerCamera.player.GlobalRotation.Y, 0);
-        snowball.Translate(new Vector3(0, 0.5f, -0.5f));
+        snowball.Translate(new Vector3(0, 0, -0.5f));
         // 设置速度
         Vector3 direction = new Vector3(0, 0, -1).Rotated(new(0, 1, 0), snowball.GlobalRotation.Y).Rotated(new(1, 0, 0), snowball.GlobalRotation.X) + new Vector3(0, 0.5f, 0);
         rigidBody.SetAxisVelocity(playerCamera.Velocity);

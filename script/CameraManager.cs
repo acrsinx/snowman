@@ -25,7 +25,8 @@ public class CameraManager : object {
         new(0, 0.2f, -0.2f),
         new(0, 0.2f, 0.2f)
     };
-    private float distance = 5.0f;
+    private const float maxDistance = 3.0f;
+    private float distance = 3.0f;
     public CameraManager(Camera3D camera, RayCast3D cameraRay) {
 		this.camera = camera;
 		this.cameraRay = cameraRay;
@@ -62,8 +63,8 @@ public class CameraManager : object {
         camera.Rotation = Vector3.Zero;
     }
 	public void UpdateCamera(float fDelta, Node3D player) {
-		if (distance > 5) {
-			distance = 5;
+		if (distance > maxDistance) {
+			distance = maxDistance;
 			SetCameraPosition();
 		} else if (distance < 0) {
 			distance = 1;
@@ -71,7 +72,7 @@ public class CameraManager : object {
 		}
 		if (IsCameraTouching()) {
 			camera.Position = Vector3.Zero;
-			while (camera.Position.Y < 5) {
+			while (camera.Position.Y < maxDistance) {
 				camera.Position += cameraVector*0.2f;
 				if (IsCameraTouching()) {
 					camera.Position -= cameraVector*0.2f;
@@ -79,10 +80,10 @@ public class CameraManager : object {
 					break;
 				}
 			}
-		} else if (distance < 5) {
+		} else if (distance < maxDistance) {
 			float record = distance;
 			distance += fDelta;
-			distance = Math.Min(distance, 5);
+			distance = Math.Min(distance, maxDistance);
 			SetCameraPosition();
 			if (IsCameraTouching()) {
 				distance = record;
@@ -100,7 +101,7 @@ public class CameraManager : object {
 	}
 	public void WheelDown() {
 		distance += 0.2f;
-		distance = MathF.Min(distance, 5);
+		distance = MathF.Min(distance, maxDistance);
 		SetCameraPosition();
 		SetFov();
 	}

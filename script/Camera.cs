@@ -3,7 +3,7 @@ using System;
 
 public partial class Camera : CharacterBody3D, HaveCharacter {
     // 相机标志的原位置
-    public static readonly Vector3 CameraMarkerOrigin = new(0, 2.633f, 0);
+    public static readonly Vector3 CameraMarkerOrigin = new(0, 1.3f, 0);
     private float direction = 0.0f;
     public Vector3 thisVelocity = Vector3.Zero;
     // 玩家状态
@@ -99,8 +99,8 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public override void _PhysicsProcess(double delta) {
         if (PlayerState == State.load) {
             playerCharacter = new Snowman(player, this);
-            new Robot(this).Position = new Vector3(15, -2.0f, 15);
-            new Robot(this).Position = new Vector3(21, -2.0f, 12);
+            new Robot(this).Position = new Vector3(7, 0, 7);
+            new Robot(this).Position = new Vector3(5, 0, 5);
             PlayerState = State.move;
             Plot.camera = this;
             Plot.Check(ui);
