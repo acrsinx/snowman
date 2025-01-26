@@ -70,11 +70,12 @@ public class CameraManager : object {
 			distance = 1;
 			SetCameraPosition();
 		}
-		if (IsCameraTouching()) {
+		if (IsCameraTouching()) { // 相机穿模了
 			camera.Position = Vector3.Zero;
-			while (camera.Position.Y < maxDistance) {
+            // 后移相机
+			while (camera.Position.Z < maxDistance) {
 				camera.Position += cameraVector*0.2f;
-				if (IsCameraTouching()) {
+				if (IsCameraTouching()) { // 如果碰到物体，则停止
 					camera.Position -= cameraVector*0.2f;
 					distance = camera.Position.Z;
 					break;
