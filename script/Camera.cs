@@ -51,6 +51,14 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         }
     }
     public Panel ControlPanel;
+    /// <summary>
+    /// 移动时的触摸屏索引
+    /// </summary>
+    public int moveIndex = -1;
+    /// <summary>
+    /// 旋转视角时的触摸屏索引
+    /// </summary>
+    public int rotateIndex = -1;
     public float front, right;
     // 鼠标是否被隐藏，可以操控角色视角
     private bool canTurn = false;
@@ -207,16 +215,33 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public override void _Input(InputEvent @event) {
         if (@event is InputEventScreenDrag drag) {
             if (ui.uiType == UiType.phone) {
-                if (IsInArea(ControlPanel, drag.Position)) {
+                if (drag.Index == moveIndex) { // 移动
                     // 此处不用规格化，在移动时会规格化
                     Vector2 moveVector = drag.Position-ControlPanel.GetGlobalRect().Position-ControlPanel.GetGlobalRect().Size/2;
                     right = -moveVector.X;
                     front = moveVector.Y;
-                } else {
+                } else if (drag.Index == rotateIndex) { // 转动视角
                     canTurn = true;
                     mouseMove = -drag.Relative * mouseSpeed;
+                } else { // 首次滑动时，判断滑动索引
+                    if (IsInArea(ControlPanel, drag.Position)) {
+                        moveIndex = drag.Index;
+                    } else {
+                        rotateIndex = drag.Index;
+                    }
                 }
                 return;
+            }
+        }
+        if (@event is InputEventScreenTouch touch) { // 滑动事件结束时，重置滑动索引
+            if (ui.uiType == UiType.phone) {
+                if (!touch.Pressed) {
+                    if (touch.Index == moveIndex) {
+                        moveIndex = -1;
+                    } else if (touch.Index == rotateIndex) {
+                        rotateIndex = -1;
+                    }
+                }
             }
         }
         if (@event is InputEventMouseMotion motion) {
