@@ -31,7 +31,10 @@ public partial class Snowman : GameCharacter {
         // 设置速度
         Vector3 direction = new Vector3(0, 0, -1).Rotated(new(0, 1, 0), snowball.GlobalRotation.Y).Rotated(new(1, 0, 0), snowball.GlobalRotation.X) + new Vector3(0, 0.5f, 0);
         rigidBody.SetAxisVelocity(playerCamera.Velocity);
-        rigidBody.ApplyImpulse(direction.Normalized()*10.0f, new Vector3(0, 0, 0));
+        Vector3 impuse = direction.Normalized()*10;
+        rigidBody.ApplyImpulse(impuse, new Vector3(0, 0, 0));
+        // I = mv => v = I/m
+        playerCamera.thisVelocity -= impuse * 0.1f;
     }
     public override void _PhysicsProcess(double delta) {
         for (int i = 0; i < snowballPool.Count; i++) {
