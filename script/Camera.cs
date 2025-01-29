@@ -197,8 +197,9 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             thisVelocity.Y *= 10.0f / lengthY;
         }
         float lengthXZ = new Vector2(thisVelocity.X, thisVelocity.Z).Length();
-        if (lengthXZ > 3.0f) {
-            float factor = 3.0f / lengthXZ;
+        float maxSpeed = isSlow?1.0f:3.0f;
+        if (lengthXZ > maxSpeed) {
+            float factor = maxSpeed / lengthXZ;
             thisVelocity.X *= factor;
             thisVelocity.Z *= factor;
         }
