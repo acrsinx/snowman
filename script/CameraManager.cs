@@ -6,24 +6,24 @@ public class CameraManager : object {
     public RayCast3D cameraRay;
     private static Vector3 cameraVector = new(0.31f, 0, 1);
     public static readonly Vector3[] checkList = {
-        new(-0.1f, 0, 0),
-        new(0.1f, 0, 0),
-        new(0, -0.1f, 0),
-        new(0, 0.1f, 0),
-        new(0, 0, -0.1f),
-        new(0, 0, 0.1f),
-        new(-0.1f, -0.1f, 0),
-        new(-0.1f, 0.1f, 0),
-        new(0.1f, -0.1f, 0),
-        new(0.1f, 0.1f, 0),
-        new(-0.1f, 0, -0.1f),
-        new(-0.1f, 0, 0.1f),
-        new(0.1f, 0, -0.1f),
-        new(0.1f, 0, 0.1f),
-        new(0, -0.1f, -0.1f),
-        new(0, -0.1f, 0.1f),
-        new(0, 0.1f, -0.1f),
-        new(0, 0.1f, 0.1f)
+        new(-0.15f, 0, 0),
+        new(0.15f, 0, 0),
+        new(0, -0.15f, 0),
+        new(0, 0.15f, 0),
+        new(0, 0, -0.15f),
+        new(0, 0, 0.15f),
+        new(-0.15f, -0.15f, 0),
+        new(-0.15f, 0.15f, 0),
+        new(0.15f, -0.15f, 0),
+        new(0.15f, 0.15f, 0),
+        new(-0.15f, 0, -0.15f),
+        new(-0.15f, 0, 0.15f),
+        new(0.15f, 0, -0.15f),
+        new(0.15f, 0, 0.15f),
+        new(0, -0.15f, -0.15f),
+        new(0, -0.15f, 0.15f),
+        new(0, 0.15f, -0.15f),
+        new(0, 0.15f, 0.15f)
     };
     private const float maxDistance = 3.0f;
     private float distance = 3.0f;
