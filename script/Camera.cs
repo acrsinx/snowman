@@ -5,6 +5,9 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     // 相机标志的原位置
     public static readonly Vector3 CameraMarkerOrigin = new(0, 1.3f, 0);
     private float direction = 0.0f;
+    /// <summary>
+    /// 玩家瞬时速度
+    /// </summary>
     public Vector3 thisVelocity = Vector3.Zero;
     // 玩家状态
     private State playerState = State.load;
@@ -91,12 +94,12 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public GameCharacter playerCharacter;
     public CameraManager cameraManager;
     [Export] public PackedScene snowball;
-    [Export] public Vector3 gravity = new(0, -30f, 0);
-    [Export] public float jumpSpeed = 15.0f;
-    [Export] public float mouseSpeed = 0.003f;
-    [Export] public float moveSpeed = 0.2f;
-    [Export] public float runSpeed = 2.0f;
-    [Export] public float maxMouseMove = 0.1f;
+    public static readonly Vector3 gravity = new(0, -30f, 0);
+    public static readonly float jumpSpeed = 15.0f;
+    public static readonly float mouseSpeed = 0.003f;
+    public static readonly float moveSpeed = 0.2f;
+    public static readonly float runSpeed = 0.6f;
+    public static readonly float maxMouseMove = 0.1f;
     [Export] public Ui ui;
     [Export] public AudioStreamPlayer backgroundMusic;
     public override void _Ready() {
@@ -193,8 +196,15 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         }
         player.Rotation = new Vector3(player.Rotation.X, FloatTo1(player.Rotation.Y, direction, fDelta*10.0f), player.Rotation.Z);
         // 限速
-        if (thisVelocity.Length() > 10.0f) {
-            thisVelocity = thisVelocity.Normalized() * 10.0f;
+        float lengthY = MathF.Abs(thisVelocity.Y);
+        if (lengthY > 10.0f) {
+            thisVelocity.Y *= 10.0f / lengthY;
+        }
+        float lengthXZ = new Vector2(thisVelocity.X, thisVelocity.Z).Length();
+        if (lengthXZ > 3.0f) {
+            float factor = 3.0f / lengthXZ;
+            thisVelocity.X *= factor;
+            thisVelocity.Y *= factor;
         }
         Velocity = thisVelocity;
         // 移动
