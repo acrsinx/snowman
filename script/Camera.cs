@@ -95,7 +95,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public CameraManager cameraManager;
     [Export] public PackedScene snowball;
     public static readonly Vector3 gravity = new(0, -30f, 0);
-    public static readonly float jumpSpeed = 15.0f;
+    public static readonly float jumpSpeed = 10.0f;
     public static readonly float mouseSpeed = 0.003f;
     public static readonly float moveSpeed = 0.2f;
     public static readonly float runSpeed = 0.6f;
