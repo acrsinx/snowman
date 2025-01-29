@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dybkojbseqwei"
+uid="uid://hfry0p6xwyov"
 path="res://.godot/imported/snowman.gltf-74593c3e70d7d8333046c3a94f2b4de6.scn"
 
 [deps]
@@ -31,35 +31,13 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "materials": {
-"nose": {
-"use_external/enabled": false,
-"use_external/path": ""
-},
-"snow": {
+"@MATERIAL:0": {
 "use_external/enabled": true,
 "use_external/path": "res://material/snow.tres"
-}
 },
-"meshes": {
-"snowman_球体": {
-"generate/lightmap_uv": 0,
-"generate/lods": 0,
-"generate/shadow_meshes": 0,
-"lods/normal_merge_angle": 60.0,
-"lods/normal_split_angle": 25.0,
-"save_to_file/enabled": false,
-"save_to_file/make_streamable": "",
-"save_to_file/path": ""
-}
-},
-"nodes": {
-"PATH:snowman": {
-"mesh_instance/layers": 4,
-"mesh_instance/visibility_range_begin": 1.0,
-"mesh_instance/visibility_range_begin_margin": 1.0,
-"mesh_instance/visibility_range_end": 2.0,
-"mesh_instance/visibility_range_end_margin": 2.0,
-"mesh_instance/visibility_range_fade_mode": 2
+"@MATERIAL:1": {
+"use_external/enabled": true,
+"use_external/path": "res://material/wood.tres"
 }
 }
 }

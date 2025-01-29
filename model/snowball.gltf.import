@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://degmpjkkosrky"
+uid="uid://b6jqxfc2onc4y"
 path="res://.godot/imported/snowball.gltf-1ba0fd3e17e40a0682df9819a74e0451.scn"
 
 [deps]
@@ -31,7 +31,7 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "materials": {
-"snowball": {
+"@MATERIAL:0": {
 "use_external/enabled": true,
 "use_external/path": "res://material/snow.tres"
 }
@@ -41,7 +41,6 @@ _subresources={
 "generate/physics": true,
 "mesh_instance/layers": 4,
 "physics/body_type": 1,
-"physics/physics_material_override": null,
 "physics/shape_type": 4
 }
 }

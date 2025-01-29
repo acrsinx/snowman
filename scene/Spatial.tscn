@@ -1,16 +1,15 @@
-[gd_scene load_steps=13 format=3 uid="uid://cfuse5s8ctik2"]
+[gd_scene load_steps=12 format=3 uid="uid://cfuse5s8ctik2"]
 
 [ext_resource type="Script" path="res://script/Camera.cs" id="1_tonl0"]
-[ext_resource type="PackedScene" uid="uid://degmpjkkosrky" path="res://model/snowball.gltf" id="3_dgxip"]
+[ext_resource type="PackedScene" uid="uid://b6jqxfc2onc4y" path="res://model/snowball.gltf" id="3_dgxip"]
 [ext_resource type="Shader" path="res://shader/toon.gdshader" id="3_sh47m"]
 [ext_resource type="PackedScene" uid="uid://d1ag14jieptrf" path="res://scene/ui.tscn" id="4_8tfp8"]
-[ext_resource type="PackedScene" uid="uid://b2t0mcjjmhw4s" path="res://model/0_0street.gltf" id="5_si3mt"]
+[ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://maps/battlefield.tscn" id="4_su3vt"]
 [ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="5_vtop7"]
 [ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="8_hj53j"]
-[ext_resource type="ArrayOccluder3D" uid="uid://qwc40miuvegp" path="res://scene/occluder.occ" id="8_u2wn2"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_y08rh"]
-size = Vector3(2.27527, 3.65153, 2.025)
+[sub_resource type="SphereShape3D" id="SphereShape3D_wmoyi"]
+radius = 1.0
 
 [sub_resource type="QuadMesh" id="QuadMesh_u6jo2"]
 size = Vector2(20, 20)
@@ -37,7 +36,7 @@ shadow_opacity = 0.88
 directional_shadow_mode = 0
 
 [node name="player" type="CharacterBody3D" parent="Node3D" node_paths=PackedStringArray("cameraMarker", "screenShader", "player", "ui", "backgroundMusic")]
-transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 2.21974, 0)
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 2.3, 0)
 disable_mode = 2
 script = ExtResource("1_tonl0")
 cameraMarker = NodePath("CameraMarker")
@@ -48,11 +47,11 @@ ui = NodePath("../../ui")
 backgroundMusic = NodePath("../../AudioStreamPlayer")
 
 [node name="character" type="CollisionShape3D" parent="Node3D/player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 2.357, 0)
-shape = SubResource("BoxShape3D_y08rh")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 1, 0)
+shape = SubResource("SphereShape3D_wmoyi")
 
 [node name="CameraMarker" type="Marker3D" parent="Node3D/player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.633, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Node3D/player/CameraMarker"]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 1, 0, 3)
@@ -71,8 +70,7 @@ target_position = Vector3(-0.2, 0, 0)
 
 [node name="map" type="AnimatableBody3D" parent="Node3D"]
 
-[node name="0_0street" parent="Node3D/map" instance=ExtResource("5_si3mt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.89, 0)
+[node name="battlefield" parent="Node3D/map" instance=ExtResource("4_su3vt")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/map"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.8272, 0)
@@ -80,10 +78,6 @@ shape = SubResource("WorldBoundaryShape3D_atgam")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Node3D"]
 environment = ExtResource("5_vtop7")
-
-[node name="OccluderInstance3D" type="OccluderInstance3D" parent="Node3D"]
-occluder = ExtResource("8_u2wn2")
-bake_mask = 4294967289
 
 [node name="ui" parent="." node_paths=PackedStringArray("playerCamera") instance=ExtResource("4_8tfp8")]
 playerCamera = NodePath("../Node3D/player")

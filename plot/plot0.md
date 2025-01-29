@@ -6,11 +6,12 @@
 `雪狗`: `这雪熊又来侵扰斯诺镇了！`  
 `caption`  
 ```
-LoadCharacter(snowdog, dog, (-4, -1.6, -6));
+LoadCharacter(snowdog, dog, (-4, 0, -6));
 PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```
+PauseAnimation(dog);
 Goto(1)
 ```
 ### `1`
