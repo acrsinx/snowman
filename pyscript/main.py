@@ -1,11 +1,12 @@
 import os
 import json
+import re
 
 def decode_mdplot(data: str) -> list[str]:
     in_tooken: bool = False
     tookens: list[str] = []
     current_tooken: str = ""
-    i = 0
+    i: int = 0
     while i < len(data):
         if data[i] == "`":
             if in_tooken:
@@ -20,6 +21,20 @@ def decode_mdplot(data: str) -> list[str]:
         current_tooken += data[i]
         i += 1
     return tookens
+
+"""
+简化剧情脚本
+将无用符号换为空格
+以减小生成的json文件大小
+"""
+def simplify_script (code: str) -> str:
+    # 将换行符、逗号、括号、空格换为空格
+    simpleCode: str = re.sub(r'[\n,() ]+', " ", code)
+    # 去除首尾空格
+    simpleCode = re.sub(r'^ | +$|', "", simpleCode)
+    # 去除与";"相连的空格
+    simpleCode = re.sub(r';+ | +;+ | +;', ";", simpleCode)
+    return simpleCode
 
 if __name__ == '__main__':
     if not os.path.exists(".\\plot"):
@@ -62,11 +77,11 @@ if __name__ == '__main__':
                     json_file_data = {}
                     json_line = {}
                     while i < len(tookens) and tookens[i] != "file":
-                        caption_index = tookens[i]
+                        caption_index: str = tookens[i]
                         actorName: str = tookens[i+1]
                         caption: str = tookens[i+2]
                         captionType: str = tookens[i+3]
-                        startCode: str = tookens[i+4]
+                        startCode: str = simplify_script(tookens[i+4])
                         if captionType == "caption": # 对话
                             json_line = {
                                 caption_index: {
@@ -74,7 +89,7 @@ if __name__ == '__main__':
                                     "caption": caption,
                                     "type": captionType,
                                     "startCode": startCode,
-                                    "endCode": tookens[i+5]
+                                    "endCode": simplify_script(tookens[i+5])
                                 }
                             }
                             i += 6
@@ -83,8 +98,10 @@ if __name__ == '__main__':
                             texts = []
                             # 读取选项
                             while True:
+                                # 选项文本
                                 texts.append(tookens[i])
-                                texts.append(tookens[i+1])
+                                # 选项结果脚本
+                                texts.append(simplify_script(tookens[i+1]))
                                 i += 2
                                 if tookens[i] == "endChoose":
                                     i += 1

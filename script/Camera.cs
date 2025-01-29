@@ -3,8 +3,11 @@ using System;
 
 public partial class Camera : CharacterBody3D, HaveCharacter {
     // 相机标志的原位置
-    public static readonly Vector3 CameraMarkerOrigin = new(0, 2.633f, 0);
+    public static readonly Vector3 CameraMarkerOrigin = new(0, 1.3f, 0);
     private float direction = 0.0f;
+    /// <summary>
+    /// 玩家瞬时速度
+    /// </summary>
     public Vector3 thisVelocity = Vector3.Zero;
     // 玩家状态
     private State playerState = State.load;
@@ -51,6 +54,14 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         }
     }
     public Panel ControlPanel;
+    /// <summary>
+    /// 移动时的触摸屏索引
+    /// </summary>
+    public int moveIndex = -1;
+    /// <summary>
+    /// 旋转视角时的触摸屏索引
+    /// </summary>
+    public int rotateIndex = -1;
     public float front, right;
     // 鼠标是否被隐藏，可以操控角色视角
     private bool canTurn = false;
@@ -83,12 +94,12 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public GameCharacter playerCharacter;
     public CameraManager cameraManager;
     [Export] public PackedScene snowball;
-    [Export] public Vector3 gravity = new(0, -30f, 0);
-    [Export] public float jumpSpeed = 15.0f;
-    [Export] public float mouseSpeed = 0.003f;
-    [Export] public float moveSpeed = 0.2f;
-    [Export] public float runSpeed = 2.0f;
-    [Export] public float maxMouseMove = 0.1f;
+    public static readonly Vector3 gravity = new(0, -30f, 0);
+    public static readonly float jumpSpeed = 10.0f;
+    public static readonly float mouseSpeed = 0.003f;
+    public static readonly float moveSpeed = 0.2f;
+    public static readonly float runSpeed = 0.6f;
+    public static readonly float maxMouseMove = 0.1f;
     [Export] public Ui ui;
     [Export] public AudioStreamPlayer backgroundMusic;
     public override void _Ready() {
@@ -99,8 +110,8 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public override void _PhysicsProcess(double delta) {
         if (PlayerState == State.load) {
             playerCharacter = new Snowman(player, this);
-            new Robot(this).Position = new Vector3(15, -2.0f, 15);
-            new Robot(this).Position = new Vector3(21, -2.0f, 12);
+            new Robot(this).Position = new Vector3(7, 0, 7);
+            new Robot(this).Position = new Vector3(5, 0, 5);
             PlayerState = State.move;
             Plot.camera = this;
             Plot.Check(ui);
@@ -141,17 +152,13 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             }
         }
         if (IsOnFloor()&&PlayerState==State.move) {
-            float front, right;
             if (ui.uiType == UiType.computer) {
                 front = Input.GetAxis("up", "down");
                 right = Input.GetAxis("right", "left");
-            } else {
-                front = this.front;
-                right = this.right;
             }
             // 规格化(right, front)
-            float length = (float) Math.Sqrt(right*right+front*front);
-            if (length != 0) {
+            float length = MathF.Sqrt(right*right+front*front);
+            if (length > 0) {
                 right /= length;
                 front /= length;
             }
@@ -185,8 +192,16 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         }
         player.Rotation = new Vector3(player.Rotation.X, FloatTo1(player.Rotation.Y, direction, fDelta*10.0f), player.Rotation.Z);
         // 限速
-        if (thisVelocity.Length() > 10.0f) {
-            thisVelocity = thisVelocity.Normalized() * 10.0f;
+        float lengthY = MathF.Abs(thisVelocity.Y);
+        if (lengthY > 10.0f) {
+            thisVelocity.Y *= 10.0f / lengthY;
+        }
+        float lengthXZ = new Vector2(thisVelocity.X, thisVelocity.Z).Length();
+        float maxSpeed = isSlow?1.0f:3.0f;
+        if (lengthXZ > maxSpeed) {
+            float factor = maxSpeed / lengthXZ;
+            thisVelocity.X *= factor;
+            thisVelocity.Z *= factor;
         }
         Velocity = thisVelocity;
         // 移动
@@ -207,16 +222,33 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public override void _Input(InputEvent @event) {
         if (@event is InputEventScreenDrag drag) {
             if (ui.uiType == UiType.phone) {
-                if (IsInArea(ControlPanel, drag.Position)) {
+                if (drag.Index == moveIndex) { // 移动
                     // 此处不用规格化，在移动时会规格化
                     Vector2 moveVector = drag.Position-ControlPanel.GetGlobalRect().Position-ControlPanel.GetGlobalRect().Size/2;
                     right = -moveVector.X;
                     front = moveVector.Y;
-                } else {
+                } else if (drag.Index == rotateIndex) { // 转动视角
                     canTurn = true;
                     mouseMove = -drag.Relative * mouseSpeed;
+                } else { // 首次滑动时，判断滑动索引
+                    if (IsInArea(ControlPanel, drag.Position)) {
+                        moveIndex = drag.Index;
+                    } else {
+                        rotateIndex = drag.Index;
+                    }
                 }
                 return;
+            }
+        }
+        if (@event is InputEventScreenTouch touch) { // 滑动事件结束时，重置滑动索引
+            if (ui.uiType == UiType.phone) {
+                if (!touch.Pressed) {
+                    if (touch.Index == moveIndex) {
+                        moveIndex = -1;
+                    } else if (touch.Index == rotateIndex) {
+                        rotateIndex = -1;
+                    }
+                }
             }
         }
         if (@event is InputEventMouseMotion motion) {

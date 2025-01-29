@@ -8,4 +8,3 @@ metallic = 1.0
 roughness = 0.35
 normal_enabled = true
 normal_texture = ExtResource("1_2pf1b")
-uv1_triplanar = true
