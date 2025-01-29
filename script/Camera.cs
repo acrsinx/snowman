@@ -152,17 +152,13 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             }
         }
         if (IsOnFloor()&&PlayerState==State.move) {
-            float front, right;
             if (ui.uiType == UiType.computer) {
                 front = Input.GetAxis("up", "down");
                 right = Input.GetAxis("right", "left");
-            } else {
-                front = this.front;
-                right = this.right;
             }
             // 规格化(right, front)
-            float length = (float) Math.Sqrt(right*right+front*front);
-            if (length != 0) {
+            float length = MathF.Sqrt(right*right+front*front);
+            if (length > 0) {
                 right /= length;
                 front /= length;
             }
@@ -204,7 +200,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         if (lengthXZ > 3.0f) {
             float factor = 3.0f / lengthXZ;
             thisVelocity.X *= factor;
-            thisVelocity.Y *= factor;
+            thisVelocity.Z *= factor;
         }
         Velocity = thisVelocity;
         // 移动
