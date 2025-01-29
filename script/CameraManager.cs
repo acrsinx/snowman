@@ -5,25 +5,25 @@ public class CameraManager : object {
 	private Camera3D camera;
     public RayCast3D cameraRay;
     private static Vector3 cameraVector = new(0.31f, 0, 1);
-    public Vector3[] checkList = {
-        new(-0.2f, 0, 0),
-        new(0.2f, 0, 0),
-        new(0, -0.2f, 0),
-        new(0, 0.2f, 0),
-        new(0, 0, -0.2f),
-        new(0, 0, 0.2f),
-        new(-0.2f, -0.2f, 0),
-        new(-0.2f, 0.2f, 0),
-        new(0.2f, -0.2f, 0),
-        new(0.2f, 0.2f, 0),
-        new(-0.2f, 0, -0.2f),
-        new(-0.2f, 0, 0.2f),
-        new(0.2f, 0, -0.2f),
-        new(0.2f, 0, 0.2f),
-        new(0, -0.2f, -0.2f),
-        new(0, -0.2f, 0.2f),
-        new(0, 0.2f, -0.2f),
-        new(0, 0.2f, 0.2f)
+    public static readonly Vector3[] checkList = {
+        new(-0.1f, 0, 0),
+        new(0.1f, 0, 0),
+        new(0, -0.1f, 0),
+        new(0, 0.1f, 0),
+        new(0, 0, -0.1f),
+        new(0, 0, 0.1f),
+        new(-0.1f, -0.1f, 0),
+        new(-0.1f, 0.1f, 0),
+        new(0.1f, -0.1f, 0),
+        new(0.1f, 0.1f, 0),
+        new(-0.1f, 0, -0.1f),
+        new(-0.1f, 0, 0.1f),
+        new(0.1f, 0, -0.1f),
+        new(0.1f, 0, 0.1f),
+        new(0, -0.1f, -0.1f),
+        new(0, -0.1f, 0.1f),
+        new(0, 0.1f, -0.1f),
+        new(0, 0.1f, 0.1f)
     };
     private const float maxDistance = 3.0f;
     private float distance = 3.0f;
@@ -57,7 +57,9 @@ public class CameraManager : object {
         }
         return false;
     }
-    // 将相机位置与方向重置
+    /// <summary>
+    /// 将相机位置与方向重置
+    /// </summary>
     public void SetCameraPosition() {
         camera.Position = cameraVector*distance;
         camera.Rotation = Vector3.Zero;
@@ -83,7 +85,7 @@ public class CameraManager : object {
 			}
 		} else if (distance < maxDistance) {
 			float record = distance;
-			distance += fDelta;
+			distance += fDelta*3;
 			distance = Math.Min(distance, maxDistance);
 			SetCameraPosition();
 			if (IsCameraTouching()) {
@@ -122,7 +124,11 @@ public class CameraManager : object {
 	public void MoveCamera(Vector3 globalPosition) {
 		camera.Position = globalPosition;
 	}
-    // 把方向旋转转换为方向向量
+    /// <summary>
+    /// 把方向旋转转换为方向向量
+    /// </summary>
+    /// <param name="rotation">方向旋转的向量</param>
+    /// <returns>方向向量</returns>
     public static Vector3 GetDirection(Vector3 rotation) {
         return new Vector3(MathF.Cos(rotation.Y), 0, MathF.Sin(rotation.Y));
     }
