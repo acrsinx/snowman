@@ -21,6 +21,7 @@ public partial class Ui : Control {
     public Setting settingPanel;
     public Button package;
     public Package packagePanel;
+    public Load loadPanel;
     public ProgressBar healthBar;
     // 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
     public long totalGameTime = 0;
@@ -40,6 +41,7 @@ public partial class Ui : Control {
         } else {
             uiType = UiType.computer;
         }
+        // 获取组件
         infomation = GetNode<Label>("infomation");
         captionContainer = GetNode<PanelContainer>("CaptionContainer");
         speakerLabel = GetNode<Label>("CaptionContainer/VBoxContainer/SpeakerLabel");
@@ -59,9 +61,10 @@ public partial class Ui : Control {
         settingPanel = GetNode<Setting>("Setting");
         package = GetNode<Button>("RightUp/package");
         packagePanel = GetNode<Package>("Package");
+        loadPanel = GetNode<Load>("Load");
         healthBar = GetNode<ProgressBar>("RightUp/health");
         healthBar.Visible = false;
-
+        // 添加事件
         chooseButtons[0].GuiInput += (InputEvent @event) => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
@@ -115,8 +118,10 @@ public partial class Ui : Control {
         playerCamera.ControlPanel = ControlPanel;
         settingPanel.ui = this;
         packagePanel.ui = this;
+        loadPanel.ui = this;
         settingPanel.Init();
         packagePanel.Init();
+        loadPanel.Init();
         ClearChoose();
         // 设置为加载态，前面的ClearCaption();会把playerCamera.PlayerState设为State.move
         playerCamera.PlayerState = State.load;

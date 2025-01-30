@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://d1ag14jieptrf"]
+[gd_scene load_steps=7 format=3 uid="uid://d1ag14jieptrf"]
 
 [ext_resource type="Theme" uid="uid://brwqadtig5tg1" path="res://config/mainTheme.tres" id="1_qh1ee"]
 [ext_resource type="Script" path="res://script/Ui.cs" id="2_mqx4e"]
 [ext_resource type="PackedScene" uid="uid://d1vaitru08e1g" path="res://scene/setting.tscn" id="3_dduwx"]
 [ext_resource type="PackedScene" uid="uid://c0q0p13xevtrf" path="res://scene/package.tscn" id="4_ldd5v"]
+[ext_resource type="PackedScene" uid="uid://ds5oq7mbxxueh" path="res://scene/load.tscn" id="5_ny8rt"]
+[ext_resource type="Script" path="res://script/Load.cs" id="6_apcne"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -214,3 +216,7 @@ offset_right = 0.0
 offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Load" parent="." instance=ExtResource("5_ny8rt")]
+layout_mode = 1
+script = ExtResource("6_apcne")

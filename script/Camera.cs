@@ -112,15 +112,6 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         cameraManager = new(c, c.GetChild<RayCast3D>(1));
     }
     public override void _PhysicsProcess(double delta) {
-        if (PlayerState == State.load) {
-            playerCharacter = new Snowman(player, this);
-            new Robot(this).Position = new Vector3(7, 0, 7);
-            new Robot(this).Position = new Vector3(5, 0, 5);
-            PlayerState = State.move;
-            Plot.camera = this;
-            Plot.Check(ui);
-            return;
-        }
         if (PlayerState != State.move) {
             return;
         }
