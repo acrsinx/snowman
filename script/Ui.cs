@@ -30,9 +30,6 @@ public partial class Ui : Control {
     private int captionIndex = 0;
     public void Log(string s) {
         GD.Print("[" + totalGameTime + "] " + s);
-        FileAccess file = FileAccess.Open("user://log.txt", FileAccess.ModeFlags.Write);
-        file.StoreString("[" + totalGameTime + "] " + s + "\n");
-        file.Close();
     }
     public override void _Ready() {
         // 设备类型
@@ -159,6 +156,14 @@ public partial class Ui : Control {
             }
         }
     }
+    public override void _Notification(int what) {
+        if (what == NotificationWMCloseRequest) { // 关闭窗口
+            Log("exit");
+            // FileAccess file = FileAccess.Open("user://userData.txt", FileAccess.ModeFlags.Write);
+            // file.Close();
+            GetTree().Quit();
+        }
+    }
     // 跳过对话或开始选择
     public void NextCaption() {
         if (playerCamera.PlayerState != State.caption) {
@@ -238,7 +243,7 @@ public partial class Ui : Control {
         }
     }
     public void Exit() {
-        GetTree().Quit();
+        GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
     }
     public bool CanUse(GameStuff gameStuff) {
         return gameStuff.CanUse();
