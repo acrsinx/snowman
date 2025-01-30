@@ -27,7 +27,9 @@ public partial class Ui : Control {
     /// </summary>
     public TextureRect map;
     public ProgressBar healthBar;
-    // 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
+    /// <summary>
+    /// 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
+    /// </summary>
     public long totalGameTime = 0;
     private int captionTime = 0;
     private long captionStartTime = 0;
@@ -174,7 +176,9 @@ public partial class Ui : Control {
             GetTree().Quit();
         }
     }
-    // 跳过对话或开始选择
+    /// <summary>
+    /// 跳过对话或开始选择
+    /// </summary>
     public void NextCaption() {
         if (playerCamera.PlayerState != State.caption) {
             return;
