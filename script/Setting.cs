@@ -7,6 +7,7 @@ public partial class Setting : Control {
     public CheckButton useScreenShader;
     public CheckButton shadow;
     private Light3D light;
+    public CheckButton showInfo;
     private SpinBox LOD;
     public Button exit;
     public void Init() {
@@ -15,6 +16,7 @@ public partial class Setting : Control {
         maxFps = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/maxFps");
         useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
         shadow = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/shadow");
+        showInfo = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/showInfo");
         exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
         LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
         // 设置初始值
@@ -26,6 +28,7 @@ public partial class Setting : Control {
             ui.Log("找不到灯光。");
         }
         shadow.ButtonPressed = light.ShadowEnabled;
+        showInfo.ButtonPressed = ui.infomation.Visible;
         LOD.Value = ui.GetTree().Root.MeshLodThreshold;
         // 绑定事件
         uiType.ItemSelected += (index) => {
@@ -39,6 +42,9 @@ public partial class Setting : Control {
         };
         shadow.Pressed += () => {
             light.ShadowEnabled = shadow.ButtonPressed;
+        };
+        showInfo.Pressed += () => {
+            ui.infomation.Visible = showInfo.ButtonPressed;
         };
         LOD.ValueChanged += (value) => {
             ui.GetTree().Root.MeshLodThreshold = (float) value;
