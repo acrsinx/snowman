@@ -93,6 +93,10 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     [Export] public CollisionShape3D player;
     public GameCharacter playerCharacter;
     public CameraManager cameraManager;
+    /// <summary>
+    /// 小地图使用
+    /// </summary>
+    [Export] public SubViewport map;
     [Export] public PackedScene snowball;
     public static readonly Vector3 gravity = new(0, -30f, 0);
     public static readonly float jumpSpeed = 10.0f;
