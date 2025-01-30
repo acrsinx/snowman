@@ -11,12 +11,12 @@ public partial class Setting : Control {
     public Button exit;
     public void Init() {
         // 获取组件
-        uiType = GetNode<OptionButton>("PanelContainer/VBoxContainer/uiType");
-        maxFps = GetNode<OptionButton>("PanelContainer/VBoxContainer/maxFps");
-        useScreenShader = GetNode<CheckButton>("PanelContainer/VBoxContainer/useScreenShader");
-        shadow = GetNode<CheckButton>("PanelContainer/VBoxContainer/shadow");
-        exit = GetNode<Button>("PanelContainer/VBoxContainer/exit");
-        LOD = GetNode<SpinBox>("PanelContainer/VBoxContainer/LOD");
+        uiType = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/uiType");
+        maxFps = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/maxFps");
+        useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
+        shadow = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/shadow");
+        exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
+        LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
         // 设置初始值
         uiType.Selected = (int)ui.uiType;
         Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
