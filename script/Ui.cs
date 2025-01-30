@@ -22,6 +22,10 @@ public partial class Ui : Control {
     public Button package;
     public Package packagePanel;
     public Load loadPanel;
+    /// <summary>
+    /// 小地图
+    /// </summary>
+    public TextureRect map;
     public ProgressBar healthBar;
     // 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
     public long totalGameTime = 0;
@@ -62,6 +66,7 @@ public partial class Ui : Control {
         package = GetNode<Button>("RightUp/package");
         packagePanel = GetNode<Package>("Package");
         loadPanel = GetNode<Load>("Load");
+        map = GetNode<TextureRect>("Map");
         healthBar = GetNode<ProgressBar>("RightUp/health");
         healthBar.Visible = false;
         // 添加事件

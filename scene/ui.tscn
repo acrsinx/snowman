@@ -220,3 +220,10 @@ grow_vertical = 2
 [node name="Load" parent="." instance=ExtResource("5_ny8rt")]
 layout_mode = 1
 script = ExtResource("6_apcne")
+
+[node name="Map" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+expand_mode = 2

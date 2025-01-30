@@ -43,6 +43,7 @@ public partial class Load : Control {
                 ui.playerCamera.PlayerState = State.move;
                 Plot.Check(ui);
                 Visible = false;
+                ui.map.Texture = ImageTexture.CreateFromImage(Image.LoadFromFile("user://map.png"));
                 QueueFree();
                 break;
         }
