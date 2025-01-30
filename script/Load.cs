@@ -43,6 +43,7 @@ public partial class Load : Control {
                 ui.playerCamera.PlayerState = State.move;
                 Plot.Check(ui);
                 Visible = false;
+                QueueFree();
                 break;
         }
         progress++;
