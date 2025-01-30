@@ -222,6 +222,7 @@ layout_mode = 1
 script = ExtResource("6_apcne")
 
 [node name="Map" type="TextureRect" parent="."]
+visible = false
 custom_minimum_size = Vector2(300, 300)
 layout_mode = 1
 offset_right = 40.0

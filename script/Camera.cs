@@ -27,6 +27,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     ui.phoneControl.Visible = ui.uiType != UiType.computer;
                     ui.settingPanel.Visible = false;
                     ui.packagePanel.Visible = false;
+                    ui.map.Visible = true;
                     break;
                 }
                 case State.setting: {
@@ -34,6 +35,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     ui.settingPanel.Visible = true;
                     ui.packagePanel.Visible = false;
                     ui.rightUp.Visible = true;
+                    ui.map.Visible = false;
                     break;
                 }
                 case State.package: {
@@ -41,6 +43,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     ui.settingPanel.Visible = false;
                     ui.packagePanel.Visible = true;
                     ui.rightUp.Visible = false;
+                    ui.map.Visible = false;
                     break;
                 }
                 case State.caption: {
@@ -48,6 +51,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     ui.rightUp.Visible = false;
                     ui.captionContainer.Visible = true;
                     ui.captionLabel.VisibleRatio = 0.0f;
+                    ui.map.Visible = false;
                     break;
                 }
             }
