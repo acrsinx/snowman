@@ -3,6 +3,10 @@ using Godot;
 public partial class GameCharacter : Node3D, HaveCharacter {
     public Node3D character;
     public PhysicsBody3D physicsBody3D;
+    /// <summary>
+    /// 小地图标记
+    /// </summary>
+    public Sprite2D mapFlag;
     public Camera playerCamera;
     public int attackWaitTime = 100;
     public Health health;
@@ -12,6 +16,12 @@ public partial class GameCharacter : Node3D, HaveCharacter {
         this.character = character.Instantiate<Node3D>();
         parent.AddChild(this);
         AddChild(this.character);
+        // 添加小地图标记
+        mapFlag = new Sprite2D {
+            Texture = ResourceLoader.Load<Texture2D>("res://image/redFruit.png"),
+            Scale = new Vector2(0.1f, 0.1f)
+        };
+        playerCamera.ui.panel.AddChild(mapFlag);
         this.playerCamera = playerCamera;
         physicsBody3D = HaveCharacter.GetPhysicsBody3D(this.character);
         health = new(10);
@@ -22,7 +32,11 @@ public partial class GameCharacter : Node3D, HaveCharacter {
                 GlobalPosition = new Vector3(0, 10, 0);
                 return;
             }
-            QueueFree();
+            Die();
+        }
+        if (playerCamera.PlayerState == State.move) {
+            // 刷新小地图标记
+            mapFlag.Position = Map.GlobalPositionToMapPosition(playerCamera, character.GlobalPosition);
         }
     }
     public void Attack() {
@@ -47,7 +61,7 @@ public partial class GameCharacter : Node3D, HaveCharacter {
         if (health.CurrentHealth <= 0) {
             if (this.isEnemy) {
                 playerCamera.ui.healthBar.Visible = false;
-                QueueFree();
+                Die();
             }
         }
         if (physicsBody3D is RigidBody3D r) {
@@ -60,5 +74,9 @@ public partial class GameCharacter : Node3D, HaveCharacter {
     }
     public virtual void CharacterAttack() {
         attackStartTime = playerCamera.ui.totalGameTime;
+    }
+    public void Die() {
+        mapFlag.QueueFree();
+        QueueFree();
     }
 }

@@ -27,9 +27,13 @@ public partial class Ui : Control {
     /// </summary>
     public Control leftUp;
     /// <summary>
+    /// 小地图的框
+    /// </summary>
+    public Panel panel;
+    /// <summary>
     /// 小地图
     /// </summary>
-    public TextureRect map;
+    public Sprite2D map;
     public ProgressBar healthBar;
     /// <summary>
     /// 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
@@ -73,7 +77,8 @@ public partial class Ui : Control {
         packagePanel = GetNode<Package>("Package");
         loadPanel = GetNode<Load>("Load");
         leftUp = GetNode<Control>("LeftUp");
-        map = GetNode<TextureRect>("LeftUp/Panel/Map");
+        panel = GetNode<Panel>("LeftUp/Panel");
+        map = GetNode<Sprite2D>("LeftUp/Panel/Map");
         healthBar = GetNode<ProgressBar>("RightUp/health");
         healthBar.Visible = false;
         // 添加事件
@@ -156,6 +161,11 @@ public partial class Ui : Control {
                 captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime + 0.01f;
                 return;
             }
+        }
+        if (playerCamera.PlayerState == State.move) {
+            // 更新小地图
+            map.Position = Map.GlobalPositionToMapPosition(playerCamera, Vector3.Zero);
+            map.Scale = new Vector2(1.0f, 1.0f);
         }
     }
     public override void _Input(InputEvent @event) {

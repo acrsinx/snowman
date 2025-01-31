@@ -26,6 +26,7 @@ public partial class Load : Control {
             case 0:
                 Plot.camera = ui.playerCamera;
                 ui.playerCamera.map.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
+                ui.playerCamera.map.GetChild<Camera3D>(0).Size = Map.mapSizes[0];
                 break;
             case 1:
                 ui.playerCamera.playerCharacter = new Snowman(ui.playerCamera.player, ui.playerCamera);

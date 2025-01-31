@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://d1ag14jieptrf"]
+[gd_scene load_steps=7 format=3 uid="uid://d1ag14jieptrf"]
 
 [ext_resource type="Theme" uid="uid://brwqadtig5tg1" path="res://config/mainTheme.tres" id="1_qh1ee"]
 [ext_resource type="Script" path="res://script/Ui.cs" id="2_mqx4e"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://c0q0p13xevtrf" path="res://scene/package.tscn" id="4_ldd5v"]
 [ext_resource type="PackedScene" uid="uid://ds5oq7mbxxueh" path="res://scene/load.tscn" id="5_ny8rt"]
 [ext_resource type="Script" path="res://script/Load.cs" id="6_apcne"]
-[ext_resource type="Texture2D" uid="uid://fk634b8hnvly" path="res://image/icon.svg" id="7_ihq0w"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -244,12 +243,6 @@ offset_bottom = 250.0
 theme = ExtResource("1_qh1ee")
 theme_type_variation = &"MapPanel"
 
-[node name="Map" type="TextureRect" parent="LeftUp/Panel"]
-layout_mode = 1
-offset_right = 200.0
-texture = ExtResource("7_ihq0w")
-expand_mode = 2
-
 [node name="Panel" type="Panel" parent="LeftUp/Panel"]
 layout_mode = 1
 anchors_preset = 15
@@ -259,3 +252,5 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_qh1ee")
 theme_type_variation = &"MapPanel"
+
+[node name="Map" type="Sprite2D" parent="LeftUp/Panel"]
