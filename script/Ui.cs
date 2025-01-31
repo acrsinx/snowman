@@ -23,6 +23,10 @@ public partial class Ui : Control {
     public Package packagePanel;
     public Load loadPanel;
     /// <summary>
+    /// 左上角的信息
+    /// </summary>
+    public Control leftUp;
+    /// <summary>
     /// 小地图
     /// </summary>
     public TextureRect map;
@@ -68,7 +72,8 @@ public partial class Ui : Control {
         package = GetNode<Button>("RightUp/package");
         packagePanel = GetNode<Package>("Package");
         loadPanel = GetNode<Load>("Load");
-        map = GetNode<TextureRect>("Map");
+        leftUp = GetNode<Control>("LeftUp");
+        map = GetNode<TextureRect>("LeftUp/Panel/Map");
         healthBar = GetNode<ProgressBar>("RightUp/health");
         healthBar.Visible = false;
         // 添加事件
