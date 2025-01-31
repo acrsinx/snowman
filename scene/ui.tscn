@@ -20,6 +20,7 @@ theme = ExtResource("1_qh1ee")
 script = ExtResource("2_mqx4e")
 
 [node name="CaptionContainer" type="PanelContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -57,6 +58,7 @@ grow_vertical = 2
 theme_type_variation = &"screen"
 
 [node name="choose" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
@@ -111,13 +113,15 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ControlPanel" type="Panel" parent="Control"]
-custom_minimum_size = Vector2(300, 300)
+custom_minimum_size = Vector2(200, 200)
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -300.0
-offset_right = 300.0
+offset_left = 50.0
+offset_top = -250.0
+offset_right = 250.0
+offset_bottom = -50.0
 grow_vertical = 0
 
 [node name="jump" type="Button" parent="Control"]
@@ -156,6 +160,7 @@ theme_type_variation = &"CircleButton"
 text = "攻"
 
 [node name="slow" type="Button" parent="Control"]
+custom_minimum_size = Vector2(50, 50)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -200,9 +205,11 @@ theme_type_variation = &"CircleButton"
 text = "设"
 
 [node name="Setting" parent="." instance=ExtResource("3_dduwx")]
+visible = false
 layout_mode = 1
 
 [node name="Package" parent="." instance=ExtResource("4_ldd5v")]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -217,8 +224,10 @@ layout_mode = 1
 script = ExtResource("6_apcne")
 
 [node name="Map" type="TextureRect" parent="."]
-custom_minimum_size = Vector2(300, 300)
+custom_minimum_size = Vector2(200, 200)
 layout_mode = 1
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 250.0
+offset_bottom = 250.0
 expand_mode = 2
