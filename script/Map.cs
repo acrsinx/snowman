@@ -42,9 +42,6 @@ public class Map : object {
     /// <param name="globalPosition">要转换的坐标</param>
     /// <returns>小地图坐标</returns>
     public static Vector2 GlobalPositionToMapPosition(Camera camera, Vector3 globalPosition) {
-        camera.ui.Log(globalPosition.ToString());
-        Vector2 a = GlobalPositionToMapPosition(camera.GetCharacter().GlobalPosition, globalPosition, camera.ui.panel, camera.ui.map);
-        camera.ui.Log(a.ToString());
-        return a;
+        return GlobalPositionToMapPosition(camera.GetCharacter().GlobalPosition, globalPosition, camera.ui.panel, camera.ui.map);
     }
 }
