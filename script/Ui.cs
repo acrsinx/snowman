@@ -154,7 +154,8 @@ public partial class Ui : Control {
             + ", uiType: " + uiType.ToString()
             + ", LOD: " + GetTree().Root.MeshLodThreshold
             + "\ntime: " + totalGameTime
-            + ", health: " + playerCamera.playerCharacter?.health;
+            + ", health: " + playerCamera.playerCharacter?.health
+            + "\n用户数据目录: " + OS.GetUserDataDir();
         }
         totalGameTime += (long)(delta * 1e3);
         if (playerCamera.PlayerState == State.caption) {
