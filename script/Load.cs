@@ -39,6 +39,7 @@ public partial class Load : Control {
                 break;
             case 4:
                 ui.playerCamera.map.GetTexture().GetImage().SavePng("user://map.png");
+                ui.playerCamera.map.QueueFree();
                 break;
             case 5:
                 ui.playerCamera.PlayerState = State.move;
