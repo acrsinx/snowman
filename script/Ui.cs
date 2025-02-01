@@ -144,16 +144,18 @@ public partial class Ui : Control {
         playerCamera.PlayerState = State.load;
     }
     public override void _Process(double delta) {
-        infomation.Text = "fps: " + Engine.GetFramesPerSecond()
-         + ", 最大fps: " + Engine.MaxFps
-         + ", 每秒处理数: " + (1/delta)
-         + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond
-         + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")"
-         + ", state: " + playerCamera.PlayerState.ToString()
-         + ", uiType: " + uiType.ToString()
-         + ", LOD: " + GetTree().Root.MeshLodThreshold
-         + "\ntime: " + totalGameTime
-         + ", health: " + playerCamera.playerCharacter?.health;
+        if (settingPanel.showInfo.ButtonPressed) {
+            infomation.Text = "fps: " + Engine.GetFramesPerSecond()
+            + ", 最大fps: " + Engine.MaxFps
+            + ", 每秒处理数: " + (1/delta)
+            + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond
+            + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")"
+            + ", state: " + playerCamera.PlayerState.ToString()
+            + ", uiType: " + uiType.ToString()
+            + ", LOD: " + GetTree().Root.MeshLodThreshold
+            + "\ntime: " + totalGameTime
+            + ", health: " + playerCamera.playerCharacter?.health;
+        }
         totalGameTime += (long)(delta * 1e3);
         if (playerCamera.PlayerState == State.caption) {
             // 计时器累加
