@@ -21,8 +21,23 @@ public partial class Ui : Control {
     public Setting settingPanel;
     public Button package;
     public Package packagePanel;
+    public Load loadPanel;
+    /// <summary>
+    /// 左上角的信息
+    /// </summary>
+    public Control leftUp;
+    /// <summary>
+    /// 小地图的框
+    /// </summary>
+    public Panel panel;
+    /// <summary>
+    /// 小地图
+    /// </summary>
+    public Sprite2D map;
     public ProgressBar healthBar;
-    // 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
+    /// <summary>
+    /// 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
+    /// </summary>
     public long totalGameTime = 0;
     private int captionTime = 0;
     private long captionStartTime = 0;
@@ -30,9 +45,6 @@ public partial class Ui : Control {
     private int captionIndex = 0;
     public void Log(string s) {
         GD.Print("[" + totalGameTime + "] " + s);
-        FileAccess file = FileAccess.Open("user://log.txt", FileAccess.ModeFlags.Write);
-        file.StoreString("[" + totalGameTime + "] " + s + "\n");
-        file.Close();
     }
     public override void _Ready() {
         // 设备类型
@@ -43,6 +55,7 @@ public partial class Ui : Control {
         } else {
             uiType = UiType.computer;
         }
+        // 获取组件
         infomation = GetNode<Label>("infomation");
         captionContainer = GetNode<PanelContainer>("CaptionContainer");
         speakerLabel = GetNode<Label>("CaptionContainer/VBoxContainer/SpeakerLabel");
@@ -62,9 +75,13 @@ public partial class Ui : Control {
         settingPanel = GetNode<Setting>("Setting");
         package = GetNode<Button>("RightUp/package");
         packagePanel = GetNode<Package>("Package");
+        loadPanel = GetNode<Load>("Load");
+        leftUp = GetNode<Control>("LeftUp");
+        panel = GetNode<Panel>("LeftUp/Panel");
+        map = GetNode<Sprite2D>("LeftUp/Panel/Map");
         healthBar = GetNode<ProgressBar>("RightUp/health");
         healthBar.Visible = false;
-
+        // 添加事件
         chooseButtons[0].GuiInput += (InputEvent @event) => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
@@ -118,23 +135,28 @@ public partial class Ui : Control {
         playerCamera.ControlPanel = ControlPanel;
         settingPanel.ui = this;
         packagePanel.ui = this;
+        loadPanel.ui = this;
         settingPanel.Init();
         packagePanel.Init();
+        loadPanel.Init();
         ClearChoose();
         // 设置为加载态，前面的ClearCaption();会把playerCamera.PlayerState设为State.move
         playerCamera.PlayerState = State.load;
     }
     public override void _Process(double delta) {
-        infomation.Text = "fps: " + Engine.GetFramesPerSecond()
-         + ", 最大fps: " + Engine.MaxFps
-         + ", 每秒处理数: " + (1/delta)
-         + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond
-         + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")"
-         + ", state: " + playerCamera.PlayerState.ToString()
-         + ", uiType: " + uiType.ToString()
-         + ", LOD: " + GetTree().Root.MeshLodThreshold
-         + "\ntime: " + totalGameTime
-         + ", health: " + playerCamera.playerCharacter?.health;
+        if (settingPanel.showInfo.ButtonPressed) {
+            infomation.Text = "fps: " + Engine.GetFramesPerSecond()
+            + ", 最大fps: " + Engine.MaxFps
+            + ", 每秒处理数: " + (1/delta)
+            + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond
+            + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")"
+            + ", state: " + playerCamera.PlayerState.ToString()
+            + ", uiType: " + uiType.ToString()
+            + ", LOD: " + GetTree().Root.MeshLodThreshold
+            + "\ntime: " + totalGameTime
+            + ", health: " + playerCamera.playerCharacter?.health
+            + "\n用户数据目录: " + OS.GetUserDataDir();
+        }
         totalGameTime += (long)(delta * 1e3);
         if (playerCamera.PlayerState == State.caption) {
             // 计时器累加
@@ -142,6 +164,11 @@ public partial class Ui : Control {
                 captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime + 0.01f;
                 return;
             }
+        }
+        if (playerCamera.PlayerState == State.move) {
+            // 更新小地图
+            map.Position = Map.GlobalPositionToMapPosition(playerCamera, Vector3.Zero);
+            map.Scale = new Vector2(1.0f, 1.0f);
         }
     }
     public override void _Input(InputEvent @event) {
@@ -159,7 +186,17 @@ public partial class Ui : Control {
             }
         }
     }
-    // 跳过对话或开始选择
+    public override void _Notification(int what) {
+        if (what == NotificationWMCloseRequest) { // 关闭窗口
+            Log("exit");
+            // FileAccess file = FileAccess.Open("user://userData.txt", FileAccess.ModeFlags.Write);
+            // file.Close();
+            GetTree().Quit();
+        }
+    }
+    /// <summary>
+    /// 跳过对话或开始选择
+    /// </summary>
     public void NextCaption() {
         if (playerCamera.PlayerState != State.caption) {
             return;
@@ -238,7 +275,7 @@ public partial class Ui : Control {
         }
     }
     public void Exit() {
-        GetTree().Quit();
+        GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
     }
     public bool CanUse(GameStuff gameStuff) {
         return gameStuff.CanUse();

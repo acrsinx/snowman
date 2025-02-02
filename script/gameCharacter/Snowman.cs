@@ -4,7 +4,7 @@ using Godot;
 public partial class Snowman : GameCharacter {
     public static PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
     public ObjectPool snowballPool = new(10);
-    public Snowman(Node parent, Camera playerCamera) : base(SnowmanScene, playerCamera, parent) {
+    public Snowman(Node parent, Camera playerCamera) : base(SnowmanScene, playerCamera, parent, false) {
         Position += new Vector3(0, -1, 0);
         Rotate(Vector3.Up, 0.5f*MathF.PI);
         health.MaxHealth = 1000;
