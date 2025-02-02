@@ -21,7 +21,7 @@ public partial class Setting : Control {
     public CheckButton shadow;
     private Light3D light;
     public CheckButton showInfo;
-    private SpinBox LOD;
+    public SpinBox LOD;
     public Button exit;
     public void Init() {
         // 获取组件

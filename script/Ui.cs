@@ -3,7 +3,9 @@ using Godot;
 using Godot.Collections;
 
 public partial class Ui : Control {
+    public const string savePath = "user://save.json";
     [Export] public Camera playerCamera;
+    public GameInformation gameInformation;
     public UiType uiType;
     public Label infomation;
     public PanelContainer captionContainer;
@@ -47,6 +49,7 @@ public partial class Ui : Control {
         GD.Print("[" + totalGameTime + "] " + s);
     }
     public override void _Ready() {
+        gameInformation = new(this);
         // 设备类型
         if (OS.GetName() == "Android" || OS.GetName() == "iOS"){
             uiType = UiType.phone;
@@ -191,8 +194,8 @@ public partial class Ui : Control {
     public override void _Notification(int what) {
         if (what == NotificationWMCloseRequest) { // 关闭窗口
             Log("exit");
-            // FileAccess file = FileAccess.Open("user://userData.txt", FileAccess.ModeFlags.Write);
-            // file.Close();
+            // 保存数据
+            gameInformation.SaveInformation(savePath);
             GetTree().Quit();
         }
     }
