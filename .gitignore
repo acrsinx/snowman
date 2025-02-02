@@ -5,3 +5,5 @@
 plotJson/
 # export是导出的二进制文件
 export/export/
+# Python的缓存
+__pycache__/

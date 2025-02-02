@@ -22,12 +22,12 @@ def decode_mdplot(data: str) -> list[str]:
         i += 1
     return tookens
 
-"""
-简化剧情脚本
-将无用符号换为空格
-以减小生成的json文件大小
-"""
 def simplify_script (code: str) -> str:
+    """
+    简化剧情脚本
+    将无用符号换为空格
+    以减小生成的json文件大小
+    """
     # 将换行符、逗号、括号、空格换为空格
     simpleCode: str = re.sub(r'[\n,() ]+', " ", code)
     # 去除首尾空格
@@ -36,10 +36,17 @@ def simplify_script (code: str) -> str:
     simpleCode = re.sub(r';+ | +;+ | +;', ";", simpleCode)
     return simpleCode
 
-if __name__ == '__main__':
+def check_current_directory() -> str:
+    """
+    检查当前目录是否含有plot文件夹
+    如果不是，则返回上一级目录
+    """
     if not os.path.exists(".\\plot"):
         os.chdir(os.path.dirname(os.getcwd()))
-    current_directory = os.getcwd()
+    return os.getcwd()
+
+if __name__ == '__main__':
+    current_directory: str = check_current_directory()
     print(current_directory)
     # 检查文件夹的各个文件
     plot_dir: str = current_directory+"\\plot\\"
