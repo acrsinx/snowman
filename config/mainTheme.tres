@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=7 format=3 uid="uid://brwqadtig5tg1"]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://brwqadtig5tg1"]
 
 [ext_resource type="StyleBox" uid="uid://bfc8s368rmuow" path="res://config/buttonTheme.tres" id="1_puqif"]
 [ext_resource type="StyleBox" uid="uid://db2dbf7kepiq0" path="res://config/buttonThemeNormal.tres" id="2_a0t1d"]
@@ -15,6 +15,13 @@ corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6qh3y"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jdk2e"]
 bg_color = Color(0, 0, 0, 0.105882)
@@ -70,6 +77,8 @@ LineEdit/constants/outline_size = 1
 LineEdit/font_sizes/font_size = 25
 LineEdit/styles/focus = ExtResource("1_puqif")
 LineEdit/styles/normal = ExtResource("2_a0t1d")
+MapPanel/base_type = &"Panel"
+MapPanel/styles/panel = SubResource("StyleBoxFlat_6qh3y")
 Panel/styles/panel = SubResource("StyleBoxFlat_jdk2e")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_s7d8f")
 screen/base_type = &"PanelContainer"

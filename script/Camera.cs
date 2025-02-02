@@ -2,14 +2,18 @@ using Godot;
 using System;
 
 public partial class Camera : CharacterBody3D, HaveCharacter {
-    // 相机标志的原位置
+    /// <summary>
+    /// 相机标志的原位置
+    /// </summary>
     public static readonly Vector3 CameraMarkerOrigin = new(0, 1.3f, 0);
     private float direction = 0.0f;
     /// <summary>
     /// 玩家瞬时速度
     /// </summary>
     public Vector3 thisVelocity = Vector3.Zero;
-    // 玩家状态
+    /// <summary>
+    /// 玩家状态
+    /// </summary>
     private State playerState = State.load;
     public State PlayerState {
         set {
@@ -23,6 +27,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     ui.phoneControl.Visible = ui.uiType != UiType.computer;
                     ui.settingPanel.Visible = false;
                     ui.packagePanel.Visible = false;
+                    ui.leftUp.Visible = true;
                     break;
                 }
                 case State.setting: {
@@ -30,6 +35,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     ui.settingPanel.Visible = true;
                     ui.packagePanel.Visible = false;
                     ui.rightUp.Visible = true;
+                    ui.leftUp.Visible = false;
                     break;
                 }
                 case State.package: {
@@ -37,6 +43,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     ui.settingPanel.Visible = false;
                     ui.packagePanel.Visible = true;
                     ui.rightUp.Visible = false;
+                    ui.leftUp.Visible = false;
                     break;
                 }
                 case State.caption: {
@@ -44,6 +51,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                     ui.rightUp.Visible = false;
                     ui.captionContainer.Visible = true;
                     ui.captionLabel.VisibleRatio = 0.0f;
+                    ui.leftUp.Visible = false;
                     break;
                 }
             }
@@ -63,7 +71,9 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     /// </summary>
     public int rotateIndex = -1;
     public float front, right;
-    // 鼠标是否被隐藏，可以操控角色视角
+    /// <summary>
+    /// 鼠标是否被隐藏，可以操控角色视角
+    /// </summary>
     private bool canTurn = false;
     public bool CanTurn {
         set {
@@ -82,9 +92,13 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     }
     public Vector2 mouseMove;
     public bool jump = false;
-    // 跳跃键上次被按下的时间
+    /// <summary>
+    /// 跳跃键上次被按下的时间
+    /// </summary>
     public long lastJumpTime;
-    // 跳跃延迟
+    /// <summary>
+    /// 跳跃延迟
+    /// </summary>
     public const long jumpDelay = 100;
     public bool isSlow = false;
     public Shake cameraShake = new();
@@ -93,6 +107,10 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     [Export] public CollisionShape3D player;
     public GameCharacter playerCharacter;
     public CameraManager cameraManager;
+    /// <summary>
+    /// 小地图使用
+    /// </summary>
+    [Export] public SubViewport map;
     [Export] public PackedScene snowball;
     public static readonly Vector3 gravity = new(0, -30f, 0);
     public static readonly float jumpSpeed = 10.0f;
@@ -108,15 +126,6 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         cameraManager = new(c, c.GetChild<RayCast3D>(1));
     }
     public override void _PhysicsProcess(double delta) {
-        if (PlayerState == State.load) {
-            playerCharacter = new Snowman(player, this);
-            new Robot(this).Position = new Vector3(7, 0, 7);
-            new Robot(this).Position = new Vector3(5, 0, 5);
-            PlayerState = State.move;
-            Plot.camera = this;
-            Plot.Check(ui);
-            return;
-        }
         if (PlayerState != State.move) {
             return;
         }
@@ -319,7 +328,13 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     public void Shake() {
         cameraShake.StartShake(ui.totalGameTime, 200);
     }
-    // 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from，from和to都是弧度
+    /// <summary>
+    /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from，from和to都是弧度
+    /// </summary>
+    /// <param name="from">从</param>
+    /// <param name="to">到</param>
+    /// <param name="speed">速度（选填）</param>
+    /// <returns>新的值</returns>
     public static float FloatTo1(float from, float to, float speed=0.1f) {
         float PI2 = 2.0f*MathF.PI;
         float newTo = to - Mathf.Floor(to / PI2) * PI2;
@@ -336,7 +351,12 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             return MathF.Max(from-speed, newTo);
         }
     }
-    // 位置是否在指定范围内
+    /// <summary>
+    /// 位置是否在指定范围内
+    /// </summary>
+    /// <param name="area">范围</param>
+    /// <param name="position">位置</param>
+    /// <returns>是否在</returns>
     public static bool IsInArea(Control area, Vector2 position) {
         return area.GetGlobalRect().HasPoint(position);
     }
