@@ -12,15 +12,20 @@ public partial class GameCharacter : Node3D, HaveCharacter {
     public Health health;
     public bool isEnemy = false;
     private long attackStartTime = 0;
-    public GameCharacter(PackedScene character, Camera playerCamera, Node parent) {
+    public GameCharacter(PackedScene character, Camera playerCamera, Node parent, bool isEnemy) {
         this.character = character.Instantiate<Node3D>();
+        this.isEnemy = isEnemy;
         parent.AddChild(this);
         AddChild(this.character);
         // 添加小地图标记
         mapFlag = new Sprite2D {
-            Texture = ResourceLoader.Load<Texture2D>("res://image/redFruit.png"),
             Scale = new Vector2(0.1f, 0.1f)
         };
+        if (isEnemy) {
+            mapFlag.Texture = ResourceLoader.Load<Texture2D>("res://image/redFruit.png");
+        } else {
+            mapFlag.Texture = ResourceLoader.Load<Texture2D>("res://image/playerFlag.svg");
+        }
         playerCamera.ui.panel.AddChild(mapFlag);
         this.playerCamera = playerCamera;
         physicsBody3D = HaveCharacter.GetPhysicsBody3D(this.character);
@@ -37,6 +42,7 @@ public partial class GameCharacter : Node3D, HaveCharacter {
         if (playerCamera.PlayerState == State.move) {
             // 刷新小地图标记
             mapFlag.Position = Map.GlobalPositionToMapPosition(playerCamera, character.GlobalPosition);
+            mapFlag.GlobalRotation = -character.GlobalRotation.Y;
         }
     }
     public void Attack() {

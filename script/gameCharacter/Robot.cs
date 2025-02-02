@@ -3,8 +3,7 @@ using Godot;
 public partial class Robot : GameCharacter {
     public static PackedScene RobotScene = GD.Load<PackedScene>("res://scene/robot.tscn");
     public Node3D weapon;
-    public Robot(Camera playerCamera) : base(RobotScene, playerCamera, playerCamera.GetTree().Root) {
-        isEnemy = true;
+    public Robot(Camera playerCamera) : base(RobotScene, playerCamera, playerCamera.GetTree().Root, true) {
         health.MaxHealth = 100;
         health.SetFullHealth();
         weapon = GetChild(0).GetChild(0) as Node3D;
