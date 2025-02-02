@@ -203,15 +203,16 @@ public partial class Ui : Control {
         if (playerCamera.PlayerState != State.caption) {
             return;
         }
+        DisplayServer.TtsStop();
+        if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完，让文字直接显示完
+            captionStartTime = totalGameTime - captionTime;
+            return;
+        }
         if (captions[captionIndex].canChoose) { // 如果可以选择
             if (!chooseButtons[0].Visible) { // 如果还没显示选择按钮
                 ShowCaptionChoose(captionIndex);
             }
         } else { // 如果不需要选择，即普通对话，即可跳过
-            if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完，让文字直接显示完
-                captionStartTime = totalGameTime - captionTime;
-                return;
-            }
             Plot.ParseScript(captions[captionIndex].endCode);
         }
     }
@@ -255,6 +256,10 @@ public partial class Ui : Control {
         speakerLabel.Text = speakerName;
         captionLabel.Text = caption;
         captionTime = time;
+        if (settingPanel.ttsId == "") {
+            return;
+        }
+        DisplayServer.TtsSpeak(caption, settingPanel.ttsId);
     }
     public void ClearChoose() {
         chooseBox.Visible = false;
