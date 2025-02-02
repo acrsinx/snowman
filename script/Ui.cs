@@ -160,10 +160,12 @@ public partial class Ui : Control {
         totalGameTime += (long)(delta * 1e3);
         if (playerCamera.PlayerState == State.caption) {
             // 计时器累加
-            if (totalGameTime - captionStartTime < captionTime) {
-                captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime + 0.01f;
+            if (totalGameTime - captionStartTime <= captionTime) {
+                captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
                 return;
             }
+            // 计时器结束，显示全部字符
+            captionLabel.VisibleCharacters = -1;
         }
         if (playerCamera.PlayerState == State.move) {
             // 更新小地图
@@ -206,7 +208,8 @@ public partial class Ui : Control {
                 ShowCaptionChoose(captionIndex);
             }
         } else { // 如果不需要选择，即普通对话，即可跳过
-            if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完
+            if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完，让文字直接显示完
+                captionStartTime = totalGameTime - captionTime;
                 return;
             }
             Plot.ParseScript(captions[captionIndex].endCode);
