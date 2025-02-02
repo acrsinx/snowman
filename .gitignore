@@ -4,4 +4,4 @@
 # plotJson是由pyscript/main.py生成的，不需要提交
 plotJson/
 # export是导出的二进制文件
-export/
+export/export/
