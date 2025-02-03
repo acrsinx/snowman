@@ -24,13 +24,114 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
                 lines.pop(i)
         return lines, suffix
 
+def split_word(data: str) -> list[tuple[str, bool]]:
+    """
+    分词
+
+    针对"{}"的编程语言
+
+    返回
+    - list[str, bool] str: 词元, bool: 是否是注释
+    """
+    words: list[str, bool] = []
+    word: str = ""
+    is_note: bool = False
+    for i in range(len(data)):
+        if is_note:
+            if data[i] == "\n":
+                is_note = False
+                if len(word) > 0:
+                    words.append((word, True))
+                    word = ""
+                continue
+            word += data[i]
+            continue
+        if data[i] in [" ", "\n", "\t", "\r", "\v"]:
+            if len(word) > 0:
+                words.append((word, False))
+                word = ""
+            continue
+        if data[i] in [",", ";", "{", "}", "(", ")", "[", "]", "\"", "'", ":"]:
+            if len(word) > 0:
+                words.append((word, False))
+                word = ""
+            words.append((data[i], False))
+            continue
+        if data[i] == "/" and data[i+1] == "/":
+            if len(word) > 0:
+                words.append((word, False))
+                word = ""
+            is_note = True
+            word += data[i]
+            continue
+        word += data[i]
+    if len(word) > 0:
+        words.append((word, False))
+    return words
+
+def output(path: str, words: list[tuple[str, bool]]):
+    """
+    输出
+    """
+    with open(path, "w", encoding="utf-8") as f:
+        tab_level: int = 0
+        # 是否在for循环的()中
+        in_for: bool = False
+        for i in range(len(words)):
+            f.write(words[i][0])
+            if i+1 >= len(words): # 最后一行
+                f.write("\n")
+                return
+            if words[i][0] == "for": # for循环
+                in_for = True
+            if words[i][0] == ")": # for循环结束
+                in_for = False
+            if words[i+1][0] == "}": # 如果下一个词是"}"，则减少缩进
+                tab_level -= 1
+                if words[i][0] != ";": # 如果当前词不是";"，则补充换行
+                    f.write("\n")
+                    f.write(" " * 4 * tab_level)
+                    continue
+            if words[i][0] == "}": # "}"后补充换行
+                if (words[i+1][0] not in ["else", "elif"]) and (not words[i+1][0] == ";"):
+                    f.write("\n")
+                    f.write(" " * 4 * tab_level)
+                    continue
+            if (words[i][0] == ";" or words[i][1]) and not in_for: # 如果是";"或注释且不是for循环的()中，则加换行
+                f.write("\n")
+                f.write(" " * 4 * tab_level)
+                continue
+            if words[i][0] == "\"" and words[i+1][0] == "\"": # 如果是""，则不加空格
+                continue
+            if words[i][0] == "'" and words[i+1][0] == "'": # 如果是''，则不加空格
+                continue
+            if words[i][0] in [")", "]"] and words[i+1][0].startswith("."): # 如果是")."或"]."，则不加空格
+                continue
+            if words[i][0] in ["(", "[", "\"", "'"]: # 如果是(或[或"或'之后，则不加空格
+                continue
+            if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")"]: # 如果是[或]或,或:或;或"或'或)之前，则不加空格
+                continue
+            if words[i+1][0] == "(" and words[i][0] not in ["for", "elif", "switch", "if", "while"] and not words[i][0].endswith("="): # 如果是(之前且不是关键词，则不加空格
+                continue
+            if words[i][0] == "{": # 如果是{，则增加缩进
+                f.write("\n")
+                tab_level += 1
+                f.write(" " * 4 * tab_level)
+                continue
+            f.write(" ")
+
 def arrange(path: str):
     """
     整理代码
     """
     print(path)
     with open(path, "r", encoding="utf-8") as f:
-        pass
+        data: str = f.read()
+        # 分词
+        words: list[tuple[str, bool]] = split_word(data)
+        # 输出
+        if path.endswith(".cs") or path.endswith(".gdshader"): # {}类编程语言，如C#、gdshader
+            output(path, words)
 
 def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str]):
     """
