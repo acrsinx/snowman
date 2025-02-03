@@ -30,7 +30,7 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
 符号列表
 从短到长
 """
-operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>", "<<=", ">>=", "??="]
+operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>", "<<=", ">>=", "??="]
 
 def is_operator(operator: str) -> bool:
     """
@@ -135,6 +135,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
                 words.append((word, NoteType.NORMAL))
                 word = ""
             continue
+        # 算符
         if data[i:].startswith(tuple(operator_list)):
             if len(word) > 0:
                 words.append((word, NoteType.NORMAL))
@@ -163,6 +164,34 @@ def output(path: str, words: list[tuple[str, NoteType]]):
     """
     输出
     """
+    # 找出泛型的尖括号
+    # 尖括号成对出现
+    # a<b<c>, d> a = new();
+    # return e > f
+    level: int = 0
+    level_list: list[int] = []
+    # 尖括号所在位置的索引
+    indexs: list[int] = []
+    for i in range(len(words)):
+        level_list.append(level)
+        if words[i][0] == "<":
+            level += 1
+            continue
+        if words[i][0] == ">":
+            level -= 1
+            if level < 0: # 一定不是泛型的尖括号
+                level = 0
+                continue
+            j: int = i - 1
+            indexs.append(i)
+            while level_list[j] > level: # 找到头
+                j -= 1
+            indexs.append(j)
+            continue
+        if words[i][0] in ["{", "}"]+operator_list: # 泛型的两个尖括号中一定没有的符号
+            level = 0
+            continue
+
     with open(path, "w", encoding="utf-8") as f:
         tab_level: int = 0
         # 是否在for循环的()中
@@ -175,6 +204,9 @@ def output(path: str, words: list[tuple[str, NoteType]]):
         tab_level_in_array: int = 0
         for i in range(len(words)):
             f.write(words[i][0])
+            if i in indexs or i+1 in indexs: # 泛型尖括号周围不加空格
+                if words[i][0] != ">":
+                    continue
             if i+1 >= len(words): # 最后一行
                 f.write("\n")
                 return
@@ -227,15 +259,17 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 continue
             if words[i][0] == ":" and words[i+1][0].startswith("\""): # 如果是:"，则不加空格
                 continue
+            if words[i][0] == ">" and words[i+1][0] in ["(", ")"]: # 如果是>)或>(，则不加空格
+                continue
             if words[i][0] in [")", "]"] and words[i+1][0].startswith("."): # 如果是")."或"]."，则不加空格
                 continue
-            if words[i][0] == "-" and (is_operator(words[i-1][0]) or words[i-1][0] in ["(", "[", ","]): # 如果是算符后加"-"，则不加空格
+            if words[i][0] == "-" and (is_operator(words[i-1][0]) or words[i-1][0] in ["(", "[", ",", "return"]): # 如果是算符后加"-"，则不加空格
                 continue
             if words[i][0] in ["(", "[", "\"", "'", "?", "!", "++", "--"]: # 如果是(或[或"或'或?或!或++或--之后，则不加空格
                 continue
             if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "++", "--"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?或++或--之前，且不是算符，则不加空格
                 continue
-            if words[i+1][0] == "(" and words[i][0] not in [",", "for", "foreach", "elif", "switch", "if", "while"] and not words[i][0].endswith("="): # 如果是(之前且不是关键词，则不加空格
+            if words[i+1][0] == "(" and words[i][0] not in [",", "for", "foreach", "elif", "switch", "if", "while"] and not is_operator(words[i][0]): # 如果是(之前且不是关键词，则不加空格
                 continue
             if words[i][0] == "{": # 如果是{，则增加缩进
                 if words[i+1][1] == NoteType.NOTE_END: # 如果是行末注释，则不立即换行
