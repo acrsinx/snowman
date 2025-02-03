@@ -30,13 +30,21 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
 符号列表
 从短到长
 """
-operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=", "??="]
+operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>", "<<=", ">>=", "??="]
 
 def is_operator(operator: str) -> bool:
     """
     判断是否是符号
     """
     return operator in operator_list
+
+def is_num(num: str) -> bool:
+    """
+    判断是否是数
+
+    只要不是字母打头，就是数
+    """
+    return num.startswith(("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "."))
 
 class NoteType(Enum):
     """
@@ -178,7 +186,11 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                     tab_level_in_array -= 1
                     if tab_level_in_array == 0:
                         tab_level -= 1
-            if words[i+1][0] == "}": # 如果下一个词是"}"且不在数组中，则减少缩进
+            if words[i+1][0] == "}": # 如果下一个词是"}"，且不在数组中，且不是{}的情况，则减少缩进
+                if words[i][0] == "{":
+                    f.write("\n")
+                    f.write(" " * 4 * tab_level)
+                    continue
                 if in_array:
                     tab_level_in_array -= 1
                     if tab_level_in_array != 0:
@@ -217,9 +229,11 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 continue
             if words[i][0] in [")", "]"] and words[i+1][0].startswith("."): # 如果是")."或"]."，则不加空格
                 continue
-            if words[i][0] in ["(", "[", "\"", "'", "?"]: # 如果是(或[或"或'或?之后，则不加空格
+            if words[i][0] == "-" and (is_operator(words[i-1][0]) or words[i-1][0] in ["(", "[", ","]): # 如果是算符后加"-"，则不加空格
                 continue
-            if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?之前，且不是算符，则不加空格
+            if words[i][0] in ["(", "[", "\"", "'", "?", "!", "++", "--"]: # 如果是(或[或"或'或?或!或++或--之后，则不加空格
+                continue
+            if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "++", "--"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?或++或--之前，且不是算符，则不加空格
                 continue
             if words[i+1][0] == "(" and words[i][0] not in [",", "for", "foreach", "elif", "switch", "if", "while"] and not words[i][0].endswith("="): # 如果是(之前且不是关键词，则不加空格
                 continue
