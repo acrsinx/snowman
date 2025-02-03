@@ -39,8 +39,9 @@ def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_li
     # 文件后缀白名单
     allow_suffix_list: list[str] = ["md", "cs", "gdshader"]
     for dir in dir_list:
-        real_dir: str = current_dir + "\\" + dir
-        if os.path.relpath(real_dir, base_dir)+"\\" in ignore_list: # 忽略文件夹
+        real_dir: str = os.path.join(current_dir, dir)
+        relpath: str = os.path.relpath(real_dir, base_dir) + "\\"
+        if any([i in relpath for i in ignore_list]): # 忽略文件夹
             continue
         if os.path.isdir(real_dir): # 如果是文件夹
             arrange_code(base_dir, real_dir, os.listdir(real_dir), ignore_list)
