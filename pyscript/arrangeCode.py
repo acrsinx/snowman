@@ -1,4 +1,6 @@
+from enum import Enum
 import os
+import shutil
 import main
 
 def read_ignore(path: str) -> tuple[list[str], list[str]]:
@@ -28,61 +30,92 @@ def is_operator(operator: str) -> bool:
     """
     判断是否是符号
     """
-    return operator in ["=", "==", "+", "-", "*", "/", "%", "++", "--", "&&", "||", "!", ">", "<", ">=", "<=", "==", "!=", "&", "|", "^", "~", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>="]
+    return operator in ["=", "==", "+", "-", "*", "/", "%", "++", "--", "&&", "||", "!", ">", "<", ">=", "<=", "==", "!=", "&", "|", "^", "~", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=", "??="]
 
-def split_word(data: str) -> list[tuple[str, bool]]:
+class NoteType(Enum):
+    """
+    类型
+    - 0 普通
+    - 1 注释
+    - 2 行末注释
+    """
+    NORMAL = 0
+    NOTE = 1
+    NOTE_END = 2
+
+def split_word(data: str) -> list[tuple[str, NoteType]]:
     """
     分词
 
     针对"{}"的编程语言
 
     返回
-    - list[str, bool] str: 词元, bool: 是否是注释
+    - list[str, NoteType] str: 词元 NoteType: 注释类型
     """
-    words: list[str, bool] = []
+    words: list[str, NoteType] = []
     word: str = ""
-    is_note: bool = False
+    is_note: NoteType = NoteType.NORMAL
     is_string: bool = False
+    is_char: bool = False
     for i in range(len(data)):
-        if is_note:
+        if is_note != NoteType.NORMAL:
             if data[i] == "\n":
-                is_note = False
                 if len(word) > 0:
-                    words.append((word, True))
+                    words.append((word, is_note))
                     word = ""
+                is_note = NoteType.NORMAL
                 continue
             word += data[i]
-            continue
-        if data[i] in [" ", "\n", "\t", "\r", "\v"]:
-            if len(word) > 0:
-                words.append((word, False))
-                word = ""
-            continue
-        if data[i] in [",", ";", "{", "}", "(", ")", "[", "]", "?", ":"]:
-            if len(word) > 0:
-                words.append((word, False))
-                word = ""
-            words.append((data[i], False))
             continue
         if data[i] == "\"":
             if not is_string:
                 if len(word) > 0:
-                    words.append((word, False))
+                    words.append((word, NoteType.NORMAL))
                     word = ""
             is_string = not is_string
+        if is_string:
+            word += data[i]
+            continue
+        if data[i] == "'":
+            if not is_char:
+                if len(word) > 0:
+                    words.append((word, NoteType.NORMAL))
+                    word = ""
+            is_char = not is_char
+        if is_char:
+            word += data[i]
+            continue
         if data[i] == "/" and data[i+1] == "/":
             if len(word) > 0:
-                words.append((word, False))
+                words.append((word, NoteType.NORMAL))
                 word = ""
-            is_note = True
+            # 是否是行末注释
+            is_note = NoteType.NOTE
+            j: int = i
+            while j >= 0 and data[j] != "\n":
+                j -= 1
+                if not data[j].isspace(): # 如果不是空格，则是行末注释
+                    is_note = NoteType.NOTE_END
+                    break
             word += data[i]
+            continue
+        if data[i] in [" ", "\n", "\t", "\r", "\v"]:
+            if len(word) > 0:
+                words.append((word, NoteType.NORMAL))
+                word = ""
+            continue
+        if data[i] in [",", ";", "{", "}", "(", ")", "[", "]", "?", ":"]:
+            if len(word) > 0:
+                words.append((word, NoteType.NORMAL))
+                word = ""
+            words.append((data[i], NoteType.NORMAL))
             continue
         word += data[i]
     if len(word) > 0:
-        words.append((word, False))
+        words.append((word, NoteType.NORMAL))
     return words
 
-def output(path: str, words: list[tuple[str, bool]]):
+def output(path: str, words: list[tuple[str, NoteType]]):
     """
     输出
     """
@@ -103,8 +136,12 @@ def output(path: str, words: list[tuple[str, bool]]):
                 return
             if words[i][0] == "for": # for循环
                 in_for = True
-            if words[i][0] == ")": # for循环结束
+            if words[i][0] == ")": # for循环结束或数组缩进减少
                 in_for = False
+                if in_array:
+                    tab_level_in_array -= 1
+                    if tab_level_in_array == 0:
+                        tab_level -= 1
             if words[i+1][0] == "}": # 如果下一个词是"}"且不在数组中，则减少缩进
                 if in_array:
                     tab_level_in_array -= 1
@@ -125,7 +162,14 @@ def output(path: str, words: list[tuple[str, bool]]):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
-            if (words[i][0] == ";" or words[i][1] or (words[i][0] == "," and in_array and tab_level_in_array == 1)) and not in_for: # 如果是";"，或注释，或数组中特定级别的"," 且不是for循环的()中，则加换行
+            if words[i][0] == "(": # 数组内的"("增大缩进
+                if in_array:
+                    tab_level_in_array += 1
+                    if tab_level_in_array == 1:
+                        f.write("\n")
+                        tab_level += 1
+                        f.write(" " * 4 * tab_level)
+            if (words[i][0] == ";" or words[i][1] != NoteType.NORMAL or (words[i][0] == "," and in_array and tab_level_in_array == 1)) and not in_for: # 如果是";"，或注释，或数组中特定级别的"," 且不是for循环的()中，则加换行
                 f.write("\n")
                 f.write(" " * 4 * tab_level)
                 continue
@@ -141,9 +185,13 @@ def output(path: str, words: list[tuple[str, bool]]):
                 continue
             if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?之前，且不是算符，则不加空格
                 continue
-            if words[i+1][0] == "(" and words[i][0] not in ["for", "elif", "switch", "if", "while"] and not words[i][0].endswith("="): # 如果是(之前且不是关键词，则不加空格
+            if words[i+1][0] == "(" and words[i][0] not in [",", "for", "foreach", "elif", "switch", "if", "while"] and not words[i][0].endswith("="): # 如果是(之前且不是关键词，则不加空格
                 continue
             if words[i][0] == "{": # 如果是{，则增加缩进
+                if words[i+1][1] == NoteType.NOTE_END: # 如果是行末注释，则不立即换行
+                    tab_level += 1
+                    f.write(" ")
+                    continue
                 if in_array:
                     tab_level_in_array += 1
                     if tab_level_in_array == 1:
@@ -183,10 +231,15 @@ def arrange(path: str):
     整理代码
     """
     print(path)
+    # 留一个副本
+    copy_path: str = "copy\\" + os.path.relpath(path, os.getcwd()) + ".copy"
+    if not os.path.exists(os.path.dirname(copy_path)):
+        os.makedirs(os.path.dirname(copy_path))
+    shutil.copy(path, copy_path)
     with open(path, "r", encoding="utf-8") as f:
         data: str = f.read()
         # 分词
-        words: list[tuple[str, bool]] = split_word(data)
+        words: list[tuple[str, NoteType]] = split_word(data)
         # 输出
         if path.endswith(".cs") or path.endswith(".gdshader"): # {}类编程语言，如C#、gdshader
             output(path, words)

@@ -7,3 +7,5 @@ plotJson/
 export/export/
 # Python的缓存
 __pycache__/
+# 格式化代码的备份
+copy/
