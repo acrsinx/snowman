@@ -24,6 +24,12 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
                 lines.pop(i)
         return lines, suffix
 
+def is_operator(operator: str) -> bool:
+    """
+    判断是否是符号
+    """
+    return operator in ["=", "==", "+", "-", "*", "/", "%", "++", "--", "&&", "||", "!", ">", "<", ">=", "<=", "==", "!=", "&", "|", "^", "~", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>="]
+
 def split_word(data: str) -> list[tuple[str, bool]]:
     """
     分词
@@ -36,6 +42,7 @@ def split_word(data: str) -> list[tuple[str, bool]]:
     words: list[str, bool] = []
     word: str = ""
     is_note: bool = False
+    is_string: bool = False
     for i in range(len(data)):
         if is_note:
             if data[i] == "\n":
@@ -51,12 +58,18 @@ def split_word(data: str) -> list[tuple[str, bool]]:
                 words.append((word, False))
                 word = ""
             continue
-        if data[i] in [",", ";", "{", "}", "(", ")", "[", "]", "\"", "'", ":"]:
+        if data[i] in [",", ";", "{", "}", "(", ")", "[", "]", "?", ":"]:
             if len(word) > 0:
                 words.append((word, False))
                 word = ""
             words.append((data[i], False))
             continue
+        if data[i] == "\"":
+            if not is_string:
+                if len(word) > 0:
+                    words.append((word, False))
+                    word = ""
+            is_string = not is_string
         if data[i] == "/" and data[i+1] == "/":
             if len(word) > 0:
                 words.append((word, False))
@@ -77,6 +90,12 @@ def output(path: str, words: list[tuple[str, bool]]):
         tab_level: int = 0
         # 是否在for循环的()中
         in_for: bool = False
+        # 是否在数组中，内无分号的就是数组，数组中相对缩进为1的展开，其余不展开
+        in_array: bool = False
+        # 数组结束的位置
+        array_end: int = -1
+        # 相对缩进
+        tab_level_in_array: int = 0
         for i in range(len(words)):
             f.write(words[i][0])
             if i+1 >= len(words): # 最后一行
@@ -86,18 +105,27 @@ def output(path: str, words: list[tuple[str, bool]]):
                 in_for = True
             if words[i][0] == ")": # for循环结束
                 in_for = False
-            if words[i+1][0] == "}": # 如果下一个词是"}"，则减少缩进
+            if words[i+1][0] == "}": # 如果下一个词是"}"且不在数组中，则减少缩进
+                if in_array:
+                    tab_level_in_array -= 1
+                    if tab_level_in_array != 0:
+                        continue
                 tab_level -= 1
                 if words[i][0] != ";": # 如果当前词不是";"，则补充换行
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
             if words[i][0] == "}": # "}"后补充换行
+                if in_array:
+                    if i >= array_end:
+                        in_array = False
+                        tab_level_in_array = 0
+                    continue
                 if (words[i+1][0] not in ["else", "elif"]) and (not words[i+1][0] == ";"):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
-            if (words[i][0] == ";" or words[i][1]) and not in_for: # 如果是";"或注释且不是for循环的()中，则加换行
+            if (words[i][0] == ";" or words[i][1] or (words[i][0] == "," and in_array and tab_level_in_array == 1)) and not in_for: # 如果是";"，或注释，或数组中特定级别的"," 且不是for循环的()中，则加换行
                 f.write("\n")
                 f.write(" " * 4 * tab_level)
                 continue
@@ -105,15 +133,45 @@ def output(path: str, words: list[tuple[str, bool]]):
                 continue
             if words[i][0] == "'" and words[i+1][0] == "'": # 如果是''，则不加空格
                 continue
+            if words[i][0] == ":" and words[i+1][0].startswith("\""): # 如果是:"，则不加空格
+                continue
             if words[i][0] in [")", "]"] and words[i+1][0].startswith("."): # 如果是")."或"]."，则不加空格
                 continue
-            if words[i][0] in ["(", "[", "\"", "'"]: # 如果是(或[或"或'之后，则不加空格
+            if words[i][0] in ["(", "[", "\"", "'", "?"]: # 如果是(或[或"或'或?之后，则不加空格
                 continue
-            if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")"]: # 如果是[或]或,或:或;或"或'或)之前，则不加空格
+            if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?之前，且不是算符，则不加空格
                 continue
             if words[i+1][0] == "(" and words[i][0] not in ["for", "elif", "switch", "if", "while"] and not words[i][0].endswith("="): # 如果是(之前且不是关键词，则不加空格
                 continue
             if words[i][0] == "{": # 如果是{，则增加缩进
+                if in_array:
+                    tab_level_in_array += 1
+                    if tab_level_in_array == 1:
+                        f.write("\n")
+                        tab_level += 1
+                        f.write(" " * 4 * tab_level)
+                    continue
+                j: int = i
+                tab_level_in: int = 0
+                while True: # 获取数组信息
+                    j += 1
+                    if words[j][0] == "}": # 下一个词是同一级的"}"，而中间没有";"，则说明是数组
+                        if tab_level_in != 0:
+                            tab_level_in -= 1
+                            continue
+                        in_array = True
+                        array_end = j
+                        break
+                    if words[j][0] == "{": # 下一个词是"{"
+                        tab_level_in += 1
+                        continue
+                    if words[j][0] == ";":
+                        break
+                    if j >= len(words):
+                        print("数组越界，代码格式定有错误", path)
+                        break
+                if in_array: # 如果是数组
+                    tab_level_in_array = 1
                 f.write("\n")
                 tab_level += 1
                 f.write(" " * 4 * tab_level)
