@@ -71,7 +71,6 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         if i - operator_start < operator_length:
             continue
         if operator_start != -1 and i - operator_start >= operator_length:
-            print(operator_list[operator])
             words.append((operator_list[operator], NoteType.NORMAL))
             operator_start = -1
             operator_length = -1
@@ -150,7 +149,6 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         word += data[i]
     if len(word) > 0:
         words.append((word, NoteType.NORMAL))
-    # [print(i[0], "\t", i[1]) for i in words]
     return words
 
 def output(path: str, words: list[tuple[str, NoteType]]):
@@ -301,8 +299,6 @@ def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_li
         arrange(real_dir)
 
 if __name__ == "__main__":
-    arrange("script\Camera.cs")
-    exit()
     current_directory: str = main.check_current_directory()
     ignore_list, _ = read_ignore(current_directory + "\\.gitignore")
     dir_list: list[str] = os.listdir(current_directory)
