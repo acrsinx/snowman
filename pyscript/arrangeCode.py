@@ -26,11 +26,17 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
                 lines.pop(i)
         return lines, suffix
 
+"""
+符号列表
+从短到长
+"""
+operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=", "??="]
+
 def is_operator(operator: str) -> bool:
     """
     判断是否是符号
     """
-    return operator in ["=", "==", "+", "-", "*", "/", "%", "++", "--", "&&", "||", "!", ">", "<", ">=", "<=", "==", "!=", "&", "|", "^", "~", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=", "??="]
+    return operator in operator_list
 
 class NoteType(Enum):
     """
@@ -57,7 +63,21 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
     is_note: NoteType = NoteType.NORMAL
     is_string: bool = False
     is_char: bool = False
+    operator: int = -1
+    operator_length = -1
+    operator_start: int = -1
     for i in range(len(data)):
+        # 算符
+        if i - operator_start < operator_length:
+            continue
+        if operator_start != -1 and i - operator_start >= operator_length:
+            print(operator_list[operator])
+            words.append((operator_list[operator], NoteType.NORMAL))
+            operator_start = -1
+            operator_length = -1
+            operator = -1
+            word = ""
+        # 注释
         if is_note != NoteType.NORMAL:
             if data[i] == "\n":
                 if len(word) > 0:
@@ -67,6 +87,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
                 continue
             word += data[i]
             continue
+        # 字符串
         if data[i] == "\"":
             if not is_string:
                 if len(word) > 0:
@@ -76,6 +97,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         if is_string:
             word += data[i]
             continue
+        # 字符
         if data[i] == "'":
             if not is_char:
                 if len(word) > 0:
@@ -85,6 +107,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         if is_char:
             word += data[i]
             continue
+        # 注释
         if data[i] == "/" and data[i+1] == "/":
             if len(word) > 0:
                 words.append((word, NoteType.NORMAL))
@@ -99,11 +122,25 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
                     break
             word += data[i]
             continue
-        if data[i] in [" ", "\n", "\t", "\r", "\v"]:
+        # 空白
+        if data[i].isspace():
             if len(word) > 0:
                 words.append((word, NoteType.NORMAL))
                 word = ""
             continue
+        if data[i:].startswith(tuple(operator_list)):
+            if len(word) > 0:
+                words.append((word, NoteType.NORMAL))
+                word = ""
+            # 匹配是哪一个算符
+            for j in range(len(operator_list)-1, -1, -1):
+                if data[i:].startswith(operator_list[j]):
+                    operator = j
+                    operator_start = i
+                    operator_length = len(operator_list[j])
+                    break
+            continue
+        # 特殊符号
         if data[i] in [",", ";", "{", "}", "(", ")", "[", "]", "?", ":"]:
             if len(word) > 0:
                 words.append((word, NoteType.NORMAL))
@@ -113,6 +150,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         word += data[i]
     if len(word) > 0:
         words.append((word, NoteType.NORMAL))
+    # [print(i[0], "\t", i[1]) for i in words]
     return words
 
 def output(path: str, words: list[tuple[str, NoteType]]):
@@ -263,6 +301,8 @@ def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_li
         arrange(real_dir)
 
 if __name__ == "__main__":
+    arrange("script\Camera.cs")
+    exit()
     current_directory: str = main.check_current_directory()
     ignore_list, _ = read_ignore(current_directory + "\\.gitignore")
     dir_list: list[str] = os.listdir(current_directory)
