@@ -177,7 +177,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
             if level > 0 and not already_have_bracket:
                 words.insert(i, ("}", NoteType.NORMAL))
                 i += 1
-                level -= 1
+                level -= 2
         if words[i][0] in ["case", "default"]:
             state = 1
             if (not have_switch) and (not already_have_bracket):
@@ -307,7 +307,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 continue
             if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "++", "--"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?或++或--之前，且不是算符，则不加空格
                 continue
-            if words[i+1][0] == "(" and words[i][0] not in [",", "for", "foreach", "elif", "switch", "if", "while"] and not is_operator(words[i][0]): # 如果是(之前且不是关键词，则不加空格
+            if words[i+1][0] == "(" and words[i][0] not in [",", "for", "foreach", "elif", "switch", "if", "while", "return"] and not is_operator(words[i][0]): # 如果是(之前且不是关键词，则不加空格
                 continue
             if words[i][0] == "{": # 如果是{，则增加缩进
                 if words[i+1][1] == NoteType.NOTE_END: # 如果是行末注释，则不立即换行
