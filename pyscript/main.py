@@ -2,6 +2,8 @@ import os
 import json
 import re
 
+import arrangeCode
+
 def decode_mdplot(data: str) -> list[str]:
     in_tooken: bool = False
     tookens: list[str] = []
@@ -69,8 +71,8 @@ if __name__ == '__main__':
                 fileName: str = this_plot_dir+tookens[i+1]
                 print(fileName)
                 if os.path.exists(fileName):
-                    # 比较生成文件时间，如果生成文件时间比原文件晚，则跳过，这样可以避免重复生成
-                    if os.path.getmtime(fileName) > os.path.getmtime(markdown_file):
+                    # 比较生成文件时间，如果生成文件时间比原文件晚，比Python脚本晚，则跳过，这样可以避免重复生成
+                    if arrangeCode.check_time(markdown_file, fileName):
                         print("跳过生成json文件。")
                         i += 1
                         while tookens[i] != "file":

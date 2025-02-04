@@ -5,7 +5,21 @@ import time
 import main
 
 pyscript_path: str = os.path.dirname(os.path.abspath(__file__))
-this_time = max([os.path.getmtime(os.path.join(pyscript_path, file)) for file in os.listdir(pyscript_path)])
+this_time: float = max([os.path.getmtime(os.path.join(pyscript_path, file)) for file in os.listdir(pyscript_path)])
+"""
+上次修改时间
+- 取pyscript文件夹下所有文件的最晚修改时间
+- 用于判断是否需要重新生成文件
+"""
+
+def check_time(source_path: str, target_path: str) -> bool:
+    """
+    检查时间
+
+    返回
+    - bool 是否可以跳过生成文件
+    """
+    return os.path.getmtime(source_path) < os.path.getmtime(target_path) and this_time < os.path.getmtime(target_path)
 
 def read_ignore(path: str) -> tuple[list[str], list[str]]:
     """
@@ -367,12 +381,12 @@ def arrange(path: str):
     """
     整理代码
     """
-    # 如果副本存在且修改时间晚于原文件，而pyscript文件夹修改时间早于二者，则跳过
+    # 跳过部分已处理的文件
     # 留一个副本
     copy_path: str = os.path.abspath("copy\\" + os.path.relpath(path, os.getcwd()))
     copy_file: str = copy_path + ".copy"
     if os.path.exists(os.path.dirname(copy_file)) and os.path.exists(copy_file):
-        if this_time < os.path.getmtime(path) < os.path.getmtime(copy_file):
+        if check_time(path, copy_file):
             return
     else:
         os.makedirs(os.path.dirname(copy_path), exist_ok=True)
