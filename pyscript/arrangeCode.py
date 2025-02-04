@@ -1,7 +1,11 @@
 from enum import Enum
 import os
 import shutil
+import time
 import main
+
+pyscript_path: str = os.path.dirname(os.path.abspath(__file__))
+this_time = max([os.path.getmtime(os.path.join(pyscript_path, file)) for file in os.listdir(pyscript_path)])
 
 def read_ignore(path: str) -> tuple[list[str], list[str]]:
     """
@@ -363,12 +367,17 @@ def arrange(path: str):
     """
     整理代码
     """
-    print(path)
+    # 如果副本存在且修改时间晚于原文件，而pyscript文件夹修改时间早于二者，则跳过
     # 留一个副本
-    copy_path: str = "copy\\" + os.path.relpath(path, os.getcwd()) + ".copy"
-    if not os.path.exists(os.path.dirname(copy_path)):
-        os.makedirs(os.path.dirname(copy_path))
-    shutil.copy(path, copy_path)
+    copy_path: str = os.path.abspath("copy\\" + os.path.relpath(path, os.getcwd()))
+    copy_file: str = copy_path + ".copy"
+    if os.path.exists(os.path.dirname(copy_file)) and os.path.exists(copy_file):
+        if this_time < os.path.getmtime(path) < os.path.getmtime(copy_file):
+            return
+    else:
+        os.makedirs(os.path.dirname(copy_path), exist_ok=True)
+    print(path)
+    shutil.copy(path, copy_file)
     with open(path, "r", encoding="utf-8") as f:
         data: str = f.read()
         # 分词
@@ -376,6 +385,11 @@ def arrange(path: str):
         # 输出
         if path.endswith(".cs") or path.endswith(".gdshader"): # {}类编程语言，如C#、gdshader
             output(path, words)
+    # 打开副本，使其时间晚于原件
+    time.sleep(0.01)
+    with open(copy_file, "w", encoding="utf-8") as f:
+        # 什么也不做
+        pass
 
 def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str]):
     """
