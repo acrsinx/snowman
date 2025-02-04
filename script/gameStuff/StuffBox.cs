@@ -1,12 +1,13 @@
 using Godot;
-
-public partial class StuffBox : BoxContainer {
+public partial class StuffBox: BoxContainer {
     public int id = -1;
     public GameStuff stuff;
     public Ui ui;
     private int num = 0;
     public int Num {
-        get { return num; }
+        get {
+            return num;
+        }
         set {
             if (value < 0) num = 0;
             num = value;
@@ -30,7 +31,6 @@ public partial class StuffBox : BoxContainer {
             Update();
         };
     }
-
     public void Update() {
         GetChild<TextureRect>(0).Texture = stuff.GetTexture();
         GetChild<Label>(1).Text = stuff.GetName() + ": " + num.ToString();

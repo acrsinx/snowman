@@ -16,7 +16,7 @@ public partial class Health {
     }
     private int currentHealth;
     public int CurrentHealth {
-        set{
+        set {
             if (value > maxHealth) {
                 currentHealth = maxHealth;
             } else if (value <= 0) {
@@ -27,7 +27,7 @@ public partial class Health {
             }
             healthChanged?.Invoke();
         }
-        get{
+        get {
             return currentHealth;
         }
     }

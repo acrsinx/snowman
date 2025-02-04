@@ -1,8 +1,7 @@
 using System;
 using Godot;
 using Godot.Collections;
-
-public partial class Ui : Control {
+public partial class Ui: Control {
     public const string savePath = "user://save.json";
     [Export] public Camera playerCamera;
     public GameInformation gameInformation;
@@ -51,7 +50,7 @@ public partial class Ui : Control {
     public override void _Ready() {
         gameInformation = new(this);
         // 设备类型
-        if (OS.GetName() == "Android" || OS.GetName() == "iOS"){
+        if (OS.GetName() == "Android" || OS.GetName() == "iOS") {
             uiType = UiType.phone;
         } else if (OS.GetName() == "Windows" || OS.GetName() == "macOS" || OS.GetName() == "Linux") {
             uiType = UiType.computer;
@@ -134,7 +133,6 @@ public partial class Ui : Control {
                 }
             }
         };
-
         playerCamera.ControlPanel = ControlPanel;
         settingPanel.ui = this;
         packagePanel.ui = this;
@@ -148,17 +146,7 @@ public partial class Ui : Control {
     }
     public override void _Process(double delta) {
         if (settingPanel.showInfo.ButtonPressed) {
-            infomation.Text = "fps: " + Engine.GetFramesPerSecond()
-            + ", 最大fps: " + Engine.MaxFps
-            + ", 每秒处理数: " + (1/delta)
-            + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond
-            + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")"
-            + ", state: " + playerCamera.PlayerState.ToString()
-            + ", uiType: " + uiType.ToString()
-            + ", LOD: " + GetTree().Root.MeshLodThreshold
-            + "\ntime: " + totalGameTime
-            + ", health: " + playerCamera.playerCharacter?.health
-            + "\n用户数据目录: " + OS.GetUserDataDir();
+            infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")" + ", state: " + playerCamera.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + playerCamera.playerCharacter?.health + "\n用户数据目录: " + OS.GetUserDataDir();
         }
         totalGameTime += (long)(delta * 1e3);
         if (playerCamera.PlayerState == State.caption) {
@@ -234,7 +222,7 @@ public partial class Ui : Control {
         if (playerCamera.PlayerState != State.caption) {
             int i = 0;
             captions = new CaptionResource[dict.Count];
-            while(dict.ContainsKey(i.ToString())) {
+            while (dict.ContainsKey(i.ToString())) {
                 captions[i] = new(this, (Dictionary) dict[i.ToString()], i);
                 i++;
             }
@@ -286,7 +274,7 @@ public partial class Ui : Control {
         }
     }
     public void Exit() {
-        GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
+        GetTree().Root.PropagateNotification((int) NotificationWMCloseRequest);
     }
     public bool CanUse(GameStuff gameStuff) {
         return gameStuff.CanUse();

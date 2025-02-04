@@ -1,7 +1,6 @@
 using Godot;
 using Godot.Collections;
-
-public partial class Setting : Control {
+public partial class Setting: Control {
     public Ui ui;
     public OptionButton uiType;
     public OptionButton maxFps;
@@ -34,7 +33,7 @@ public partial class Setting : Control {
         exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
         LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
         // 设置初始值
-        uiType.Selected = (int)ui.uiType;
+        uiType.Selected = (int) ui.uiType;
         Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
         tts.Selected = 0;
         voices = DisplayServer.TtsGetVoices();
@@ -52,7 +51,7 @@ public partial class Setting : Control {
         LOD.Value = ui.GetTree().Root.MeshLodThreshold;
         // 绑定事件
         uiType.ItemSelected += (index) => {
-            ui.uiType = (UiType)index;
+            ui.uiType = (UiType) index;
         };
         maxFps.ItemSelected += (index) => {
             Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
@@ -62,7 +61,7 @@ public partial class Setting : Control {
                 ttsId = "";
                 return;
             }
-            ttsId = voices[((int)index)-1]["id"].ToString();
+            ttsId = voices[((int) index) - 1]["id"].ToString();
         };
         useScreenShader.Pressed += () => {
             ui.playerCamera.screenShader.Visible = useScreenShader.ButtonPressed;

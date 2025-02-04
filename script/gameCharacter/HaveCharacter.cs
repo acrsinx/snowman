@@ -1,5 +1,4 @@
 using Godot;
-
 public partial interface HaveCharacter {
     public GameCharacter GetCharacter();
     public static HaveCharacter GetHaveCharacter(Node node) {

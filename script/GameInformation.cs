@@ -1,11 +1,9 @@
 using Godot;
 using Godot.Collections;
-
-
 /// <summary>
 /// 游戏信息类
 /// </summary>
-public class GameInformation : object {
+public class GameInformation: object {
     public Ui ui;
     public GameInformation(Ui ui) {
         this.ui = ui;
@@ -15,7 +13,7 @@ public class GameInformation : object {
     /// </summary>
     /// <param name="path">文件路径</param>
     public void SaveInformation(string path) {
-        Dictionary<string, string> information = new(){
+        Dictionary<string, string> information = new() {
             {"totalGameTime", ui.totalGameTime.ToString()},
             {"maxFps", ui.settingPanel.maxFps.Selected.ToString()},
             {"tts", ui.settingPanel.tts.Selected.ToString()},

@@ -1,6 +1,5 @@
 using Godot;
-
-public class PlotCharacter : object {
+public class PlotCharacter: object {
     public Node3D character;
     public AnimationPlayer animationPlayer;
     public PlotCharacter(Node3D character) {
@@ -35,7 +34,6 @@ public class PlotCharacter : object {
         animationPlayer ??= GetAnimationPlayer(character);
         animationPlayer.Play(animationName);
     }
-
     public void PauseAnimation() {
         animationPlayer ??= GetAnimationPlayer(character);
         animationPlayer.Pause();
