@@ -158,6 +158,44 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         word += data[i]
     if len(word) > 0:
         words.append((word, NoteType.NORMAL))
+    words_copy: list[tuple[str, NoteType]] = words.copy()
+    # 为case: 语句补充大括号，使之格式更好看
+    i: int = 0
+    state: int = 0
+    level: int = 0
+    have_switch: bool = False
+    already_have_bracket: bool = False
+    while True:
+        if i+2 >= len(words):
+            break
+        if words[i][0] == "switch":
+            have_switch = True
+        if words[i][0] == "{":
+            if have_switch:
+                level += 1
+        if words[i][0] == "}":
+            if level > 0 and not already_have_bracket:
+                words.insert(i, ("}", NoteType.NORMAL))
+                i += 1
+                level -= 1
+        if words[i][0] in ["case", "default"]:
+            state = 1
+            if (not have_switch) and (not already_have_bracket):
+                words.insert(i, ("}", NoteType.NORMAL))
+                i += 1
+                level -= 1
+            have_switch = False
+        if words[i][0] == ":" and state == 1:
+            if words[i+1][0] == "{":
+                already_have_bracket = True
+                state = 0
+                i += 1
+                continue
+            state = 0
+            words.insert(i+1, ("{", NoteType.NORMAL))
+            i += 1
+            level += 1
+        i += 1
     return words
 
 def output(path: str, words: list[tuple[str, NoteType]]):
