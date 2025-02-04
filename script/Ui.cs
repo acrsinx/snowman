@@ -1,9 +1,10 @@
 using System;
 using Godot;
 using Godot.Collections;
-
-public partial class Ui : Control {
+public partial class Ui: Control {
+    public const string savePath = "user://save.json";
     [Export] public Camera playerCamera;
+    public GameInformation gameInformation;
     public UiType uiType;
     public Label infomation;
     public PanelContainer captionContainer;
@@ -47,8 +48,9 @@ public partial class Ui : Control {
         GD.Print("[" + totalGameTime + "] " + s);
     }
     public override void _Ready() {
+        gameInformation = new(this);
         // 设备类型
-        if (OS.GetName() == "Android" || OS.GetName() == "iOS"){
+        if (OS.GetName() == "Android" || OS.GetName() == "iOS") {
             uiType = UiType.phone;
         } else if (OS.GetName() == "Windows" || OS.GetName() == "macOS" || OS.GetName() == "Linux") {
             uiType = UiType.computer;
@@ -131,7 +133,6 @@ public partial class Ui : Control {
                 }
             }
         };
-
         playerCamera.ControlPanel = ControlPanel;
         settingPanel.ui = this;
         packagePanel.ui = this;
@@ -145,25 +146,17 @@ public partial class Ui : Control {
     }
     public override void _Process(double delta) {
         if (settingPanel.showInfo.ButtonPressed) {
-            infomation.Text = "fps: " + Engine.GetFramesPerSecond()
-            + ", 最大fps: " + Engine.MaxFps
-            + ", 每秒处理数: " + (1/delta)
-            + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond
-            + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")"
-            + ", state: " + playerCamera.PlayerState.ToString()
-            + ", uiType: " + uiType.ToString()
-            + ", LOD: " + GetTree().Root.MeshLodThreshold
-            + "\ntime: " + totalGameTime
-            + ", health: " + playerCamera.playerCharacter?.health
-            + "\n用户数据目录: " + OS.GetUserDataDir();
+            infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")" + ", state: " + playerCamera.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + playerCamera.playerCharacter?.health + "\n用户数据目录: " + OS.GetUserDataDir();
         }
         totalGameTime += (long)(delta * 1e3);
         if (playerCamera.PlayerState == State.caption) {
             // 计时器累加
-            if (totalGameTime - captionStartTime < captionTime) {
-                captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime + 0.01f;
+            if (totalGameTime - captionStartTime <= captionTime) {
+                captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
                 return;
             }
+            // 计时器结束，显示全部字符
+            captionLabel.VisibleCharacters = -1;
         }
         if (playerCamera.PlayerState == State.move) {
             // 更新小地图
@@ -189,8 +182,8 @@ public partial class Ui : Control {
     public override void _Notification(int what) {
         if (what == NotificationWMCloseRequest) { // 关闭窗口
             Log("exit");
-            // FileAccess file = FileAccess.Open("user://userData.txt", FileAccess.ModeFlags.Write);
-            // file.Close();
+            // 保存数据
+            gameInformation.SaveInformation(savePath);
             GetTree().Quit();
         }
     }
@@ -201,14 +194,16 @@ public partial class Ui : Control {
         if (playerCamera.PlayerState != State.caption) {
             return;
         }
+        DisplayServer.TtsStop();
+        if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完，让文字直接显示完
+            captionStartTime = totalGameTime - captionTime;
+            return;
+        }
         if (captions[captionIndex].canChoose) { // 如果可以选择
             if (!chooseButtons[0].Visible) { // 如果还没显示选择按钮
                 ShowCaptionChoose(captionIndex);
             }
         } else { // 如果不需要选择，即普通对话，即可跳过
-            if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完
-                return;
-            }
             Plot.ParseScript(captions[captionIndex].endCode);
         }
     }
@@ -227,7 +222,7 @@ public partial class Ui : Control {
         if (playerCamera.PlayerState != State.caption) {
             int i = 0;
             captions = new CaptionResource[dict.Count];
-            while(dict.ContainsKey(i.ToString())) {
+            while (dict.ContainsKey(i.ToString())) {
                 captions[i] = new(this, (Dictionary) dict[i.ToString()], i);
                 i++;
             }
@@ -252,6 +247,10 @@ public partial class Ui : Control {
         speakerLabel.Text = speakerName;
         captionLabel.Text = caption;
         captionTime = time;
+        if (settingPanel.ttsId == "") {
+            return;
+        }
+        DisplayServer.TtsSpeak(caption, settingPanel.ttsId);
     }
     public void ClearChoose() {
         chooseBox.Visible = false;
@@ -275,7 +274,7 @@ public partial class Ui : Control {
         }
     }
     public void Exit() {
-        GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
+        GetTree().Root.PropagateNotification((int) NotificationWMCloseRequest);
     }
     public bool CanUse(GameStuff gameStuff) {
         return gameStuff.CanUse();

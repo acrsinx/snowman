@@ -1,7 +1,6 @@
 using Godot;
-
-public partial class RedFruit : Food {
-    public RedFruit(Ui ui) : base(ui) {
+public partial class RedFruit: Food {
+    public RedFruit(Ui ui): base(ui) {
     }
     public override bool CanUse() {
         return !ui.playerCamera.playerCharacter.health.IsFullHealth();

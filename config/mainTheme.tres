@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=8 format=3 uid="uid://brwqadtig5tg1"]
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://brwqadtig5tg1"]
 
 [ext_resource type="StyleBox" uid="uid://bfc8s368rmuow" path="res://config/buttonTheme.tres" id="1_puqif"]
 [ext_resource type="StyleBox" uid="uid://db2dbf7kepiq0" path="res://config/buttonThemeNormal.tres" id="2_a0t1d"]
@@ -43,6 +43,9 @@ border_color = Color(0.341176, 0.341176, 0.341176, 0.835294)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pcitc"]
+bg_color = Color(0.12549, 0.12549, 0.12549, 1)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tffjf"]
 bg_color = Color(1, 1, 1, 0)
 border_width_left = 20
@@ -81,5 +84,7 @@ MapPanel/base_type = &"Panel"
 MapPanel/styles/panel = SubResource("StyleBoxFlat_6qh3y")
 Panel/styles/panel = SubResource("StyleBoxFlat_jdk2e")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_s7d8f")
+loadPanel/base_type = &"PanelContainer"
+loadPanel/styles/panel = SubResource("StyleBoxFlat_pcitc")
 screen/base_type = &"PanelContainer"
 screen/styles/panel = SubResource("StyleBoxFlat_tffjf")

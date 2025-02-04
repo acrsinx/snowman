@@ -1,6 +1,5 @@
 using Godot;
-
-public partial class Shake : object {
+public partial class Shake: object {
     public bool isShaking = false;
     public Vector3 offset = Vector3.Zero;
     public Vector3 ShakeTarget = Vector3.Zero;

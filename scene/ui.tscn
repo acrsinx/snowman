@@ -219,10 +219,6 @@ offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Load" parent="." instance=ExtResource("5_ny8rt")]
-layout_mode = 1
-script = ExtResource("6_apcne")
-
 [node name="LeftUp" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -254,3 +250,7 @@ theme = ExtResource("1_qh1ee")
 theme_type_variation = &"MapPanel"
 
 [node name="Map" type="Sprite2D" parent="LeftUp/Panel"]
+
+[node name="Load" parent="." instance=ExtResource("5_ny8rt")]
+layout_mode = 1
+script = ExtResource("6_apcne")

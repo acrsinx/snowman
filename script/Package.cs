@@ -1,6 +1,5 @@
 using Godot;
-
-public partial class Package : Control {
+public partial class Package: Control {
     public Ui ui;
     public Button back;
     public GridContainer stuffTable;

@@ -16,6 +16,10 @@ config/features=PackedStringArray("4.2", "C#")
 boot_splash/image="res://image/icon.png"
 config/icon="res://image/icon.svg"
 
+[audio]
+
+general/text_to_speech=true
+
 [display]
 
 window/stretch/mode="canvas_items"

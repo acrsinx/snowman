@@ -1,7 +1,6 @@
 using System.Linq;
 using Godot.Collections;
-
-public class CaptionResource : object {
+public class CaptionResource: object {
     public int id;
     public string actorName;
     public string caption;

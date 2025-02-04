@@ -3,3 +3,9 @@
 .vscode/
 # plotJson是由pyscript/main.py生成的，不需要提交
 plotJson/
+# export是导出的二进制文件
+export/export/
+# Python的缓存
+__pycache__/
+# 格式化代码的备份
+copy/

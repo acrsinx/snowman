@@ -1,6 +1,5 @@
 using Godot;
-
-public partial class GameStuff : BoxContainer {
+public partial class GameStuff: BoxContainer {
     public Ui ui;
     public GameStuff(Ui ui) {
         this.ui = ui;
