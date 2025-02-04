@@ -3,7 +3,8 @@ using Godot;
 using Godot.Collections;
 public class Plot {
     public static Dictionary CharacterPath = new() {
-        {"snowdog", "res://model/snowdog.gltf"}
+        {"snowdog", "res://model/snowdog.gltf"},
+        {"snowbear", "res://model/snowbear.gltf"}
     };
     public static System.Collections.Generic.Dictionary<string, object> InstanceName = new() {
     };
@@ -35,11 +36,13 @@ public class Plot {
     /// <param name="instanceName">角色对象名字</param>
     /// <param name="position">角色位置</param>
     public static void LoadCharacter(string characterName, string instanceName, Vector3 position) {
+        if (!CharacterPath.ContainsKey(characterName)) {
+            camera.ui.Log("未找到角色：" + characterName);
+            return;
+        }
         PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
-        Node3D characterIns = character.Instantiate<Node3D>();
-        characterIns.Position = position;
-        camera.GetParent().AddChild(characterIns);
-        PlotCharacter plotCharacter = new(characterIns);
+        GameCharacter plotCharacter = new(character, camera, camera.GetParent(), false);
+        plotCharacter.Position = position;
         InstanceName.Add(instanceName, plotCharacter);
     }
     /// <summary>
