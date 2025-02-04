@@ -136,6 +136,7 @@ public class Plot {
     public static void Open(Ui ui, int n) {
         if (!FileAccess.FileExists(paths[n])) {
             ui.Log("未找到文件: " + paths[n]);
+            return;
         }
         if (paths == null) {
             ui.Log("未设置剧情文件路径");
