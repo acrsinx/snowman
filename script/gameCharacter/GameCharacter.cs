@@ -1,6 +1,5 @@
 using Godot;
-
-public partial class GameCharacter : Node3D, HaveCharacter {
+public partial class GameCharacter: Node3D, HaveCharacter {
     public Node3D character;
     public PhysicsBody3D physicsBody3D;
     /// <summary>

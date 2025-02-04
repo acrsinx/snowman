@@ -1,7 +1,8 @@
 using Godot;
-
-public class Map : object {
-    public static readonly float[] mapSizes = {17.0f};
+public class Map: object {
+    public static readonly float[] mapSizes = {
+        17.0f
+    };
     /// <summary>
     /// 获取全局坐标到小地图坐标的缩放因子y，单位为像素/米
     /// </summary>
@@ -9,7 +10,7 @@ public class Map : object {
     /// <returns>缩放因子y</returns>
     public static float GetFactorY(Sprite2D map) {
         // factor(pixel/meter) = mapPngSize(pixel) * scale / mapSize(meter)
-        return map.Texture.GetHeight()*map.Scale.Y/mapSizes[0];
+        return map.Texture.GetHeight() * map.Scale.Y / mapSizes[0];
     }
     /// <summary>
     /// 获取全局坐标到小地图坐标的缩放因子x，单位为像素/米
@@ -18,7 +19,7 @@ public class Map : object {
     /// <returns>缩放因子x</returns>
     public static float GetFactorX(Sprite2D map) {
         // factor(pixel/meter) = mapPngSize(pixel) * scale / mapSize(meter)
-        return map.Texture.GetWidth()*map.Scale.X/mapSizes[0];
+        return map.Texture.GetWidth() * map.Scale.X / mapSizes[0];
     }
     /// <summary>
     /// 从全局坐标获取小地图坐标

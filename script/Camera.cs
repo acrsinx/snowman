@@ -1,7 +1,6 @@
 using Godot;
 using System;
-
-public partial class Camera : CharacterBody3D, HaveCharacter {
+public partial class Camera: CharacterBody3D, HaveCharacter {
     /// <summary>
     /// 相机标志的原位置
     /// </summary>
@@ -144,15 +143,15 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         } else if (mouseMove.Y < -maxMouseMove) {
             mouseMove.Y = -maxMouseMove;
         }
-        if (PlayerState is State.move&&CanTurn) {
+        if (PlayerState is State.move && CanTurn) {
             // 处理cameraMarker.Rotation
-            cameraMarker.Rotation = new Vector3(cameraMarker.Rotation.X+mouseMove.Y, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+            cameraMarker.Rotation = new Vector3(cameraMarker.Rotation.X + mouseMove.Y, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
             // 处理this.Rotation
-            Rotation = new Vector3(Rotation.X, Rotation.Y+mouseMove.X, Rotation.Z);
+            Rotation = new Vector3(Rotation.X, Rotation.Y + mouseMove.X, Rotation.Z);
             // 限制视角
-            if (-1.2f>cameraMarker.Rotation.X) {
+            if (-1.2f > cameraMarker.Rotation.X) {
                 cameraMarker.Rotation = new Vector3(-1.2f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-            } else if (0.5f<cameraMarker.Rotation.X) {
+            } else if (0.5f < cameraMarker.Rotation.X) {
                 cameraMarker.Rotation = new Vector3(0.5f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
             }
             if (ui.uiType == UiType.computer) {
@@ -160,13 +159,13 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
                 Input.WarpMouse(0.5f * GetViewport().GetVisibleRect().Size);
             }
         }
-        if (IsOnFloor()&&PlayerState==State.move) {
+        if (IsOnFloor() && PlayerState == State.move) {
             if (ui.uiType == UiType.computer) {
                 front = Input.GetAxis("up", "down");
                 right = Input.GetAxis("right", "left");
             }
             // 规格化(right, front)
-            float length = MathF.Sqrt(right*right+front*front);
+            float length = MathF.Sqrt(right * right + front * front);
             if (length > 0) {
                 right /= length;
                 front /= length;
@@ -180,16 +179,16 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             }
             float sin = MathF.Sin(cameraMarker.GlobalRotation.Y);
             float cos = MathF.Cos(cameraMarker.GlobalRotation.Y);
-            thisVelocity += new Vector3(front*sin-right*cos, 0, front*cos+right*sin);
+            thisVelocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
             // 在跳跃缓冲时间内可以跳跃
             if (lastJumpTime + jumpDelay > ui.totalGameTime) {
                 thisVelocity += new Vector3(0, jumpSpeed, 0);
             }
-            if (front!=0||right!=0) {
+            if (front != 0 || right != 0) {
                 direction = new Vector2(-right, front).AngleTo(new(0, -1));
             } else {
-                if (mouseMove.X != 0&&CanTurn) {
-                    direction = FloatTo1(direction, mouseMove.X, fDelta*10.0f);
+                if (mouseMove.X != 0 && CanTurn) {
+                    direction = FloatTo1(direction, mouseMove.X, fDelta * 10.0f);
                 }
             }
             // 在地板上时有阻力
@@ -199,7 +198,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             // 不在地板上时也有阻力，但阻力更小
             thisVelocity *= 0.99f;
         }
-        player.Rotation = new Vector3(player.Rotation.X, FloatTo1(player.Rotation.Y, direction, fDelta*10.0f), player.Rotation.Z);
+        player.Rotation = new Vector3(player.Rotation.X, FloatTo1(player.Rotation.Y, direction, fDelta * 10.0f), player.Rotation.Z);
         // 限速
         float lengthY = MathF.Abs(thisVelocity.Y);
         if (lengthY > 10.0f) {
@@ -233,7 +232,7 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             if (ui.uiType == UiType.phone) {
                 if (drag.Index == moveIndex) { // 移动
                     // 此处不用规格化，在移动时会规格化
-                    Vector2 moveVector = drag.Position-ControlPanel.GetGlobalRect().Position-ControlPanel.GetGlobalRect().Size/2;
+                    Vector2 moveVector = drag.Position - ControlPanel.GetGlobalRect().Position - ControlPanel.GetGlobalRect().Size / 2;
                     right = -moveVector.X;
                     front = moveVector.Y;
                 } else if (drag.Index == rotateIndex) { // 转动视角
@@ -268,8 +267,8 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
         }
         if (@event is InputEventMouseButton button) {
             if (ui.uiType == UiType.computer) {
-                if (button.Pressed){
-                    if(PlayerState is State.move) {
+                if (button.Pressed) {
+                    if (PlayerState is State.move) {
                         switch (button.ButtonIndex) {
                             case MouseButton.Left: {
                                 if (CanTurn) { // 玩家可控制视角时，攻击
@@ -335,8 +334,8 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
     /// <param name="to">到</param>
     /// <param name="speed">速度（选填）</param>
     /// <returns>新的值</returns>
-    public static float FloatTo1(float from, float to, float speed=0.1f) {
-        float PI2 = 2.0f*MathF.PI;
+    public static float FloatTo1(float from, float to, float speed = 0.1f) {
+        float PI2 = 2.0f * MathF.PI;
         float newTo = to - Mathf.Floor(to / PI2) * PI2;
         newTo += Mathf.Floor(from / PI2) * PI2;
         if (MathF.Abs(newTo + PI2 - from) < MathF.Abs(newTo - from)) {
@@ -346,9 +345,9 @@ public partial class Camera : CharacterBody3D, HaveCharacter {
             newTo -= PI2;
         }
         if (newTo > from) {
-            return MathF.Min(from+speed, newTo);
+            return MathF.Min(from + speed, newTo);
         } else {
-            return MathF.Max(from-speed, newTo);
+            return MathF.Max(from - speed, newTo);
         }
     }
     /// <summary>

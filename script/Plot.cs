@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
-
 public class Plot {
     public static Dictionary CharacterPath = new() {
         {"snowdog", "res://model/snowdog.gltf"}
     };
-    public static System.Collections.Generic.Dictionary<string, object> InstanceName = new() {};
+    public static System.Collections.Generic.Dictionary<string, object> InstanceName = new() {
+    };
     public static string[] paths;
     public static Camera camera;
     public static void Check(Ui ui) {
@@ -24,7 +24,7 @@ public class Plot {
     /// <returns>返回角色名字</returns>
     public static PlotCharacter GetPlotCharacter(string instanceName) {
         if (!InstanceName.ContainsKey(instanceName)) {
-            camera.ui.Log("未找到剧情角色："+instanceName);
+            camera.ui.Log("未找到剧情角色：" + instanceName);
         }
         return (PlotCharacter) InstanceName[instanceName];
     }
@@ -93,30 +93,38 @@ public class Plot {
         }
         // 解析核心词
         switch (wordsList[0]) {
-            case "LoadCharacter":
+            case "LoadCharacter": {
                 LoadCharacter(wordsList[1], wordsList[2], new Vector3(float.Parse(wordsList[3]), float.Parse(wordsList[4]), float.Parse(wordsList[5])));
                 break;
-            case "PlayAnimation":
+            }
+            case "PlayAnimation": {
                 PlayAnimation(wordsList[1], wordsList[2]);
                 break;
-            case "PauseAnimation":
+            }
+            case "PauseAnimation": {
                 PauseAnimation(wordsList[1]);
                 break;
-            case "LookAtCharacter":
+            }
+            case "LookAtCharacter": {
                 LookAtCharacter(wordsList[1], float.Parse(wordsList[2]), float.Parse(wordsList[3]));
                 break;
-            case "SetCameraPosition":
+            }
+            case "SetCameraPosition": {
                 SetCameraPosition();
                 break;
-            case "Goto":
+            }
+            case "Goto": {
                 camera.ui.ShowCaption(int.Parse(wordsList[1]));
                 break;
-            case "Exit":
+            }
+            case "Exit": {
                 camera.PlayerState = State.move;
                 break;
-            default:
+            }
+            default: {
                 camera.ui.Log("未知的剧情指令: " + wordsList[0]);
                 break;
+            }
         }
     }
     public static void ParseScript(string script) {

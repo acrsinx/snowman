@@ -1,10 +1,9 @@
 using Godot;
-
-public partial class ObjectPool : object{
+public partial class ObjectPool: object {
     public bool[] haveUsed;
     public Node3D[] list;
     public RigidBody3D[] rList;
-    public int Count{
+    public int Count {
         get => list.Length;
     }
     public ObjectPool(int length) {
