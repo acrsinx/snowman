@@ -158,7 +158,6 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         word += data[i]
     if len(word) > 0:
         words.append((word, NoteType.NORMAL))
-    words_copy: list[tuple[str, NoteType]] = words.copy()
     # 为case: 语句补充大括号，使之格式更好看
     i: int = 0
     state: int = 0
@@ -204,16 +203,21 @@ def output(path: str, words: list[tuple[str, NoteType]]):
     """
     # 找出泛型的尖括号
     # 尖括号成对出现
-    # a<b<c>, d> a = new();
-    # return e > f
+    # 找出三元运算符?:中的:位置
     level: int = 0
     level_list: list[int] = []
     # 尖括号所在位置的索引
     indexs: list[int] = []
+    # 三元运算符?:中的:索引
+    have_question: bool = False
+    op_indexs: list[int] = []
     for i in range(len(words)):
         level_list.append(level)
         if words[i][0] == "<":
             level += 1
+            continue
+        if words[i][0] == "?":
+            have_question = True
             continue
         if words[i][0] == ">":
             level -= 1
@@ -229,6 +233,11 @@ def output(path: str, words: list[tuple[str, NoteType]]):
         if words[i][0] in ["{", "}"]+operator_list: # 泛型的两个尖括号中一定没有的符号
             level = 0
             continue
+        if words[i][0] in ["{", "}", ";"]: # 三元运算符?:中一定没有的符号
+            have_question = False
+        if words[i][0] == ":" and have_question: # 三元运算符?:中的:索引
+            have_question = False
+            op_indexs.append(i)
 
     with open(path, "w", encoding="utf-8") as f:
         tab_level: int = 0
@@ -296,6 +305,8 @@ def output(path: str, words: list[tuple[str, NoteType]]):
             if words[i][0] == "'" and words[i+1][0] == "'": # 如果是''，则不加空格
                 continue
             if words[i][0] == ":" and words[i+1][0].startswith("\""): # 如果是:"，则不加空格
+                continue
+            if words[i][0] == ":" and i in op_indexs: # 如果是三元运算符，则不加空格
                 continue
             if words[i][0] == ">" and words[i+1][0] in ["(", ")"]: # 如果是>)或>(，则不加空格
                 continue
