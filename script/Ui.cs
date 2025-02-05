@@ -14,9 +14,6 @@ public partial class Ui: Control {
     public Button[] chooseButtons;
     public Control phoneControl;
     public Panel ControlPanel;
-    public Button phoneJump;
-    public Button phoneAttack;
-    public Button phoneSlow;
     public HBoxContainer rightUp;
     public Button setting;
     public Setting settingPanel;
@@ -69,9 +66,6 @@ public partial class Ui: Control {
         chooseButtons[2] = GetNode<Button>("choose/Button3");
         phoneControl = GetNode<Control>("Control");
         ControlPanel = GetNode<Panel>("Control/ControlPanel");
-        phoneJump = GetNode<Button>("Control/jump");
-        phoneAttack = GetNode<Button>("Control/attack");
-        phoneSlow = GetNode<Button>("Control/slow");
         rightUp = GetNode<HBoxContainer>("RightUp");
         setting = GetNode<Button>("RightUp/setting");
         settingPanel = GetNode<Setting>("Setting");
@@ -102,20 +96,6 @@ public partial class Ui: Control {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Choose(2);
-                }
-            }
-        };
-        phoneJump.GuiInput += (InputEvent @event) => {
-            if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
-                    playerCamera.Jump();
-                }
-            }
-        };
-        phoneAttack.GuiInput += (InputEvent @event) => {
-            if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
-                    playerCamera.playerCharacter.Attack();
                 }
             }
         };
@@ -165,18 +145,26 @@ public partial class Ui: Control {
         }
     }
     public override void _Input(InputEvent @event) {
-        if (@event is InputEventMouseButton button) {
-            if (button.Pressed) {
-                if (button.ButtonIndex == MouseButton.Left) {
-                    NextCaption();
-                }
+        if (@event.IsAction("next_caption")) {
+            if (@event.IsPressed()) {
+                return;
             }
-        } else if (@event is InputEventKey key) {
-            if (key.Pressed) {
-                if (key.Keycode == Key.Space) {
-                    NextCaption();
-                }
+            NextCaption();
+            return;
+        }
+        if (@event.IsAction("jump")) {
+            if (@event.IsPressed()) {
+                return;
             }
+            playerCamera.Jump();
+            return;
+        }
+        if (@event.IsAction("attack")) {
+            if (@event.IsPressed()) {
+                return;
+            }
+            playerCamera.playerCharacter.Attack();
+            return;
         }
     }
     public override void _Notification(int what) {

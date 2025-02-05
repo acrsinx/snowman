@@ -170,7 +170,7 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
                 right /= length;
                 front /= length;
             }
-            isSlow = ui.phoneSlow.ButtonPressed || Input.IsMouseButtonPressed(MouseButton.Right);
+            isSlow = Input.IsActionPressed("slow");
             front *= isSlow?moveSpeed:runSpeed;
             right *= isSlow?moveSpeed:runSpeed;
             if (Input.IsActionPressed("alt")) {
@@ -267,7 +267,7 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
         }
         if (@event is InputEventMouseButton button) {
             if (ui.uiType == UiType.computer) {
-                if (button.Pressed) {
+                if (button.IsReleased()) {
                     if (PlayerState is State.move) {
                         switch (button.ButtonIndex) {
                             case MouseButton.Left: {

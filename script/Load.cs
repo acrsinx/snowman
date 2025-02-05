@@ -15,6 +15,7 @@ public partial class Load: Control {
         Do();
     }
     public void Init() {
+        Visible = true;
         RefreshProgress();
     }
     private void RefreshProgress() {
