@@ -235,16 +235,28 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
                     Vector2 moveVector = drag.Position - ControlPanel.GetGlobalRect().Position - ControlPanel.GetGlobalRect().Size / 2;
                     right = -moveVector.X;
                     front = moveVector.Y;
-                } else if (drag.Index == rotateIndex) { // 转动视角
+                    return;
+                }
+                if (drag.Index == rotateIndex) { // 转动视角
                     canTurn = true;
                     mouseMove = -drag.Relative * mouseSpeed;
-                } else { // 首次滑动时，判断滑动索引
-                    if (IsInArea(ControlPanel, drag.Position)) {
-                        moveIndex = drag.Index;
-                    } else {
-                        rotateIndex = drag.Index;
-                    }
+                    return;
                 }
+                // 首次滑动时，判断滑动索引
+                if (IsInArea(ui.phoneJump, drag.Position)) {
+                    return;
+                }
+                if (IsInArea(ui.phoneAttack, drag.Position)) {
+                    return;
+                }
+                if (IsInArea(ui.phoneSlow, drag.Position)) {
+                    return;
+                }
+                if (IsInArea(ControlPanel, drag.Position)) {
+                    moveIndex = drag.Index;
+                    return;
+                }
+                rotateIndex = drag.Index;
                 return;
             }
         }
@@ -358,5 +370,17 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
     /// <returns>是否在</returns>
     public static bool IsInArea(Control area, Vector2 position) {
         return area.GetGlobalRect().HasPoint(position);
+    }
+    /// <summary>
+    /// 位置是否在指定范围内，不能处理旋转，缩放不均匀等情况
+    /// </summary>
+    /// <param name="area">范围</param>
+    /// <param name="position">位置</param>
+    /// <returns>是否在</returns>
+    public static bool IsInArea(TouchScreenButton area, Vector2 position) {
+        CircleShape2D shape = area.Shape as CircleShape2D;
+        float Scale = area.Scale.X;
+        float radius = shape.Radius * Scale;
+        return position.DistanceTo(area.GlobalPosition + 0.5f * Scale * area.TextureNormal.GetSize()) < radius;
     }
 }

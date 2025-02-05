@@ -14,6 +14,9 @@ public partial class Ui: Control {
     public Button[] chooseButtons;
     public Control phoneControl;
     public Panel ControlPanel;
+    public TouchScreenButton phoneJump;
+    public TouchScreenButton phoneAttack;
+    public TouchScreenButton phoneSlow;
     public HBoxContainer rightUp;
     public Button setting;
     public Setting settingPanel;
@@ -66,6 +69,9 @@ public partial class Ui: Control {
         chooseButtons[2] = GetNode<Button>("choose/Button3");
         phoneControl = GetNode<Control>("Control");
         ControlPanel = GetNode<Panel>("Control/ControlPanel");
+        phoneJump = GetNode<TouchScreenButton>("Control/RightDown/jump");
+        phoneAttack = GetNode<TouchScreenButton>("Control/RightDown/attack");
+        phoneSlow = GetNode<TouchScreenButton>("Control/RightDown/slow");
         rightUp = GetNode<HBoxContainer>("RightUp");
         setting = GetNode<Button>("RightUp/setting");
         settingPanel = GetNode<Setting>("Setting");
