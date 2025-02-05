@@ -267,7 +267,7 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
         }
         if (@event is InputEventMouseButton button) {
             if (ui.uiType == UiType.computer) {
-                if (button.IsReleased()) {
+                if (button.IsPressed()) {
                     if (PlayerState is State.move) {
                         switch (button.ButtonIndex) {
                             case MouseButton.Left: {

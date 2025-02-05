@@ -146,21 +146,21 @@ public partial class Ui: Control {
     }
     public override void _Input(InputEvent @event) {
         if (@event.IsAction("next_caption")) {
-            if (@event.IsPressed()) {
+            if (@event.IsReleased()) {
                 return;
             }
             NextCaption();
             return;
         }
         if (@event.IsAction("jump")) {
-            if (@event.IsPressed()) {
+            if (@event.IsReleased()) {
                 return;
             }
             playerCamera.Jump();
             return;
         }
         if (@event.IsAction("attack")) {
-            if (@event.IsPressed()) {
+            if (@event.IsReleased()) {
                 return;
             }
             playerCamera.playerCharacter.Attack();
