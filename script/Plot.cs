@@ -3,10 +3,9 @@ using Godot;
 using Godot.Collections;
 public class Plot {
     public static Dictionary CharacterPath = new() {
-        {"snowdog", "res://model/snowdog.gltf"},
-        {"snowbear", "res://model/snowbear.gltf"}
+        {"snowdog", "res://model/snowdog.gltf"}
     };
-    public static System.Collections.Generic.Dictionary<string, object> InstanceName = new() {
+    public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
     };
     public static string[] paths;
     public static Camera camera;
@@ -36,14 +35,27 @@ public class Plot {
     /// <param name="instanceName">角色对象名字</param>
     /// <param name="position">角色位置</param>
     public static void LoadCharacter(string characterName, string instanceName, Vector3 position) {
-        if (!CharacterPath.ContainsKey(characterName)) {
-            camera.ui.Log("未找到角色：" + characterName);
+        if (CharacterPath.ContainsKey(characterName)) {
+            PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
+            GameCharacter plotCharacter = new(character, camera, camera.GetParent(), false) {
+                Position = position
+            };
+            InstanceName.Add(instanceName, plotCharacter);
             return;
         }
-        PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
-        GameCharacter plotCharacter = new(character, camera, camera.GetParent(), false);
-        plotCharacter.Position = position;
-        InstanceName.Add(instanceName, plotCharacter);
+        GameCharacter gameCharacter;
+        switch (characterName) {
+            case "snowbear": {
+                gameCharacter = new Snowbear(camera);
+                break;
+            }
+            default: {
+                camera.ui.Log("未找到角色：" + characterName);
+                return;
+            }
+        }
+        gameCharacter.Position = position;
+        InstanceName.Add(instanceName, gameCharacter);
     }
     /// <summary>
     /// 播放动画
