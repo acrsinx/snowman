@@ -117,6 +117,77 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="RightDown" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="jump" type="TouchScreenButton" parent="Control/RightDown"]
+position = Vector2(-268, -274)
+texture_normal = ExtResource("3_bpsmd")
+texture_pressed = ExtResource("4_ejgsy")
+shape = SubResource("CircleShape2D_4og0v")
+action = "jump"
+
+[node name="Label" type="Label" parent="Control/RightDown/jump"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_qh1ee")
+theme_type_variation = &"HeaderLarge"
+text = "跳"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="attack" type="TouchScreenButton" parent="Control/RightDown"]
+position = Vector2(-327, -140)
+scale = Vector2(0.7, 0.7)
+texture_normal = ExtResource("3_bpsmd")
+texture_pressed = ExtResource("4_ejgsy")
+shape = SubResource("CircleShape2D_4og0v")
+action = "attack"
+
+[node name="Label" type="Label" parent="Control/RightDown/attack"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_qh1ee")
+theme_type_variation = &"HeaderLarge"
+text = "攻"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="slow" type="TouchScreenButton" parent="Control/RightDown"]
+position = Vector2(-134, -366)
+scale = Vector2(0.6, 0.6)
+texture_normal = ExtResource("3_bpsmd")
+texture_pressed = ExtResource("4_ejgsy")
+shape = SubResource("CircleShape2D_4og0v")
+action = "slow"
+
+[node name="Label" type="Label" parent="Control/RightDown/slow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_qh1ee")
+theme_type_variation = &"HeaderLarge"
+text = "慢"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="ControlPanel" type="Panel" parent="Control"]
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 1
@@ -128,29 +199,6 @@ offset_top = -250.0
 offset_right = 250.0
 offset_bottom = -50.0
 grow_vertical = 0
-
-[node name="jump" type="TouchScreenButton" parent="Control"]
-position = Vector2(844, 334)
-texture_normal = ExtResource("3_bpsmd")
-texture_pressed = ExtResource("4_ejgsy")
-shape = SubResource("CircleShape2D_4og0v")
-action = "jump"
-
-[node name="attack" type="TouchScreenButton" parent="Control"]
-position = Vector2(785, 468)
-scale = Vector2(0.7, 0.7)
-texture_normal = ExtResource("3_bpsmd")
-texture_pressed = ExtResource("4_ejgsy")
-shape = SubResource("CircleShape2D_4og0v")
-action = "attack"
-
-[node name="slow" type="TouchScreenButton" parent="Control"]
-position = Vector2(978, 242)
-scale = Vector2(0.6, 0.6)
-texture_normal = ExtResource("3_bpsmd")
-texture_pressed = ExtResource("4_ejgsy")
-shape = SubResource("CircleShape2D_4og0v")
-action = "slow"
 
 [node name="RightUp" type="HBoxContainer" parent="."]
 layout_mode = 1
