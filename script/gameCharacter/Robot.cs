@@ -7,7 +7,7 @@ public partial class Robot: GameCharacter {
         health.SetFullHealth();
         weapon = GetChild(0).GetChild(0) as Node3D;
         Area3D area = weapon.GetChild(0) as Area3D;
-        area.BodyEntered += (Node3D body) => {
+        area.BodyEntered += body => {
             HaveCharacter character = HaveCharacter.GetHaveCharacter(body);
             if (character == null) {
                 return;

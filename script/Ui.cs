@@ -84,35 +84,35 @@ public partial class Ui: Control {
         healthBar = GetNode<ProgressBar>("RightUp/health");
         healthBar.Visible = false;
         // 添加事件
-        chooseButtons[0].GuiInput += (InputEvent @event) => {
+        chooseButtons[0].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Choose(0);
                 }
             }
         };
-        chooseButtons[1].GuiInput += (InputEvent @event) => {
+        chooseButtons[1].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Choose(1);
                 }
             }
         };
-        chooseButtons[2].GuiInput += (InputEvent @event) => {
+        chooseButtons[2].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Choose(2);
                 }
             }
         };
-        setting.GuiInput += (InputEvent @event) => {
+        setting.GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Setting();
                 }
             }
         };
-        package.GuiInput += (InputEvent @event) => {
+        package.GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Package();
