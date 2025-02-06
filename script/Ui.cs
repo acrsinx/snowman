@@ -151,6 +151,15 @@ public partial class Ui: Control {
         }
     }
     public override void _Input(InputEvent @event) {
+        if (@event.IsAction("show_info")) {
+            if (@event.IsReleased()) {
+                return;
+            }
+            // 打开或关闭调试信息
+            settingPanel.showInfo.ButtonPressed = !settingPanel.showInfo.ButtonPressed;
+            settingPanel.SetShowInfo();
+            return;
+        }
         if (@event.IsAction("next_caption")) {
             if (@event.IsReleased()) {
                 return;

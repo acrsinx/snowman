@@ -188,6 +188,14 @@ text = "慢"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="showInfo" type="TouchScreenButton" parent="Control/RightDown"]
+position = Vector2(-20, -20)
+scale = Vector2(0.3, 0.3)
+texture_normal = ExtResource("3_bpsmd")
+texture_pressed = ExtResource("4_ejgsy")
+shape = SubResource("CircleShape2D_4og0v")
+action = "show_info"
+
 [node name="ControlPanel" type="Panel" parent="Control"]
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 1
