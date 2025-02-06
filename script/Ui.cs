@@ -133,10 +133,13 @@ public partial class Ui: Control {
     public override void _Process(double delta) {
         if (settingPanel.showInfo.ButtonPressed) {
             infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")" + ", state: " + playerCamera.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + playerCamera.playerCharacter?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            if (playerCamera.PlayerState == State.caption) {
+                infomation.Text += "\n剧情位置: " + Plot.paths[0] + ":" + captionIndex.ToString();
+            }
         }
+        // 计时器累加
         totalGameTime += (long)(delta * 1e3);
         if (playerCamera.PlayerState == State.caption) {
-            // 计时器累加
             if (totalGameTime - captionStartTime <= captionTime) {
                 captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
                 return;
