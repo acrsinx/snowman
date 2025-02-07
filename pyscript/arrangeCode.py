@@ -401,7 +401,7 @@ def arrange(path: str):
             output(path, words)
     # 打开副本，使其时间晚于原件
     time.sleep(0.01)
-    with open(copy_file, "w", encoding="utf-8") as f:
+    with open(copy_file, "r", encoding="utf-8"):
         # 什么也不做
         pass
 
