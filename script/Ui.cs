@@ -14,9 +14,9 @@ public partial class Ui: Control {
     public Button[] chooseButtons;
     public Control phoneControl;
     public Panel ControlPanel;
-    public Button phoneJump;
-    public Button phoneAttack;
-    public Button phoneSlow;
+    public TouchScreenButton phoneJump;
+    public TouchScreenButton phoneAttack;
+    public TouchScreenButton phoneSlow;
     public HBoxContainer rightUp;
     public Button setting;
     public Setting settingPanel;
@@ -69,9 +69,9 @@ public partial class Ui: Control {
         chooseButtons[2] = GetNode<Button>("choose/Button3");
         phoneControl = GetNode<Control>("Control");
         ControlPanel = GetNode<Panel>("Control/ControlPanel");
-        phoneJump = GetNode<Button>("Control/jump");
-        phoneAttack = GetNode<Button>("Control/attack");
-        phoneSlow = GetNode<Button>("Control/slow");
+        phoneJump = GetNode<TouchScreenButton>("Control/RightDown/jump");
+        phoneAttack = GetNode<TouchScreenButton>("Control/RightDown/attack");
+        phoneSlow = GetNode<TouchScreenButton>("Control/RightDown/slow");
         rightUp = GetNode<HBoxContainer>("RightUp");
         setting = GetNode<Button>("RightUp/setting");
         settingPanel = GetNode<Setting>("Setting");
@@ -84,49 +84,35 @@ public partial class Ui: Control {
         healthBar = GetNode<ProgressBar>("RightUp/health");
         healthBar.Visible = false;
         // 添加事件
-        chooseButtons[0].GuiInput += (InputEvent @event) => {
+        chooseButtons[0].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Choose(0);
                 }
             }
         };
-        chooseButtons[1].GuiInput += (InputEvent @event) => {
+        chooseButtons[1].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Choose(1);
                 }
             }
         };
-        chooseButtons[2].GuiInput += (InputEvent @event) => {
+        chooseButtons[2].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Choose(2);
                 }
             }
         };
-        phoneJump.GuiInput += (InputEvent @event) => {
-            if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
-                    playerCamera.Jump();
-                }
-            }
-        };
-        phoneAttack.GuiInput += (InputEvent @event) => {
-            if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
-                    playerCamera.playerCharacter.Attack();
-                }
-            }
-        };
-        setting.GuiInput += (InputEvent @event) => {
+        setting.GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Setting();
                 }
             }
         };
-        package.GuiInput += (InputEvent @event) => {
+        package.GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
                 if (touch.Pressed) {
                     Package();
@@ -147,10 +133,13 @@ public partial class Ui: Control {
     public override void _Process(double delta) {
         if (settingPanel.showInfo.ButtonPressed) {
             infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")" + ", state: " + playerCamera.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + playerCamera.playerCharacter?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            if (playerCamera.PlayerState == State.caption) {
+                infomation.Text += "\n剧情位置: " + Plot.paths[0] + ":" + captionIndex.ToString();
+            }
         }
+        // 计时器累加
         totalGameTime += (long)(delta * 1e3);
         if (playerCamera.PlayerState == State.caption) {
-            // 计时器累加
             if (totalGameTime - captionStartTime <= captionTime) {
                 captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
                 return;
@@ -165,18 +154,35 @@ public partial class Ui: Control {
         }
     }
     public override void _Input(InputEvent @event) {
-        if (@event is InputEventMouseButton button) {
-            if (button.Pressed) {
-                if (button.ButtonIndex == MouseButton.Left) {
-                    NextCaption();
-                }
+        if (@event.IsAction("show_info")) {
+            if (@event.IsReleased()) {
+                return;
             }
-        } else if (@event is InputEventKey key) {
-            if (key.Pressed) {
-                if (key.Keycode == Key.Space) {
-                    NextCaption();
-                }
+            // 打开或关闭调试信息
+            settingPanel.showInfo.ButtonPressed = !settingPanel.showInfo.ButtonPressed;
+            settingPanel.SetShowInfo();
+            return;
+        }
+        if (@event.IsAction("next_caption")) {
+            if (@event.IsReleased()) {
+                return;
             }
+            NextCaption();
+            return;
+        }
+        if (@event.IsAction("jump")) {
+            if (@event.IsReleased()) {
+                return;
+            }
+            playerCamera.Jump();
+            return;
+        }
+        if (@event.IsAction("attack")) {
+            if (@event.IsReleased()) {
+                return;
+            }
+            playerCamera.playerCharacter.Attack();
+            return;
         }
     }
     public override void _Notification(int what) {

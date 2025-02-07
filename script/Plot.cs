@@ -5,7 +5,7 @@ public class Plot {
     public static Dictionary CharacterPath = new() {
         {"snowdog", "res://model/snowdog.gltf"}
     };
-    public static System.Collections.Generic.Dictionary<string, object> InstanceName = new() {
+    public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
     };
     public static string[] paths;
     public static Camera camera;
@@ -35,12 +35,27 @@ public class Plot {
     /// <param name="instanceName">角色对象名字</param>
     /// <param name="position">角色位置</param>
     public static void LoadCharacter(string characterName, string instanceName, Vector3 position) {
-        PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
-        Node3D characterIns = character.Instantiate<Node3D>();
-        characterIns.Position = position;
-        camera.GetParent().AddChild(characterIns);
-        PlotCharacter plotCharacter = new(characterIns);
-        InstanceName.Add(instanceName, plotCharacter);
+        if (CharacterPath.ContainsKey(characterName)) {
+            PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
+            GameCharacter plotCharacter = new(character, camera, camera.GetParent(), false) {
+                Position = position
+            };
+            InstanceName.Add(instanceName, plotCharacter);
+            return;
+        }
+        GameCharacter gameCharacter;
+        switch (characterName) {
+            case "snowbear": {
+                gameCharacter = new Snowbear(camera);
+                break;
+            }
+            default: {
+                camera.ui.Log("未找到角色：" + characterName);
+                return;
+            }
+        }
+        gameCharacter.Position = position;
+        InstanceName.Add(instanceName, gameCharacter);
     }
     /// <summary>
     /// 播放动画
@@ -136,6 +151,7 @@ public class Plot {
     public static void Open(Ui ui, int n) {
         if (!FileAccess.FileExists(paths[n])) {
             ui.Log("未找到文件: " + paths[n]);
+            return;
         }
         if (paths == null) {
             ui.Log("未设置剧情文件路径");

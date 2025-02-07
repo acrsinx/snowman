@@ -3651,8 +3651,7 @@ _subresources={
 "nodes": {
 "PATH:骨架/Skeleton3D/snowbear": {
 "generate/physics": true,
-"mesh_instance/layers": 4,
-"physics/body_type": 1
+"mesh_instance/layers": 4
 }
 }
 }

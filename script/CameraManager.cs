@@ -118,7 +118,7 @@ public class CameraManager: object {
         camera.GlobalRotation = new Vector3(0, character.Rotation.Y - MathF.PI, 0);
     }
     public void LookAtCharacter(PlotCharacter character, float height, float distance) {
-        LookAtCharacter(character.character, height, distance);
+        LookAtCharacter(character.GetCharacterNode(), height, distance);
     }
     public void MoveCamera(Vector3 globalPosition) {
         camera.Position = globalPosition;

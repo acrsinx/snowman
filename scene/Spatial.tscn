@@ -35,14 +35,13 @@ shadow_enabled = true
 shadow_opacity = 0.88
 directional_shadow_mode = 0
 
-[node name="player" type="CharacterBody3D" parent="Node3D" node_paths=PackedStringArray("cameraMarker", "screenShader", "player", "map", "ui", "backgroundMusic")]
+[node name="player" type="CharacterBody3D" parent="Node3D" node_paths=PackedStringArray("cameraMarker", "screenShader", "player", "ui", "backgroundMusic")]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 2.3, 0)
 disable_mode = 2
 script = ExtResource("1_tonl0")
 cameraMarker = NodePath("CameraMarker")
 screenShader = NodePath("CameraMarker/Camera3D/screenShader")
 player = NodePath("character")
-map = NodePath("../../map")
 snowball = ExtResource("3_dgxip")
 ui = NodePath("../../ui")
 backgroundMusic = NodePath("../../AudioStreamPlayer")
@@ -95,7 +94,7 @@ size = Vector2i(1024, 1024)
 render_target_update_mode = 4
 
 [node name="mapCamera3D" type="Camera3D" parent="map"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 100, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 50, 0)
 cull_mask = 1048569
 projection = 1
 size = 17.0

@@ -1,7 +1,25 @@
 from enum import Enum
 import os
 import shutil
+import time
 import main
+
+pyscript_path: str = os.path.dirname(os.path.abspath(__file__))
+this_time: float = max([os.path.getmtime(os.path.join(pyscript_path, file)) for file in os.listdir(pyscript_path)])
+"""
+上次修改时间
+- 取pyscript文件夹下所有文件的最晚修改时间
+- 用于判断是否需要重新生成文件
+"""
+
+def check_time(source_path: str, target_path: str) -> bool:
+    """
+    检查时间
+
+    返回
+    - bool 是否可以跳过生成文件
+    """
+    return os.path.getmtime(source_path) < os.path.getmtime(target_path) and this_time < os.path.getmtime(target_path)
 
 def read_ignore(path: str) -> tuple[list[str], list[str]]:
     """
@@ -26,11 +44,11 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
                 lines.pop(i)
         return lines, suffix
 
+operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>", "<<=", ">>=", "??="]
 """
 符号列表
 从短到长
 """
-operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>", "<<=", ">>=", "??="]
 
 def is_operator(operator: str) -> bool:
     """
@@ -66,7 +84,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
     返回
     - list[str, NoteType] str: 词元 NoteType: 注释类型
     """
-    words: list[str, NoteType] = []
+    words: list[tuple[str, NoteType]] = []
     word: str = ""
     is_note: NoteType = NoteType.NORMAL
     is_string: bool = False
@@ -363,12 +381,17 @@ def arrange(path: str):
     """
     整理代码
     """
-    print(path)
+    # 跳过部分已处理的文件
     # 留一个副本
-    copy_path: str = "copy\\" + os.path.relpath(path, os.getcwd()) + ".copy"
-    if not os.path.exists(os.path.dirname(copy_path)):
-        os.makedirs(os.path.dirname(copy_path))
-    shutil.copy(path, copy_path)
+    copy_path: str = os.path.abspath("copy\\" + os.path.relpath(path, os.getcwd()))
+    copy_file: str = copy_path + ".copy"
+    if os.path.exists(os.path.dirname(copy_file)) and os.path.exists(copy_file):
+        if check_time(path, copy_file):
+            return
+    else:
+        os.makedirs(os.path.dirname(copy_path), exist_ok=True)
+    print(path)
+    shutil.copy(path, copy_file)
     with open(path, "r", encoding="utf-8") as f:
         data: str = f.read()
         # 分词
@@ -376,6 +399,9 @@ def arrange(path: str):
         # 输出
         if path.endswith(".cs") or path.endswith(".gdshader"): # {}类编程语言，如C#、gdshader
             output(path, words)
+    # 使副本时间晚于原件
+    time.sleep(0.01)
+    os.utime(copy_file, (time.time(), time.time()))
 
 def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str]):
     """
@@ -395,7 +421,11 @@ def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_li
             continue
         arrange(real_dir)
 
-if __name__ == "__main__":
+def arrange_whole_project() -> None:
+    """
+    整理项目代码
+    - 其实就是格式化
+    """
     current_directory: str = main.check_current_directory()
     ignore_list, _ = read_ignore(current_directory + "\\.gitignore")
     dir_list: list[str] = os.listdir(current_directory)
