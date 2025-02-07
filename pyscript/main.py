@@ -81,7 +81,7 @@ if __name__ == '__main__':
                                 break
                         continue
                 print("生成json文件。")
-                with open(fileName, "w", encoding='utf-8') as f:
+                with open(fileName, "w", encoding='utf-8') as file_output:
                     i += 2
                     json_file_data = {}
                     json_line = {}
@@ -136,4 +136,4 @@ if __name__ == '__main__':
                             print("未知对话类型: ", captionType)
                             break
                         json_file_data.update(json_line)
-                    json.dump(json_file_data, f, ensure_ascii=False, indent=4)
+                    json.dump(json_file_data, file_output, ensure_ascii=False, indent=4)
