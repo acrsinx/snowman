@@ -54,6 +54,7 @@ if __name__ == '__main__':
     plot_dir: str = current_directory+"\\plot\\"
     plot_json_dir: str = current_directory+"\\plotJson\\"
     files: list[str] = os.listdir(plot_dir)
+    files = [file for file in files if file.endswith(".md")]
     print(files)
     os.makedirs(plot_json_dir, exist_ok=True)
 
@@ -136,4 +137,4 @@ if __name__ == '__main__':
                             print("未知对话类型: ", captionType)
                             break
                         json_file_data.update(json_line)
-                    json.dump(json_file_data, file_output, ensure_ascii=False, indent=4)
+                    json.dump(json_file_data, file_output, ensure_ascii=False)
