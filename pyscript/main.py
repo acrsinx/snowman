@@ -2,6 +2,8 @@ import os
 import json
 import re
 
+import arrangeCode
+
 def decode_mdplot(data: str) -> list[str]:
     in_tooken: bool = False
     tookens: list[str] = []
@@ -38,21 +40,21 @@ def simplify_script (code: str) -> str:
 
 def check_current_directory() -> str:
     """
-    检查当前目录是否含有plot文件夹
-    如果不是，则返回上一级目录
+    设置正确的工作目录
     """
-    if not os.path.exists(".\\plot"):
-        os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(os.path.dirname(os.path.dirname(__file__)))
     return os.getcwd()
 
-if __name__ == '__main__':
+def make_json() -> None:
+    """
+    生成剧情脚本
+    """
     current_directory: str = check_current_directory()
-    print(current_directory)
     # 检查文件夹的各个文件
     plot_dir: str = current_directory+"\\plot\\"
     plot_json_dir: str = current_directory+"\\plotJson\\"
     files: list[str] = os.listdir(plot_dir)
-    print(files)
+    files = [file for file in files if file.endswith(".md")]
     os.makedirs(plot_json_dir, exist_ok=True)
 
     for file in files:
@@ -67,19 +69,17 @@ if __name__ == '__main__':
                 if tookens[i] != "file":
                     break
                 fileName: str = this_plot_dir+tookens[i+1]
-                print(fileName)
                 if os.path.exists(fileName):
-                    # 比较生成文件时间，如果生成文件时间比原文件晚，则跳过，这样可以避免重复生成
-                    if os.path.getmtime(fileName) > os.path.getmtime(markdown_file):
-                        print("跳过生成json文件。")
+                    # 比较生成文件时间，如果生成文件时间比原文件晚，比Python脚本晚，则跳过，这样可以避免重复生成
+                    if arrangeCode.check_time(markdown_file, fileName):
                         i += 1
                         while tookens[i] != "file":
                             i += 1
                             if i >= len(tookens):
                                 break
                         continue
-                print("生成json文件。")
-                with open(fileName, "w", encoding='utf-8') as f:
+                print("生成json文件: ", fileName)
+                with open(fileName, "w", encoding='utf-8') as file_output:
                     i += 2
                     json_file_data = {}
                     json_line = {}
@@ -113,14 +113,14 @@ if __name__ == '__main__':
                                 if tookens[i] == "endChoose":
                                     i += 1
                                     break
-                            texts_json = {}
+                            texts_json: dict = {}
                             for j in range(len(texts) // 2):
                                 texts_json.update({
                                     j: {
                                         texts[j*2]: texts[j*2+1]
                                     }
                                 })
-                            a_json = {
+                            a_json: dict = {
                                     "actorName": actorName,
                                     "caption": caption,
                                     "type": captionType,
@@ -134,4 +134,17 @@ if __name__ == '__main__':
                             print("未知对话类型: ", captionType)
                             break
                         json_file_data.update(json_line)
-                    json.dump(json_file_data, f, ensure_ascii=False, indent=4)
+                    json.dump(json_file_data, file_output, ensure_ascii=False)
+
+need_dirs: list[str] = ["export\\export\\"]
+
+def make_dir() -> None:
+    for dir in need_dirs:
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+            print("创建目录: ", dir)
+
+if __name__ == '__main__':
+    make_dir()
+    arrangeCode.arrange_whole_project()
+    make_json()

@@ -39,11 +39,17 @@ public class GameInformation: object {
         Dictionary<string, string> information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
         ui.totalGameTime = long.Parse(information["totalGameTime"]);
         ui.settingPanel.maxFps.Selected = int.Parse(information["maxFps"]);
+        ui.settingPanel.SetMaxFps(int.Parse(information["maxFps"]));
         ui.settingPanel.tts.Selected = int.Parse(information["tts"]);
+        ui.settingPanel.SetTtsId(int.Parse(information["tts"]));
         ui.settingPanel.useScreenShader.ButtonPressed = information["useScreenShader"] == "1";
+        ui.settingPanel.SetUseScreenShader();
         ui.settingPanel.shadow.ButtonPressed = information["shadow"] == "1";
+        ui.settingPanel.SetShadow();
         ui.settingPanel.showInfo.ButtonPressed = information["showInfo"] == "1";
+        ui.settingPanel.SetShowInfo();
         ui.settingPanel.LOD.Value = double.Parse(information["LOD"]);
+        ui.settingPanel.SetLOD(double.Parse(information["LOD"]));
         file.Close();
     }
 }

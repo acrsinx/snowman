@@ -1,9 +1,9 @@
 using Godot;
-public class PlotCharacter: object {
-    public Node3D character;
-    public AnimationPlayer animationPlayer;
-    public PlotCharacter(Node3D character) {
-        this.character = character;
+public interface PlotCharacter {
+    public Node3D GetCharacterNode();
+    public AnimationPlayer AnimationPlayer {
+        set;
+        get;
     }
     public static AnimationPlayer GetAnimationPlayer(Node node) {
         if (node is null) {
@@ -31,11 +31,11 @@ public class PlotCharacter: object {
         return null;
     }
     public void PlayAnimation(string animationName) {
-        animationPlayer ??= GetAnimationPlayer(character);
-        animationPlayer.Play(animationName);
+        AnimationPlayer ??= GetAnimationPlayer(GetCharacterNode());
+        AnimationPlayer.Play(animationName);
     }
     public void PauseAnimation() {
-        animationPlayer ??= GetAnimationPlayer(character);
-        animationPlayer.Pause();
+        AnimationPlayer ??= GetAnimationPlayer(GetCharacterNode());
+        AnimationPlayer.Pause();
     }
 }

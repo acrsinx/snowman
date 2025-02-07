@@ -51,32 +51,53 @@ public partial class Setting: Control {
         LOD.Value = ui.GetTree().Root.MeshLodThreshold;
         // 绑定事件
         uiType.ItemSelected += (index) => {
-            ui.uiType = (UiType) index;
+            SetUiType(index);
         };
         maxFps.ItemSelected += (index) => {
-            Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
+            SetMaxFps(index);
         };
         tts.ItemSelected += (index) => {
-            if (index == 0) { // 不使用TTS
-                ttsId = "";
-                return;
-            }
-            ttsId = voices[((int) index) - 1]["id"].ToString();
+            SetTtsId(index);
         };
         useScreenShader.Pressed += () => {
-            ui.playerCamera.screenShader.Visible = useScreenShader.ButtonPressed;
+            SetUseScreenShader();
         };
         shadow.Pressed += () => {
-            light.ShadowEnabled = shadow.ButtonPressed;
+            SetShadow();
         };
         showInfo.Pressed += () => {
-            ui.infomation.Visible = showInfo.ButtonPressed;
+            SetShowInfo();
         };
         LOD.ValueChanged += (value) => {
-            ui.GetTree().Root.MeshLodThreshold = (float) value;
+            SetLOD(value);
         };
         exit.Pressed += () => {
             ui.Exit();
         };
+    }
+    public void SetUiType(long index) {
+        ui.uiType = (UiType) index;
+    }
+    public void SetMaxFps(long index) {
+        Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
+    }
+    public void SetTtsId(long index) {
+        if (index == 0) { // 不使用TTS
+            ttsId = "";
+            return;
+        }
+        ttsId = voices[((int) index) - 1]["id"].ToString();
+    }
+    public void SetUseScreenShader() {
+        ui.playerCamera.screenShader.Visible = useScreenShader.ButtonPressed;
+    }
+    public void SetShadow() {
+        light.ShadowEnabled = shadow.ButtonPressed;
+    }
+    public void SetShowInfo() {
+        ui.infomation.Visible = showInfo.ButtonPressed;
+    }
+    public void SetLOD(double value) {
+        ui.GetTree().Root.MeshLodThreshold = (float) value;
     }
 }

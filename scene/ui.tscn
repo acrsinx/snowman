@@ -1,11 +1,16 @@
-[gd_scene load_steps=7 format=3 uid="uid://d1ag14jieptrf"]
+[gd_scene load_steps=10 format=3 uid="uid://d1ag14jieptrf"]
 
 [ext_resource type="Theme" uid="uid://brwqadtig5tg1" path="res://config/mainTheme.tres" id="1_qh1ee"]
 [ext_resource type="Script" path="res://script/Ui.cs" id="2_mqx4e"]
+[ext_resource type="Texture2D" uid="uid://biok4eh4irxqj" path="res://image/button.svg" id="3_bpsmd"]
 [ext_resource type="PackedScene" uid="uid://d1vaitru08e1g" path="res://scene/setting.tscn" id="3_dduwx"]
+[ext_resource type="Texture2D" uid="uid://d0qx6s65ddip0" path="res://image/buttonPressed.svg" id="4_ejgsy"]
 [ext_resource type="PackedScene" uid="uid://c0q0p13xevtrf" path="res://scene/package.tscn" id="4_ldd5v"]
 [ext_resource type="PackedScene" uid="uid://ds5oq7mbxxueh" path="res://scene/load.tscn" id="5_ny8rt"]
 [ext_resource type="Script" path="res://script/Load.cs" id="6_apcne"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4og0v"]
+radius = 64.0
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -112,6 +117,85 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="RightDown" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="jump" type="TouchScreenButton" parent="Control/RightDown"]
+position = Vector2(-268, -274)
+texture_normal = ExtResource("3_bpsmd")
+texture_pressed = ExtResource("4_ejgsy")
+shape = SubResource("CircleShape2D_4og0v")
+action = "jump"
+
+[node name="Label" type="Label" parent="Control/RightDown/jump"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_qh1ee")
+theme_type_variation = &"HeaderLarge"
+text = "跳"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="attack" type="TouchScreenButton" parent="Control/RightDown"]
+position = Vector2(-327, -140)
+scale = Vector2(0.7, 0.7)
+texture_normal = ExtResource("3_bpsmd")
+texture_pressed = ExtResource("4_ejgsy")
+shape = SubResource("CircleShape2D_4og0v")
+action = "attack"
+
+[node name="Label" type="Label" parent="Control/RightDown/attack"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_qh1ee")
+theme_type_variation = &"HeaderLarge"
+text = "攻"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="slow" type="TouchScreenButton" parent="Control/RightDown"]
+position = Vector2(-134, -366)
+scale = Vector2(0.6, 0.6)
+texture_normal = ExtResource("3_bpsmd")
+texture_pressed = ExtResource("4_ejgsy")
+shape = SubResource("CircleShape2D_4og0v")
+action = "slow"
+
+[node name="Label" type="Label" parent="Control/RightDown/slow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_qh1ee")
+theme_type_variation = &"HeaderLarge"
+text = "慢"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="showInfo" type="TouchScreenButton" parent="Control/RightDown"]
+position = Vector2(-20, -20)
+scale = Vector2(0.3, 0.3)
+texture_normal = ExtResource("3_bpsmd")
+texture_pressed = ExtResource("4_ejgsy")
+shape = SubResource("CircleShape2D_4og0v")
+action = "show_info"
+
 [node name="ControlPanel" type="Panel" parent="Control"]
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 1
@@ -123,58 +207,6 @@ offset_top = -250.0
 offset_right = 250.0
 offset_bottom = -50.0
 grow_vertical = 0
-
-[node name="jump" type="Button" parent="Control"]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -222.0
-offset_top = -204.0
-offset_right = -122.0
-offset_bottom = -104.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_type_variation = &"CircleButton"
-action_mode = 0
-text = "跳"
-
-[node name="attack" type="Button" parent="Control"]
-custom_minimum_size = Vector2(70, 70)
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -323.0
-offset_top = -146.0
-offset_right = -253.0
-offset_bottom = -76.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_type_variation = &"CircleButton"
-text = "攻"
-
-[node name="slow" type="Button" parent="Control"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -152.0
-offset_top = -298.0
-offset_right = -107.0
-offset_bottom = -253.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_type_variation = &"CircleButton"
-text = "慢"
 
 [node name="RightUp" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -252,5 +284,6 @@ theme_type_variation = &"MapPanel"
 [node name="Map" type="Sprite2D" parent="LeftUp/Panel"]
 
 [node name="Load" parent="." instance=ExtResource("5_ny8rt")]
+visible = false
 layout_mode = 1
 script = ExtResource("6_apcne")

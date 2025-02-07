@@ -106,10 +106,6 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
     [Export] public CollisionShape3D player;
     public GameCharacter playerCharacter;
     public CameraManager cameraManager;
-    /// <summary>
-    /// 小地图使用
-    /// </summary>
-    [Export] public SubViewport map;
     [Export] public PackedScene snowball;
     public static readonly Vector3 gravity = new(0, -30f, 0);
     public static readonly float jumpSpeed = 10.0f;
@@ -170,7 +166,7 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
                 right /= length;
                 front /= length;
             }
-            isSlow = ui.phoneSlow.ButtonPressed || Input.IsMouseButtonPressed(MouseButton.Right);
+            isSlow = Input.IsActionPressed("slow");
             front *= isSlow?moveSpeed:runSpeed;
             right *= isSlow?moveSpeed:runSpeed;
             if (Input.IsActionPressed("alt")) {
@@ -219,8 +215,6 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
         }
         cameraMarker.Position = cameraShake.GetShakeOffset(ui.totalGameTime) + CameraMarkerOrigin;
         mouseMove = Vector2.Zero;
-        right = 0;
-        front = 0;
         jump = false;
         isSlow = false;
         if (!backgroundMusic.Playing) {
@@ -235,27 +229,42 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
                     Vector2 moveVector = drag.Position - ControlPanel.GetGlobalRect().Position - ControlPanel.GetGlobalRect().Size / 2;
                     right = -moveVector.X;
                     front = moveVector.Y;
-                } else if (drag.Index == rotateIndex) { // 转动视角
+                    return;
+                }
+                if (drag.Index == rotateIndex) { // 转动视角
                     canTurn = true;
                     mouseMove = -drag.Relative * mouseSpeed;
-                } else { // 首次滑动时，判断滑动索引
-                    if (IsInArea(ControlPanel, drag.Position)) {
-                        moveIndex = drag.Index;
-                    } else {
-                        rotateIndex = drag.Index;
-                    }
+                    return;
                 }
+                // 首次滑动时，判断滑动索引
+                if (IsInArea(ui.phoneJump, drag.Position)) {
+                    return;
+                }
+                if (IsInArea(ui.phoneAttack, drag.Position)) {
+                    return;
+                }
+                if (IsInArea(ui.phoneSlow, drag.Position)) {
+                    return;
+                }
+                if (IsInArea(ControlPanel, drag.Position)) {
+                    moveIndex = drag.Index;
+                    return;
+                }
+                rotateIndex = drag.Index;
                 return;
             }
         }
         if (@event is InputEventScreenTouch touch) { // 滑动事件结束时，重置滑动索引
             if (ui.uiType == UiType.phone) {
-                if (!touch.Pressed) {
-                    if (touch.Index == moveIndex) {
-                        moveIndex = -1;
-                    } else if (touch.Index == rotateIndex) {
-                        rotateIndex = -1;
-                    }
+                if (touch.Pressed) {
+                    return;
+                }
+                if (touch.Index == moveIndex) {
+                    right = 0;
+                    front = 0;
+                    moveIndex = -1;
+                } else if (touch.Index == rotateIndex) {
+                    rotateIndex = -1;
                 }
             }
         }
@@ -267,7 +276,7 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
         }
         if (@event is InputEventMouseButton button) {
             if (ui.uiType == UiType.computer) {
-                if (button.Pressed) {
+                if (button.IsPressed()) {
                     if (PlayerState is State.move) {
                         switch (button.ButtonIndex) {
                             case MouseButton.Left: {
@@ -358,5 +367,17 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
     /// <returns>是否在</returns>
     public static bool IsInArea(Control area, Vector2 position) {
         return area.GetGlobalRect().HasPoint(position);
+    }
+    /// <summary>
+    /// 位置是否在指定范围内，不能处理旋转，缩放不均匀等情况
+    /// </summary>
+    /// <param name="area">范围</param>
+    /// <param name="position">位置</param>
+    /// <returns>是否在</returns>
+    public static bool IsInArea(TouchScreenButton area, Vector2 position) {
+        CircleShape2D shape = area.Shape as CircleShape2D;
+        float Scale = area.Scale.X;
+        float radius = shape.Radius * Scale;
+        return position.DistanceTo(area.GlobalPosition + 0.5f * Scale * area.TextureNormal.GetSize()) < radius;
     }
 }

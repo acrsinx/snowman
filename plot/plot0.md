@@ -21,6 +21,7 @@ Goto(1)
 SetCameraPosition()
 ```
 ```
+LoadCharacter(snowbear, bear, (5, 0, 6));
 Exit(0)
 ```
 ## 战斗结束

@@ -2,6 +2,10 @@ using Godot;
 public partial class Load: Control {
     public int progress = 0;
     public const int maxProgress = 6;
+    /// <summary>
+    /// 地图
+    /// </summary>
+    public SubViewport map;
     public Ui ui;
     public ProgressBar progressBar;
     public override void _Ready() {
@@ -15,6 +19,7 @@ public partial class Load: Control {
         Do();
     }
     public void Init() {
+        Visible = true;
         RefreshProgress();
     }
     private void RefreshProgress() {
@@ -24,8 +29,9 @@ public partial class Load: Control {
         switch (progress) {
             case 0: {
                 Plot.camera = ui.playerCamera;
-                ui.playerCamera.map.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
-                ui.playerCamera.map.GetChild<Camera3D>(0).Size = Map.mapSizes[0];
+                map = GetTree().Root.GetNode<SubViewport>("Node/map");
+                map.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
+                map.GetChild<Camera3D>(0).Size = Map.mapSizes[0];
                 // 加载用户数据
                 ui.gameInformation.LoadInformation(Ui.savePath);
                 break;
@@ -43,8 +49,8 @@ public partial class Load: Control {
                 break;
             }
             case 4: {
-                ui.playerCamera.map.GetTexture().GetImage().SavePng("user://map.png");
-                ui.playerCamera.map.QueueFree();
+                map.GetTexture().GetImage().SavePng("user://map.png");
+                map.QueueFree();
                 break;
             }
             case 5: {

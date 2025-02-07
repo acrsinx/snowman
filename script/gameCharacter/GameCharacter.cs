@@ -1,7 +1,12 @@
 using Godot;
-public partial class GameCharacter: Node3D, HaveCharacter {
+public partial class GameCharacter: Node3D, HaveCharacter, PlotCharacter {
     public Node3D character;
     public PhysicsBody3D physicsBody3D;
+    private AnimationPlayer animationPlayer;
+    public AnimationPlayer AnimationPlayer {
+        get => animationPlayer;
+        set => animationPlayer = value;
+    }
     /// <summary>
     /// 小地图标记
     /// </summary>
@@ -83,5 +88,8 @@ public partial class GameCharacter: Node3D, HaveCharacter {
     public void Die() {
         mapFlag.QueueFree();
         QueueFree();
+    }
+    public Node3D GetCharacterNode() {
+        return character;
     }
 }
