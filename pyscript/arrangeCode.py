@@ -399,11 +399,9 @@ def arrange(path: str):
         # 输出
         if path.endswith(".cs") or path.endswith(".gdshader"): # {}类编程语言，如C#、gdshader
             output(path, words)
-    # 打开副本，使其时间晚于原件
+    # 使副本时间晚于原件
     time.sleep(0.01)
-    with open(copy_file, "r", encoding="utf-8"):
-        # 什么也不做
-        pass
+    os.utime(copy_file, (time.time(), time.time()))
 
 def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str]):
     """
@@ -423,7 +421,11 @@ def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_li
             continue
         arrange(real_dir)
 
-if __name__ == "__main__":
+def arrange_whole_project() -> None:
+    """
+    整理项目代码
+    - 其实就是格式化
+    """
     current_directory: str = main.check_current_directory()
     ignore_list, _ = read_ignore(current_directory + "\\.gitignore")
     dir_list: list[str] = os.listdir(current_directory)
