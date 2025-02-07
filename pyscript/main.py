@@ -115,14 +115,14 @@ if __name__ == '__main__':
                                 if tookens[i] == "endChoose":
                                     i += 1
                                     break
-                            texts_json = {}
+                            texts_json: dict = {}
                             for j in range(len(texts) // 2):
                                 texts_json.update({
                                     j: {
                                         texts[j*2]: texts[j*2+1]
                                     }
                                 })
-                            a_json = {
+                            a_json: dict = {
                                     "actorName": actorName,
                                     "caption": caption,
                                     "type": captionType,

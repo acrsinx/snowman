@@ -84,7 +84,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
     返回
     - list[str, NoteType] str: 词元 NoteType: 注释类型
     """
-    words: list[str, NoteType] = []
+    words: list[tuple[str, NoteType]] = []
     word: str = ""
     is_note: NoteType = NoteType.NORMAL
     is_string: bool = False
