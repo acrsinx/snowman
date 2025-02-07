@@ -219,8 +219,6 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
         }
         cameraMarker.Position = cameraShake.GetShakeOffset(ui.totalGameTime) + CameraMarkerOrigin;
         mouseMove = Vector2.Zero;
-        right = 0;
-        front = 0;
         jump = false;
         isSlow = false;
         if (!backgroundMusic.Playing) {
@@ -262,12 +260,15 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
         }
         if (@event is InputEventScreenTouch touch) { // 滑动事件结束时，重置滑动索引
             if (ui.uiType == UiType.phone) {
-                if (!touch.Pressed) {
-                    if (touch.Index == moveIndex) {
-                        moveIndex = -1;
-                    } else if (touch.Index == rotateIndex) {
-                        rotateIndex = -1;
-                    }
+                if (touch.Pressed) {
+                    return;
+                }
+                if (touch.Index == moveIndex) {
+                    right = 0;
+                    front = 0;
+                    moveIndex = -1;
+                } else if (touch.Index == rotateIndex) {
+                    rotateIndex = -1;
                 }
             }
         }
