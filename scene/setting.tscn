@@ -88,6 +88,10 @@ text = "使用屏幕着色器"
 layout_mode = 2
 text = "开启调试信息"
 
+[node name="window" type="CheckButton" parent="PanelContainer/Scroll/VBoxContainer"]
+layout_mode = 2
+text = "窗口模式"
+
 [node name="LOD" type="SpinBox" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
 max_value = 1.0

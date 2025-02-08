@@ -21,6 +21,10 @@ public partial class Setting: Control {
     public CheckButton useScreenShader;
     private Light3D light;
     public CheckButton showInfo;
+    /// <summary>
+    /// 窗口模式
+    /// </summary>
+    public CheckButton window;
     public SpinBox LOD;
     public Button exit;
     public void Init() {
@@ -32,6 +36,7 @@ public partial class Setting: Control {
         develop = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/develop");
         useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
         showInfo = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/showInfo");
+        window = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/window");
         exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
         LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
         // 设置初始值
@@ -56,7 +61,7 @@ public partial class Setting: Control {
             SetUiType(index);
         };
         maxFps.ItemSelected += (index) => {
-            SetMaxFps(index);
+            SetMaxFps();
         };
         tts.ItemSelected += (index) => {
             SetTtsId(index);
@@ -73,6 +78,9 @@ public partial class Setting: Control {
         showInfo.Pressed += () => {
             SetShowInfo();
         };
+        window.Pressed += () => {
+            SetWindow();
+        };
         LOD.ValueChanged += (value) => {
             SetLOD(value);
         };
@@ -82,8 +90,9 @@ public partial class Setting: Control {
     }
     public void SetUiType(long index) {
         ui.uiType = (UiType) index;
+        SetWindowVisible();
     }
-    public void SetMaxFps(long index) {
+    public void SetMaxFps() {
         Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
     }
     public void SetTtsId(long index) {
@@ -101,12 +110,19 @@ public partial class Setting: Control {
         useScreenShader.Visible = dev;
         showInfo.Visible = dev;
         LOD.Visible = dev;
+        SetWindowVisible();
     }
     public void SetUseScreenShader() {
         ui.playerCamera.screenShader.Visible = useScreenShader.ButtonPressed;
     }
     public void SetShowInfo() {
         ui.infomation.Visible = showInfo.ButtonPressed;
+    }
+    public void SetWindow() {
+        DisplayServer.WindowSetMode(window.ButtonPressed? DisplayServer.WindowMode.Maximized : DisplayServer.WindowMode.ExclusiveFullscreen);
+    }
+    public void SetWindowVisible() {
+        window.Visible = ui.uiType == UiType.computer && develop.ButtonPressed;
     }
     public void SetLOD(double value) {
         ui.GetTree().Root.MeshLodThreshold = (float) value;

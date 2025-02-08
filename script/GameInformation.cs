@@ -21,6 +21,7 @@ public class GameInformation: object {
             {"develop", ui.settingPanel.develop.ButtonPressed?"1":"0"},
             {"useScreenShader", ui.settingPanel.useScreenShader.ButtonPressed?"1":"0"},
             {"showInfo", ui.settingPanel.showInfo.ButtonPressed?"1":"0"},
+            {"window", ui.settingPanel.window.ButtonPressed?"1":"0"},
             {"LOD", ui.settingPanel.LOD.Value.ToString()}
         };
         FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
@@ -39,9 +40,8 @@ public class GameInformation: object {
         }
         Dictionary<string, string> information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
         ui.totalGameTime = long.Parse(SafeRead(information, "totalGameTime") ?? "0");
-        int maxFps = int.Parse(SafeRead(information, "maxFps") ?? "60");
-        ui.settingPanel.maxFps.Selected = maxFps;
-        ui.settingPanel.SetMaxFps(maxFps);
+        ui.settingPanel.maxFps.Selected = int.Parse(SafeRead(information, "maxFps") ?? "60");
+        ui.settingPanel.SetMaxFps();
         int tts = int.Parse(SafeRead(information, "tts") ?? "0");
         ui.settingPanel.tts.Selected = tts;
         ui.settingPanel.SetTtsId(tts);
@@ -57,6 +57,9 @@ public class GameInformation: object {
         bool showInfo = (SafeRead(information, "showInfo") ?? "0") == "1";
         ui.settingPanel.showInfo.ButtonPressed = showInfo;
         ui.settingPanel.SetShowInfo();
+        bool window = (SafeRead(information, "window") ?? "0") == "1";
+        ui.settingPanel.window.ButtonPressed = window;
+        ui.settingPanel.SetWindow();
         double lod = double.Parse(SafeRead(information, "LOD") ?? "1");
         ui.settingPanel.LOD.Value = lod;
         ui.settingPanel.SetLOD(lod);
