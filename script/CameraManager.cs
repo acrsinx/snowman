@@ -1,11 +1,10 @@
 using System;
-using System.Reflection.Metadata;
 using Godot;
 public class CameraManager: object {
     private readonly Camera3D camera;
     public readonly Marker3D cameraMarker;
     public readonly RayCast3D cameraRay;
-    public readonly Camera playerCamera;
+    public readonly Player player;
     /// <summary>
     /// 相机标志的原位置
     /// </summary>
@@ -42,10 +41,10 @@ public class CameraManager: object {
     };
     private const float maxDistance = 3.0f;
     private float distance = 3.0f;
-    public CameraManager(Camera3D camera, RayCast3D cameraRay, Camera playerCamera, Marker3D cameraMarker) {
+    public CameraManager(Camera3D camera, RayCast3D cameraRay, Player player, Marker3D cameraMarker) {
         this.camera = camera;
         this.cameraRay = cameraRay;
-        this.playerCamera = playerCamera;
+        this.player = player;
         this.cameraMarker = cameraMarker;
         SetCameraPosition();
         SetFov();
@@ -99,10 +98,10 @@ public class CameraManager: object {
         }
         // 回正相机角度
         if (cameraMarker.Rotation.X > CameraMarkerRotationMaxX) {
-            cameraMarker.Rotation = new Vector3(Camera.FloatTo1(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+            cameraMarker.Rotation = new Vector3(Tool.FloatTo(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
         if (cameraMarker.Rotation.X < CameraMarkerRotationMinX) {
-            cameraMarker.Rotation = new Vector3(Camera.FloatTo1(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+            cameraMarker.Rotation = new Vector3(Tool.FloatTo(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
         SetFov();
     }
@@ -113,17 +112,17 @@ public class CameraManager: object {
     public void UpdateCameraWhenTurning(Vector2 mouseMove) {
         // 处理cameraMarker.Rotation
         cameraMarker.Rotation = new Vector3(cameraMarker.Rotation.X + mouseMove.Y, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-        // 处理playerCamera.Rotation
-        playerCamera.Rotation = new Vector3(playerCamera.Rotation.X, playerCamera.Rotation.Y + mouseMove.X, playerCamera.Rotation.Z);
+        // 处理player.Rotation
+        player.Rotation = new Vector3(player.Rotation.X, player.Rotation.Y + mouseMove.X, player.Rotation.Z);
         // 限制视角
         if (-1.2f > cameraMarker.Rotation.X) {
             cameraMarker.Rotation = new Vector3(-1.2f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         } else if (0.5f < cameraMarker.Rotation.X) {
             cameraMarker.Rotation = new Vector3(0.5f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
-        if (playerCamera.ui.uiType == UiType.computer) {
+        if (player.ui.uiType == UiType.computer) {
             // 鼠标归中
-            Input.WarpMouse(0.5f * playerCamera.GetViewport().GetVisibleRect().Size);
+            Input.WarpMouse(0.5f * player.GetViewport().GetVisibleRect().Size);
         }
     }
     /// <summary>
@@ -150,9 +149,9 @@ public class CameraManager: object {
             }
         }
         // 相机震动
-        cameraMarker.Position = cameraShake.GetShakeOffset(playerCamera.ui.totalGameTime) + CameraMarkerOrigin;
+        cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
         SetFov();
-        playerCamera.player.Visible = camera.Position.Z > 2;
+        player.character.Visible = camera.Position.Z > 2;
     }
     public void WheelUp() {
         distance -= 0.2f;

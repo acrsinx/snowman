@@ -39,10 +39,10 @@ public class Map: object {
     /// <summary>
     /// 从全局坐标获取小地图坐标
     /// </summary>
-    /// <param name="camera">玩家相机</param>
+    /// <param name="player">玩家</param>
     /// <param name="globalPosition">要转换的坐标</param>
     /// <returns>小地图坐标</returns>
-    public static Vector2 GlobalPositionToMapPosition(Camera camera, Vector3 globalPosition) {
-        return GlobalPositionToMapPosition(camera.GetCharacter().GlobalPosition, globalPosition, camera.ui.panel, camera.ui.map);
+    public static Vector2 GlobalPositionToMapPosition(Player player, Vector3 globalPosition) {
+        return GlobalPositionToMapPosition(player.character.GlobalPosition, globalPosition, player.ui.panel, player.ui.map);
     }
 }

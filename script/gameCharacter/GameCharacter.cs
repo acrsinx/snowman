@@ -1,8 +1,12 @@
 using Godot;
-public partial class GameCharacter: Node3D, HaveCharacter, PlotCharacter {
+public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacter {
     public Node3D character;
     public PhysicsBody3D physicsBody3D;
     private AnimationPlayer animationPlayer;
+    /// <summary>
+    /// 寻路节点
+    /// </summary>
+    public NavigationAgent3D agent;
     public AnimationPlayer AnimationPlayer {
         get => animationPlayer;
         set => animationPlayer = value;
@@ -11,16 +15,25 @@ public partial class GameCharacter: Node3D, HaveCharacter, PlotCharacter {
     /// 小地图标记
     /// </summary>
     public Sprite2D mapFlag;
-    public Camera playerCamera;
+    public Player player;
     public int attackWaitTime = 100;
     public Health health;
     public bool isEnemy = false;
+    public bool isPlayer = false;
     private long attackStartTime = 0;
-    public GameCharacter(PackedScene character, Camera playerCamera, Node parent, bool isEnemy) {
+    public GameCharacter(PackedScene character, Player player, bool isEnemy, bool isPlayer = false) {
         this.character = character.Instantiate<Node3D>();
         this.isEnemy = isEnemy;
-        parent.AddChild(this);
+        this.isPlayer = isPlayer;
+        if (isPlayer) {
+            player.AddChild(this);
+        } else {
+            player.GetTree().Root.AddChild(this);
+        }
         AddChild(this.character);
+        // 添加寻路节点
+        agent = new NavigationAgent3D();
+        AddChild(agent);
         // 添加小地图标记
         mapFlag = new Sprite2D {
             Scale = new Vector2(0.1f, 0.1f)
@@ -30,8 +43,8 @@ public partial class GameCharacter: Node3D, HaveCharacter, PlotCharacter {
         } else {
             mapFlag.Texture = ResourceLoader.Load<Texture2D>("res://image/playerFlag.svg");
         }
-        playerCamera.ui.panel.AddChild(mapFlag);
-        this.playerCamera = playerCamera;
+        player.ui.panel.AddChild(mapFlag);
+        this.player = player;
         physicsBody3D = HaveCharacter.GetPhysicsBody3D(this.character);
         health = new(10);
     }
@@ -43,47 +56,53 @@ public partial class GameCharacter: Node3D, HaveCharacter, PlotCharacter {
             }
             Die();
         }
-        if (playerCamera.PlayerState == State.move) {
+        if (player.PlayerState == State.move) {
             // 刷新小地图标记
-            mapFlag.Position = Map.GlobalPositionToMapPosition(playerCamera, character.GlobalPosition);
+            mapFlag.Position = Map.GlobalPositionToMapPosition(player, character.GlobalPosition);
             mapFlag.GlobalRotation = -character.GlobalRotation.Y;
         }
     }
     public void Attack() {
-        if (playerCamera.ui.totalGameTime - attackStartTime > attackWaitTime && playerCamera.PlayerState == State.move) {
+        if (player.ui.totalGameTime - attackStartTime > attackWaitTime && player.PlayerState == State.move) {
             CharacterAttack();
         }
     }
     public GameCharacter GetCharacter() {
         return this;
     }
-    // 返回值为是否受伤
+    /// <summary>
+    /// 受到攻击
+    /// </summary>
+    /// <param name="damage">基础伤害值</param>
+    /// <param name="type">伤害类型</param>
+    /// <param name="isEnemy">攻击者是否是敌人</param>
+    /// <returns>是否受伤</returns>
     public bool BeAttack(int damage, DamageType type, bool isEnemy) {
         if (isEnemy == this.isEnemy) {
             return false;
         }
         health.CurrentHealth -= damage;
         if (this.isEnemy) {
-            playerCamera.ui.healthBar.Visible = true;
-            playerCamera.ui.healthBar.Value = health.CurrentHealth;
-            playerCamera.ui.healthBar.MaxValue = health.MaxHealth;
+            player.ui.healthBar.Visible = true;
+            player.ui.healthBar.Value = health.CurrentHealth;
+            player.ui.healthBar.MaxValue = health.MaxHealth;
         }
         if (health.CurrentHealth <= 0) {
             if (this.isEnemy) {
-                playerCamera.ui.healthBar.Visible = false;
+                player.ui.healthBar.Visible = false;
                 Die();
             }
         }
         if (physicsBody3D is RigidBody3D r) {
             r.ApplyCentralImpulse(Vector3.Up * 1000);
-        } else if (physicsBody3D is Camera c) {
-            c.thisVelocity += Vector3.Up * 1000;
-            c.Shake();
+        }
+        if (isPlayer) {
+            player.cameraManager.cameraShake.StartShake(player.ui.totalGameTime, 500);
         }
         return true;
     }
     public virtual void CharacterAttack() {
-        attackStartTime = playerCamera.ui.totalGameTime;
+        attackStartTime = player.ui.totalGameTime;
     }
     public void Die() {
         mapFlag.QueueFree();

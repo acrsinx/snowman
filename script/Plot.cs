@@ -8,7 +8,7 @@ public class Plot {
     public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
     };
     public static string[] paths;
-    public static Camera camera;
+    public static Player player;
     public static void Check(Ui ui) {
         paths = new string[] {
             "res://plotJson/plot0/plot0_0.json",
@@ -24,9 +24,9 @@ public class Plot {
     /// <returns>返回角色名字</returns>
     public static PlotCharacter GetPlotCharacter(string instanceName) {
         if (!InstanceName.ContainsKey(instanceName)) {
-            camera.ui.Log("未找到剧情角色：" + instanceName);
+            player.ui.Log("未找到剧情角色：" + instanceName);
         }
-        return (PlotCharacter) InstanceName[instanceName];
+        return InstanceName[instanceName];
     }
     /// <summary>
     /// 加载角色到场景中
@@ -37,7 +37,7 @@ public class Plot {
     public static void LoadCharacter(string characterName, string instanceName, Vector3 position) {
         if (CharacterPath.ContainsKey(characterName)) {
             PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
-            GameCharacter plotCharacter = new(character, camera, camera.GetParent(), false) {
+            GameCharacter plotCharacter = new(character, player, false) {
                 Position = position
             };
             InstanceName.Add(instanceName, plotCharacter);
@@ -46,11 +46,11 @@ public class Plot {
         GameCharacter gameCharacter;
         switch (characterName) {
             case "snowbear": {
-                gameCharacter = new Snowbear(camera);
+                gameCharacter = new Snowbear(player);
                 break;
             }
             default: {
-                camera.ui.Log("未找到角色：" + characterName);
+                player.ui.Log("未找到角色：" + characterName);
                 return;
             }
         }
@@ -79,13 +79,13 @@ public class Plot {
     /// <param name="height">相机高度</param>
     /// <param name="distance">距离</param>
     public static void LookAtCharacter(string instanceName, float height, float distance) {
-        camera.cameraManager.LookAtCharacter(GetPlotCharacter(instanceName), height, distance);
+        player.cameraManager.LookAtCharacter(GetPlotCharacter(instanceName), height, distance);
     }
     /// <summary>
     /// 设置回相机位置
     /// </summary>
     public static void SetCameraPosition() {
-        camera.cameraManager.SetCameraPosition();
+        player.cameraManager.SetCameraPosition();
     }
     /// <summary>
     /// 解析剧情脚本
@@ -129,15 +129,15 @@ public class Plot {
                 break;
             }
             case "Goto": {
-                camera.ui.ShowCaption(int.Parse(wordsList[1]));
+                player.ui.ShowCaption(int.Parse(wordsList[1]));
                 break;
             }
             case "Exit": {
-                camera.PlayerState = State.move;
+                player.PlayerState = State.move;
                 break;
             }
             default: {
-                camera.ui.Log("未知的剧情指令: " + wordsList[0]);
+                player.ui.Log("未知的剧情指令: " + wordsList[0]);
                 break;
             }
         }

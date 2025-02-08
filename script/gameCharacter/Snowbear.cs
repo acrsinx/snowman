@@ -1,7 +1,7 @@
 using Godot;
 public partial class Snowbear: GameCharacter {
     public static PackedScene SnowbearScene = GD.Load<PackedScene>("res://model/snowbear.gltf");
-    public Snowbear(Camera playerCamera): base(SnowbearScene, playerCamera, playerCamera.GetTree().Root, true) {
+    public Snowbear(Player player): base(SnowbearScene, player, true) {
         health.MaxHealth = 100;
         health.SetFullHealth();
         health.die += () => {

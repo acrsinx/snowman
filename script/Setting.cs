@@ -53,8 +53,8 @@ public partial class Setting: Control {
             ui.Log(voices[i].ToString());
             tts.AddItem(voices[i]["name"].ToString());
         }
-        useScreenShader.ButtonPressed = ui.playerCamera.screenShader.Visible;
-        light = ui.playerCamera.GetTree().Root.GetChild<Node>(0).GetChild<Node>(0).GetChild<Light3D>(0);
+        useScreenShader.ButtonPressed = ui.player.screenShader.Visible;
+        light = ui.GetTree().Root.GetNode<Light3D>("Node/sunLight");
         if (light is null) {
             ui.Log("找不到灯光。");
         }
@@ -130,7 +130,7 @@ public partial class Setting: Control {
         SetWindowVisible();
     }
     public void SetUseScreenShader() {
-        ui.playerCamera.screenShader.Visible = useScreenShader.ButtonPressed;
+        ui.player.screenShader.Visible = useScreenShader.ButtonPressed;
     }
     public void SetShowInfo() {
         ui.infomation.Visible = showInfo.ButtonPressed;

@@ -42,6 +42,7 @@ _subresources={
 },
 "nodes": {
 "PATH:snowman": {
+"generate/physics": true,
 "mesh_instance/layers": 4
 }
 }
