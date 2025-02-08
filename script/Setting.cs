@@ -3,6 +3,10 @@ using Godot.Collections;
 public partial class Setting: Control {
     public Ui ui;
     public OptionButton uiType;
+    /// <summary>
+    /// 开启垂直同步
+    /// </summary>
+    public CheckButton vsync;
     public OptionButton maxFps;
     /// <summary>
     /// 声音
@@ -30,6 +34,7 @@ public partial class Setting: Control {
     public void Init() {
         // 获取组件
         uiType = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/uiType");
+        vsync = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/vsync");
         maxFps = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/maxFps");
         tts = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/tts");
         shadow = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/shadow");
@@ -59,6 +64,9 @@ public partial class Setting: Control {
         // 绑定事件
         uiType.ItemSelected += (index) => {
             SetUiType(index);
+        };
+        vsync.Pressed += () => {
+            SetVsync();
         };
         maxFps.ItemSelected += (index) => {
             SetMaxFps();
@@ -91,6 +99,15 @@ public partial class Setting: Control {
     public void SetUiType(long index) {
         ui.uiType = (UiType) index;
         SetWindowVisible();
+    }
+    public void SetVsync() {
+        bool enabled = vsync.ButtonPressed;
+        DisplayServer.VSyncMode mode = enabled?DisplayServer.VSyncMode.Enabled:DisplayServer.VSyncMode.Disabled;
+        if (mode == DisplayServer.WindowGetVsyncMode()) {
+            return;
+        }
+        DisplayServer.WindowSetVsyncMode(mode);
+        maxFps.Visible = !enabled;
     }
     public void SetMaxFps() {
         Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();

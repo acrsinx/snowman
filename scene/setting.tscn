@@ -44,6 +44,10 @@ popup/item_0/id = 1
 popup/item_1/text = "手机"
 popup/item_1/id = 0
 
+[node name="vsync" type="CheckButton" parent="PanelContainer/Scroll/VBoxContainer"]
+layout_mode = 2
+text = "开启垂直同步"
+
 [node name="maxFps" type="OptionButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
 item_count = 8

@@ -15,6 +15,7 @@ public class GameInformation: object {
     public void SaveInformation(string path) {
         Dictionary<string, string> information = new() {
             {"totalGameTime", ui.totalGameTime.ToString()},
+            {"vsync", ui.settingPanel.vsync.ButtonPressed?"1":"0"},
             {"maxFps", ui.settingPanel.maxFps.Selected.ToString()},
             {"tts", ui.settingPanel.tts.Selected.ToString()},
             {"shadow", ui.settingPanel.shadow.ButtonPressed?"1":"0"},
@@ -40,6 +41,9 @@ public class GameInformation: object {
         }
         Dictionary<string, string> information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
         ui.totalGameTime = long.Parse(SafeRead(information, "totalGameTime") ?? "0");
+        bool vsync = (SafeRead(information, "vsync") ?? "1") == "1";
+        ui.settingPanel.vsync.ButtonPressed = vsync;
+        ui.settingPanel.SetVsync();
         ui.settingPanel.maxFps.Selected = int.Parse(SafeRead(information, "maxFps") ?? "60");
         ui.settingPanel.SetMaxFps();
         int tts = int.Parse(SafeRead(information, "tts") ?? "0");
