@@ -8,7 +8,7 @@ public class CameraManager: object {
     /// <summary>
     /// 相机标志的原位置
     /// </summary>
-    public static readonly Vector3 CameraMarkerOrigin = new(0, 1.3f, 0);
+    public static readonly Vector3 CameraMarkerOrigin = new(0, 0.5f, 0);
     /// <summary>
     /// 相机标志的最小合适旋转角度
     /// </summary>
@@ -39,8 +39,9 @@ public class CameraManager: object {
         new(0, 0.15f, -0.15f),
         new(0, 0.15f, 0.15f)
     };
-    private const float maxDistance = 3.0f;
-    private float distance = 3.0f;
+    private const float minDistance = 0.5f;
+    private const float maxDistance = 2.0f;
+    private float distance = 2.0f;
     public CameraManager(Camera3D camera, RayCast3D cameraRay, Player player, Marker3D cameraMarker) {
         this.camera = camera;
         this.cameraRay = cameraRay;
@@ -137,7 +138,8 @@ public class CameraManager: object {
             SetCameraPosition();
         }
         if (IsCameraTouching()) { // 相机穿模了
-            camera.Position = Vector3.Zero;
+            distance = minDistance;
+            SetCameraPosition();
             // 后移相机
             while (camera.Position.Z < maxDistance) {
                 camera.Position += cameraVector * 0.2f;
@@ -151,11 +153,11 @@ public class CameraManager: object {
         // 相机震动
         cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
         SetFov();
-        player.character.Visible = camera.Position.Z > 2;
+        player.character.Visible = camera.Position.Z > 0.5f;
     }
     public void WheelUp() {
         distance -= 0.2f;
-        distance = MathF.Max(distance, 0.1f);
+        distance = MathF.Max(distance, minDistance);
         SetCameraPosition();
         SetFov();
     }
