@@ -16,8 +16,9 @@ public partial class Setting: Control {
     /// 文本转语音的ID
     /// </summary>
     public string ttsId = "";
-    public CheckButton useScreenShader;
     public CheckButton shadow;
+    public CheckButton develop;
+    public CheckButton useScreenShader;
     private Light3D light;
     public CheckButton showInfo;
     public SpinBox LOD;
@@ -27,8 +28,9 @@ public partial class Setting: Control {
         uiType = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/uiType");
         maxFps = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/maxFps");
         tts = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/tts");
-        useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
         shadow = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/shadow");
+        develop = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/develop");
+        useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
         showInfo = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/showInfo");
         exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
         LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
@@ -59,11 +61,14 @@ public partial class Setting: Control {
         tts.ItemSelected += (index) => {
             SetTtsId(index);
         };
-        useScreenShader.Pressed += () => {
-            SetUseScreenShader();
-        };
         shadow.Pressed += () => {
             SetShadow();
+        };
+        develop.Pressed += () => {
+            SetDevelop();
+        };
+        useScreenShader.Pressed += () => {
+            SetUseScreenShader();
         };
         showInfo.Pressed += () => {
             SetShowInfo();
@@ -88,11 +93,17 @@ public partial class Setting: Control {
         }
         ttsId = voices[((int) index) - 1]["id"].ToString();
     }
-    public void SetUseScreenShader() {
-        ui.playerCamera.screenShader.Visible = useScreenShader.ButtonPressed;
-    }
     public void SetShadow() {
         light.ShadowEnabled = shadow.ButtonPressed;
+    }
+    public void SetDevelop() {
+        bool dev = develop.ButtonPressed;
+        useScreenShader.Visible = dev;
+        showInfo.Visible = dev;
+        LOD.Visible = dev;
+    }
+    public void SetUseScreenShader() {
+        ui.playerCamera.screenShader.Visible = useScreenShader.ButtonPressed;
     }
     public void SetShowInfo() {
         ui.infomation.Visible = showInfo.ButtonPressed;
