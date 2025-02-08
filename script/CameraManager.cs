@@ -112,8 +112,8 @@ public class CameraManager: object {
     public void UpdateCameraWhenTurning(Vector2 mouseMove) {
         // 处理cameraMarker.Rotation
         cameraMarker.Rotation = new Vector3(cameraMarker.Rotation.X + mouseMove.Y, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-        // 处理player.Rotation
-        player.Rotation = new Vector3(player.Rotation.X, player.Rotation.Y + mouseMove.X, player.Rotation.Z);
+        // 处理player.character.Rotation
+        player.character.Rotation = new Vector3(player.character.Rotation.X, player.character.Rotation.Y + mouseMove.X, player.character.Rotation.Z);
         // 限制视角
         if (-1.2f > cameraMarker.Rotation.X) {
             cameraMarker.Rotation = new Vector3(-1.2f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);

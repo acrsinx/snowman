@@ -36,10 +36,10 @@ environment = ExtResource("5_vtop7")
 script = ExtResource("2_5vpts")
 
 [node name="CameraMarker" type="Marker3D" parent="player"]
-transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 2.56, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.56, 0)
 
 [node name="Camera3D" type="Camera3D" parent="player/CameraMarker"]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 1, 0, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
 
 [node name="screenShader" type="MeshInstance3D" parent="player/CameraMarker/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)

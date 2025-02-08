@@ -2,6 +2,7 @@ using Godot;
 public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacter {
     public Node3D character;
     public PhysicsBody3D physicsBody3D;
+    public CollisionShape3D collisionShape3D;
     private AnimationPlayer animationPlayer;
     /// <summary>
     /// 寻路节点
@@ -34,6 +35,11 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         // 添加寻路节点
         agent = new NavigationAgent3D();
         AddChild(agent);
+        collisionShape3D = new CollisionShape3D {
+            Shape = new SphereShape3D() {Radius = 0.5f},
+            Position = new Vector3(0, 0.5f, 0)
+        };
+        AddChild(collisionShape3D);
         // 添加小地图标记
         mapFlag = new Sprite2D {
             Scale = new Vector2(0.1f, 0.1f)

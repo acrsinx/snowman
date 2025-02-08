@@ -5,7 +5,9 @@ public partial class Snowman: GameCharacter {
     public static PackedScene SnowballScene = ResourceLoader.Load<PackedScene>("res://model/snowball.gltf");
     public ObjectPool snowballPool = new(10);
     public Snowman(Player player): base(SnowmanScene, player, false, true) {
-        Position += new Vector3(0, 1, 0);
+        Position += new Vector3(0, 2, 0);
+        player.cameraManager.cameraMarker.Reparent(this, false);
+        player.cameraManager.SetCameraPosition();
         Rotate(Vector3.Up, 0.5f * MathF.PI);
         health.MaxHealth = 1000;
         health.SetFullHealth();
