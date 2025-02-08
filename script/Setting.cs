@@ -119,7 +119,11 @@ public partial class Setting: Control {
         ui.infomation.Visible = showInfo.ButtonPressed;
     }
     public void SetWindow() {
-        DisplayServer.WindowSetMode(window.ButtonPressed? DisplayServer.WindowMode.Maximized : DisplayServer.WindowMode.ExclusiveFullscreen);
+        DisplayServer.WindowMode mode = window.ButtonPressed?DisplayServer.WindowMode.Maximized:DisplayServer.WindowMode.ExclusiveFullscreen;
+        if (DisplayServer.WindowGetMode() == mode) {
+            return;
+        }
+        DisplayServer.WindowSetMode(mode);
     }
     public void SetWindowVisible() {
         window.Visible = ui.uiType == UiType.computer && develop.ButtonPressed;
