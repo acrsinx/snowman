@@ -1,10 +1,6 @@
 using Godot;
 using System;
 public partial class Camera: CharacterBody3D, HaveCharacter {
-    /// <summary>
-    /// 相机标志的原位置
-    /// </summary>
-    public static readonly Vector3 CameraMarkerOrigin = new(0, 1.3f, 0);
     private float direction = 0.0f;
     /// <summary>
     /// 玩家瞬时速度
@@ -100,8 +96,6 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
     /// </summary>
     public const long jumpDelay = 100;
     public bool isSlow = false;
-    public Shake cameraShake = new();
-    [Export] public Marker3D cameraMarker;
     [Export] public MeshInstance3D screenShader;
     [Export] public CollisionShape3D player;
     public GameCharacter playerCharacter;
@@ -117,8 +111,9 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
     [Export] public AudioStreamPlayer backgroundMusic;
     public override void _Ready() {
         ui.Log("_Ready");
-        Camera3D c = GetChild<Node3D>(1).GetChild<Camera3D>(0);
-        cameraManager = new(c, c.GetChild<RayCast3D>(1));
+        Marker3D m = GetChild<Marker3D>(1);
+        Camera3D c = m.GetChild<Camera3D>(0);
+        cameraManager = new(c, c.GetChild<RayCast3D>(1), this, m);
     }
     public override void _PhysicsProcess(double delta) {
         if (PlayerState != State.move) {
@@ -140,20 +135,7 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
             mouseMove.Y = -maxMouseMove;
         }
         if (PlayerState is State.move && CanTurn) {
-            // 处理cameraMarker.Rotation
-            cameraMarker.Rotation = new Vector3(cameraMarker.Rotation.X + mouseMove.Y, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-            // 处理this.Rotation
-            Rotation = new Vector3(Rotation.X, Rotation.Y + mouseMove.X, Rotation.Z);
-            // 限制视角
-            if (-1.2f > cameraMarker.Rotation.X) {
-                cameraMarker.Rotation = new Vector3(-1.2f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-            } else if (0.5f < cameraMarker.Rotation.X) {
-                cameraMarker.Rotation = new Vector3(0.5f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-            }
-            if (ui.uiType == UiType.computer) {
-                // 鼠标归中
-                Input.WarpMouse(0.5f * GetViewport().GetVisibleRect().Size);
-            }
+            cameraManager.UpdateCameraWhenTurning(mouseMove);
         }
         if (IsOnFloor() && PlayerState == State.move) {
             if (ui.uiType == UiType.computer) {
@@ -173,15 +155,16 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
                 front = 0;
                 right = 0;
             }
-            float sin = MathF.Sin(cameraMarker.GlobalRotation.Y);
-            float cos = MathF.Cos(cameraMarker.GlobalRotation.Y);
+            float sin = MathF.Sin(cameraManager.cameraMarker.GlobalRotation.Y);
+            float cos = MathF.Cos(cameraManager.cameraMarker.GlobalRotation.Y);
             thisVelocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
             // 在跳跃缓冲时间内可以跳跃
             if (lastJumpTime + jumpDelay > ui.totalGameTime) {
                 thisVelocity += new Vector3(0, jumpSpeed, 0);
             }
-            if (front != 0 || right != 0) {
+            if (front != 0 || right != 0) { // 移动时
                 direction = new Vector2(-right, front).AngleTo(new(0, -1));
+                cameraManager.UpdateCameraWhenMoving(fDelta);
             } else {
                 if (mouseMove.X != 0 && CanTurn) {
                     direction = FloatTo1(direction, mouseMove.X, fDelta * 10.0f);
@@ -211,9 +194,8 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
         // 移动
         MoveAndSlide();
         if (playerState == State.move) {
-            cameraManager.UpdateCamera(fDelta, player);
+            cameraManager.UpdateCamera();
         }
-        cameraMarker.Position = cameraShake.GetShakeOffset(ui.totalGameTime) + CameraMarkerOrigin;
         mouseMove = Vector2.Zero;
         jump = false;
         isSlow = false;
@@ -334,7 +316,7 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
         }
     }
     public void Shake() {
-        cameraShake.StartShake(ui.totalGameTime, 200);
+        cameraManager.cameraShake.StartShake(ui.totalGameTime, 200);
     }
     /// <summary>
     /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from，from和to都是弧度

@@ -25,7 +25,7 @@ public partial class Snowman: GameCharacter {
         rigidBody.MaxContactsReported = 1;
         // 设置雪球位置
         snowball.GlobalPosition = playerCamera.player.GlobalPosition;
-        snowball.GlobalRotation = new(playerCamera.cameraMarker.Rotation.X, playerCamera.player.GlobalRotation.Y, 0);
+        snowball.GlobalRotation = new(playerCamera.cameraManager.cameraMarker.Rotation.X, playerCamera.player.GlobalRotation.Y, 0);
         snowball.Translate(new Vector3(0, 0, -0.5f));
         // 设置速度
         Vector3 direction = new Vector3(0, 0, -1).Rotated(new(0, 1, 0), snowball.GlobalRotation.Y).Rotated(new(1, 0, 0), snowball.GlobalRotation.X) + new Vector3(0, 0.5f, 0);
