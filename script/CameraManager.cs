@@ -3,7 +3,7 @@ using Godot;
 public class CameraManager: object {
     private readonly Camera3D camera;
     public readonly Marker3D cameraMarker;
-    public readonly RayCast3D cameraRay;
+    public readonly ShapeCast3D cameraCast;
     public readonly Player player;
     /// <summary>
     /// 相机标志的原位置
@@ -20,35 +20,15 @@ public class CameraManager: object {
     /// <summary>
     /// 相机视角缩放速度
     /// </summary>
-    public const float CameraZoomSpeed = 0.03f;
+    public const float CameraZoomSpeed = 0.1f;
     public Shake cameraShake = new();
     private static Vector3 cameraVector = new(0.31f, 0, 1);
-    public static readonly Vector3[] checkList = {
-        new(-0.15f, 0, 0),
-        new(0.15f, 0, 0),
-        new(0, -0.15f, 0),
-        new(0, 0.15f, 0),
-        new(0, 0, -0.15f),
-        new(0, 0, 0.15f),
-        new(-0.15f, -0.15f, 0),
-        new(-0.15f, 0.15f, 0),
-        new(0.15f, -0.15f, 0),
-        new(0.15f, 0.15f, 0),
-        new(-0.15f, 0, -0.15f),
-        new(-0.15f, 0, 0.15f),
-        new(0.15f, 0, -0.15f),
-        new(0.15f, 0, 0.15f),
-        new(0, -0.15f, -0.15f),
-        new(0, -0.15f, 0.15f),
-        new(0, 0.15f, -0.15f),
-        new(0, 0.15f, 0.15f)
-    };
     private const float minDistance = 0.7f;
     private const float maxDistance = 2.0f;
     private float distance = 2.0f;
-    public CameraManager(Camera3D camera, RayCast3D cameraRay, Player player, Marker3D cameraMarker) {
+    public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
         this.camera = camera;
-        this.cameraRay = cameraRay;
+        this.cameraCast = cameraCast;
         this.player = player;
         this.cameraMarker = cameraMarker;
         SetCameraPosition();
@@ -66,17 +46,8 @@ public class CameraManager: object {
         return camera.GlobalPosition;
     }
     private bool IsCameraTouching() {
-        for (int i = 0; i < checkList.Length; i++) {
-            cameraRay.TargetPosition = checkList[i];
-            cameraRay.ForceRaycastUpdate();
-            GodotObject collider = cameraRay.GetCollider();
-            if (collider != null) {
-                if (collider.GetType().FullName != "Camera") {
-                    return true;
-                }
-            }
-        }
-        return false;
+        cameraCast.ForceShapecastUpdate();
+        return cameraCast.IsColliding();
     }
     /// <summary>
     /// 将相机位置与方向重置
@@ -154,6 +125,7 @@ public class CameraManager: object {
     /// 处理相机穿模
     /// </summary>
     public void DealWithCameraTouch() {
+        float record = distance;
         // 前移相机
         while (true) {
             distance -= 0.2f;
@@ -165,14 +137,17 @@ public class CameraManager: object {
                 return;
             }
         }
-        distance = minDistance;
+        distance = record;
         SetCameraPosition();
         // 后移相机
-        while (camera.Position.Z < maxDistance) {
-            camera.Position += cameraVector * 0.2f;
-            if (IsCameraTouching()) { // 如果碰到物体，则停止
-                camera.Position -= cameraVector * 0.2f;
-                distance = camera.Position.Z;
+        while (true) {
+            distance += 0.2f;
+            SetCameraPosition();
+            if (distance > maxDistance) {
+                player.ui.Log("相机穿模，后移失败");
+                break;
+            }
+            if (!IsCameraTouching()) {
                 break;
             }
         }

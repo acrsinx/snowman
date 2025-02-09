@@ -162,7 +162,7 @@ public partial class Player: Node3D {
         Marker3D m = GetChild<Marker3D>(0);
         Camera3D c = m.GetChild<Camera3D>(0);
         MeshInstance3D m3d = c.GetChild<MeshInstance3D>(0);
-        cameraManager = new(c, c.GetChild<RayCast3D>(1), this, m);
+        cameraManager = new(c, c.GetChild<ShapeCast3D>(1), this, m);
         screenShader = m3d;
     }
     public override void _PhysicsProcess(double delta) {
