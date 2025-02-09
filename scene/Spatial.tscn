@@ -17,8 +17,8 @@ shader_parameter/range = 2.0
 shader_parameter/threshold = 0.9
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iwtqv"]
-margin = 0.1
-radius = 0.1
+margin = 0.3
+radius = 0.3
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_atgam"]
 

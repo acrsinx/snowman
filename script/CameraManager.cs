@@ -23,7 +23,8 @@ public class CameraManager: object {
     public const float CameraZoomSpeed = 0.1f;
     public Shake cameraShake = new();
     private static Vector3 cameraVector = new(0.31f, 0, 1);
-    private const float minDistance = -0.5f;
+    private const float minDistance = -0.15f;
+    private const float minSuitableDistance = 0.5f;
     private const float maxDistance = 2.0f;
     private float distance = 2.0f;
     public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
@@ -32,7 +33,6 @@ public class CameraManager: object {
         this.player = player;
         this.cameraMarker = cameraMarker;
         SetCameraPosition();
-        SetFov();
     }
     private void SetFov() {
         float fov = 75 + (distance - 5) * 5;
@@ -71,6 +71,7 @@ public class CameraManager: object {
         cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
         camera.Position = cameraVector * distance;
         camera.Rotation = Vector3.Zero;
+        SetFov();
     }
     /// <summary>
     /// 玩家移动时回正相机
@@ -95,7 +96,6 @@ public class CameraManager: object {
         if (cameraMarker.Rotation.X < CameraMarkerRotationMinX) {
             cameraMarker.Rotation = new Vector3(Tool.FloatTo(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
-        SetFov();
     }
     /// <summary>
     /// 旋转视角
@@ -131,10 +131,10 @@ public class CameraManager: object {
         if (IsCameraTouching()) { // 相机穿模了
             DealWithCameraTouch();
         }
+        SetCameraPosition();
         // 相机震动
         cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
-        SetFov();
-        player.character.character.Visible = camera.Position.Z > 0.6f;
+        player.character.character.Visible = distance > 0.85f;
     }
     /// <summary>
     /// 处理相机穿模
@@ -153,16 +153,25 @@ public class CameraManager: object {
         }
     }
     public void WheelUp() {
+        if (distance < minSuitableDistance) {
+            return;
+        }
         distance -= CameraZoomSpeed;
-        distance = MathF.Max(distance, minDistance);
+        distance = MathF.Max(distance, minSuitableDistance);
         SetCameraPosition();
-        SetFov();
+        if (IsCameraTouching()) {
+            distance += CameraZoomSpeed;
+            SetCameraPosition();
+        }
     }
     public void WheelDown() {
         distance += CameraZoomSpeed;
         distance = MathF.Min(distance, maxDistance);
         SetCameraPosition();
-        SetFov();
+        if (IsCameraTouching()) {
+            distance -= CameraZoomSpeed;
+            SetCameraPosition();
+        }
     }
     /// <summary>
     /// 单人机位
