@@ -43,7 +43,7 @@ public class CameraManager: object {
         new(0, 0.15f, -0.15f),
         new(0, 0.15f, 0.15f)
     };
-    private const float minDistance = 0.5f;
+    private const float minDistance = 0.7f;
     private const float maxDistance = 2.0f;
     private float distance = 2.0f;
     public CameraManager(Camera3D camera, RayCast3D cameraRay, Player player, Marker3D cameraMarker) {
@@ -143,22 +143,39 @@ public class CameraManager: object {
             SetCameraPosition();
         }
         if (IsCameraTouching()) { // 相机穿模了
-            distance = minDistance;
-            SetCameraPosition();
-            // 后移相机
-            while (camera.Position.Z < maxDistance) {
-                camera.Position += cameraVector * 0.2f;
-                if (IsCameraTouching()) { // 如果碰到物体，则停止
-                    camera.Position -= cameraVector * 0.2f;
-                    distance = camera.Position.Z;
-                    break;
-                }
-            }
+            DealWithCameraTouch();
         }
         // 相机震动
         cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
         SetFov();
         player.character.character.Visible = camera.Position.Z > 0.6f;
+    }
+    /// <summary>
+    /// 处理相机穿模
+    /// </summary>
+    public void DealWithCameraTouch() {
+        // 前移相机
+        while (true) {
+            distance -= 0.2f;
+            SetCameraPosition();
+            if (distance < minDistance) {
+                break;
+            }
+            if (!IsCameraTouching()) {
+                return;
+            }
+        }
+        distance = minDistance;
+        SetCameraPosition();
+        // 后移相机
+        while (camera.Position.Z < maxDistance) {
+            camera.Position += cameraVector * 0.2f;
+            if (IsCameraTouching()) { // 如果碰到物体，则停止
+                camera.Position -= cameraVector * 0.2f;
+                distance = camera.Position.Z;
+                break;
+            }
+        }
     }
     public void WheelUp() {
         distance -= CameraZoomSpeed;
