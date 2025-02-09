@@ -17,7 +17,6 @@ shader_parameter/range = 2.0
 shader_parameter/threshold = 0.9
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iwtqv"]
-margin = 0.3
 radius = 0.3
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_atgam"]
@@ -56,6 +55,7 @@ surface_material_override/0 = SubResource("ShaderMaterial_4t0to")
 [node name="ShapeCast3D" type="ShapeCast3D" parent="player/CameraMarker/Camera3D"]
 shape = SubResource("SphereShape3D_iwtqv")
 target_position = Vector3(0, 0, 0)
+margin = 0.3
 max_results = 1
 
 [node name="ui" parent="." instance=ExtResource("4_8tfp8")]

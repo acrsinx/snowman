@@ -41,10 +41,6 @@ public partial class Player: Node3D {
     /// </summary>
     public static readonly Vector3 gravity = new(0, -30f, 0);
     /// <summary>
-    /// 玩家瞬时速度
-    /// </summary>
-    public Vector3 thisVelocity = Vector3.Zero;
-    /// <summary>
     /// 玩家移动方向（弧度制）
     /// </summary>
     private float direction = 0.0f;
@@ -200,36 +196,34 @@ public partial class Player: Node3D {
             }
             float sin = MathF.Sin(cameraManager.cameraMarker.GlobalRotation.Y);
             float cos = MathF.Cos(cameraManager.cameraMarker.GlobalRotation.Y);
-            thisVelocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
+            character.Velocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
             // 在跳跃缓冲时间内可以跳跃
             if (lastJumpTime + jumpDelay > ui.totalGameTime) {
-                thisVelocity += new Vector3(0, jumpSpeed, 0);
+                character.Velocity += new Vector3(0, jumpSpeed, 0);
             }
             if (front != 0 || right != 0) { // 移动时
                 direction = new Vector2(-right, front).AngleTo(new(0, -1));
-                cameraManager.UpdateCameraWhenMoving(fDelta);
+                cameraManager.UpdateCameraWhenMoving();
                 character.character.Rotation = new Vector3(character.character.Rotation.X, Tool.FloatTo(character.character.Rotation.Y, direction, fDelta * 10.0f), character.character.Rotation.Z);
             }
             // 在地板上时有阻力
-            thisVelocity *= 0.95f;
+            character.Velocity *= 0.95f;
         } else {
-            thisVelocity += gravity * fDelta;
+            character.Velocity += gravity * fDelta;
             // 不在地板上时也有阻力，但阻力更小
-            thisVelocity *= 0.99f;
+            character.Velocity *= 0.99f;
         }
         // 限速
-        float lengthY = MathF.Abs(thisVelocity.Y);
+        float lengthY = MathF.Abs(character.Velocity.Y);
         if (lengthY > 10.0f) {
-            thisVelocity.Y *= 10.0f / lengthY;
+            character.Velocity = new Vector3(character.Velocity.X, character.Velocity.Y * 10.0f / lengthY, character.Velocity.Z);
         }
-        float lengthXZ = new Vector2(thisVelocity.X, thisVelocity.Z).Length();
+        float lengthXZ = new Vector2(character.Velocity.X, character.Velocity.Z).Length();
         float maxSpeed = isSlow?1.0f:3.0f;
         if (lengthXZ > maxSpeed) {
             float factor = maxSpeed / lengthXZ;
-            thisVelocity.X *= factor;
-            thisVelocity.Z *= factor;
+            character.Velocity = new Vector3(character.Velocity.X * factor, character.Velocity.Y, character.Velocity.Z * factor);
         }
-        character.Velocity = thisVelocity;
         // 移动
         character.MoveAndSlide();
         if (playerState == State.move) {

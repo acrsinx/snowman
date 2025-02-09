@@ -36,7 +36,7 @@ public partial class Snowman: GameCharacter {
         Vector3 impuse = direction.Normalized() * 10;
         rigidBody.ApplyImpulse(impuse, new Vector3(0, 0, 0));
         // I = mv => v = I/m
-        player.thisVelocity -= impuse * 0.1f;
+        player.character.Velocity -= impuse * 0.1f;
     }
     public override void _PhysicsProcess(double delta) {
         for (int i = 0; i < snowballPool.Count; i++) {

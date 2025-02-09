@@ -16,17 +16,17 @@ public class CameraManager: object {
     /// <summary>
     /// 相机标志的最大合适旋转角度
     /// </summary>
-    public const float CameraMarkerRotationMaxX = 0.2f;
+    public const float CameraMarkerRotationMaxX = 0.1f;
     /// <summary>
     /// 相机视角缩放速度
     /// </summary>
-    public const float CameraZoomSpeed = 0.1f;
+    public const float CameraZoomSpeed = 0.05f;
     public Shake cameraShake = new();
-    private static Vector3 cameraVector = new(0.31f, 0, 1);
+    private static readonly Vector3 cameraVector = new(0.31f, 0, 1);
     private const float minDistance = -0.15f;
     private const float minSuitableDistance = 0.5f;
     private const float maxDistance = 2.0f;
-    private float distance = 2.0f;
+    private float distance = maxDistance;
     public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
         this.camera = camera;
         this.cameraCast = cameraCast;
@@ -50,16 +50,14 @@ public class CameraManager: object {
         if (!cameraCast.IsColliding()) {
             return false;
         }
-        if (!player.character.character.Visible) {
-            GodotObject obj = cameraCast.GetCollider(0);
-            if (obj is Node node) {
-                HaveCharacter haveCharacter = HaveCharacter.GetHaveCharacter(node);
-                if (haveCharacter == null) {
-                    return true;
-                }
-                if (haveCharacter.GetCharacter().isPlayer) {
-                    return false;
-                }
+        GodotObject obj = cameraCast.GetCollider(0);
+        if (obj is Node node) {
+            HaveCharacter haveCharacter = HaveCharacter.GetHaveCharacter(node);
+            if (haveCharacter == null) {
+                return true;
+            }
+            if (haveCharacter.GetCharacter().isPlayer) {
+                return false;
             }
         }
         return true;
@@ -77,18 +75,9 @@ public class CameraManager: object {
     /// 玩家移动时回正相机
     /// </summary>
     /// <param name="fDelta">时间增量</param>
-    public void UpdateCameraWhenMoving(float fDelta) {
+    public void UpdateCameraWhenMoving() {
         // 回正视场角
-        if (distance < maxDistance) {
-            float record = distance;
-            distance += fDelta * 3;
-            distance = Math.Min(distance, maxDistance);
-            SetCameraPosition();
-            if (IsCameraTouching()) {
-                distance = record;
-                SetCameraPosition();
-            }
-        }
+        WheelDown();
         // 回正相机角度
         if (cameraMarker.Rotation.X > CameraMarkerRotationMaxX) {
             cameraMarker.Rotation = new Vector3(Tool.FloatTo(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
@@ -134,20 +123,26 @@ public class CameraManager: object {
         SetCameraPosition();
         // 相机震动
         cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
-        player.character.character.Visible = distance > 0.85f;
+        player.character.character.Visible = distance > 0.9f;
     }
     /// <summary>
     /// 处理相机穿模
     /// </summary>
-    public void DealWithCameraTouch() {
+    private void DealWithCameraTouch() {
         // 前移相机
+        // 相机不穿模次数
+        int i = 0;
         while (true) {
-            distance -= 0.2f;
+            distance -= CameraZoomSpeed;
             SetCameraPosition();
             if (distance < minDistance) {
-                break;
+                player.ui.Log("相机穿模，找不到合适的位置");
+                return;
             }
             if (!IsCameraTouching()) {
+                i++;
+            }
+            if (i > 3) {
                 return;
             }
         }
@@ -165,13 +160,24 @@ public class CameraManager: object {
         }
     }
     public void WheelDown() {
-        distance += CameraZoomSpeed;
-        distance = MathF.Min(distance, maxDistance);
-        SetCameraPosition();
-        if (IsCameraTouching()) {
-            distance -= CameraZoomSpeed;
+        float record = distance;
+        // 相机退三不碰，方可退一
+        for (int i = 0; i < 3; i++) {
+            distance += CameraZoomSpeed;
+            if (distance > maxDistance) {
+                distance = maxDistance;
+                SetCameraPosition();
+                return;
+            }
             SetCameraPosition();
+            if (IsCameraTouching()) {
+                distance = record;
+                SetCameraPosition();
+                return;
+            }
         }
+        distance = record + CameraZoomSpeed;
+        SetCameraPosition();
     }
     /// <summary>
     /// 单人机位
