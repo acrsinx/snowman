@@ -55,7 +55,7 @@ public partial class Player: Node3D {
     /// <summary>
     /// 鼠标移动最大距离
     /// </summary>
-    public static readonly float maxMouseMove = 0.1f;
+    public static readonly float maxMouseMove = 0.06f;
     /// <summary>
     /// 移动时的触摸屏索引
     /// </summary>
@@ -174,15 +174,8 @@ public partial class Player: Node3D {
             CanTurn = false;
         }
         // 鼠标限速
-        if (mouseMove.X > maxMouseMove) {
-            mouseMove.X = maxMouseMove;
-        } else if (mouseMove.X < -maxMouseMove) {
-            mouseMove.X = -maxMouseMove;
-        }
-        if (mouseMove.Y > maxMouseMove) {
-            mouseMove.Y = maxMouseMove;
-        } else if (mouseMove.Y < -maxMouseMove) {
-            mouseMove.Y = -maxMouseMove;
+        if (mouseMove.Length() > maxMouseMove) {
+            mouseMove = mouseMove.Normalized() * maxMouseMove;
         }
         if (PlayerState is State.move && CanTurn) {
             cameraManager.UpdateCameraWhenTurning(mouseMove);

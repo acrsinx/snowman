@@ -23,7 +23,7 @@ public class CameraManager: object {
     public const float CameraZoomSpeed = 0.1f;
     public Shake cameraShake = new();
     private static Vector3 cameraVector = new(0.31f, 0, 1);
-    private const float minDistance = 0.7f;
+    private const float minDistance = -0.5f;
     private const float maxDistance = 2.0f;
     private float distance = 2.0f;
     public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
@@ -47,7 +47,22 @@ public class CameraManager: object {
     }
     private bool IsCameraTouching() {
         cameraCast.ForceShapecastUpdate();
-        return cameraCast.IsColliding();
+        if (!cameraCast.IsColliding()) {
+            return false;
+        }
+        if (!player.character.character.Visible) {
+            GodotObject obj = cameraCast.GetCollider(0);
+            if (obj is Node node) {
+                HaveCharacter haveCharacter = HaveCharacter.GetHaveCharacter(node);
+                if (haveCharacter == null) {
+                    return true;
+                }
+                if (haveCharacter.GetCharacter().isPlayer) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     /// <summary>
     /// 将相机位置与方向重置
@@ -125,7 +140,6 @@ public class CameraManager: object {
     /// 处理相机穿模
     /// </summary>
     public void DealWithCameraTouch() {
-        float record = distance;
         // 前移相机
         while (true) {
             distance -= 0.2f;
@@ -135,20 +149,6 @@ public class CameraManager: object {
             }
             if (!IsCameraTouching()) {
                 return;
-            }
-        }
-        distance = record;
-        SetCameraPosition();
-        // 后移相机
-        while (true) {
-            distance += 0.2f;
-            SetCameraPosition();
-            if (distance > maxDistance) {
-                player.ui.Log("相机穿模，后移失败");
-                break;
-            }
-            if (!IsCameraTouching()) {
-                break;
             }
         }
     }
