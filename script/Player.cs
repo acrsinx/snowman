@@ -213,11 +213,11 @@ public partial class Player: Node3D {
                 thisVelocity += new Vector3(0, jumpSpeed, 0);
             }
             if (front != 0 || right != 0) { // 移动时
-                direction = new Vector2(-right, front).AngleTo(new(1, 0));
+                direction = new Vector2(-right, front).AngleTo(new(0, -1));
                 cameraManager.UpdateCameraWhenMoving(fDelta);
             } else {
                 if (mouseMove.X != 0 && CanTurn) {
-                    direction = Tool.FloatTo(direction, MathF.PI * 0.5f - cameraManager.cameraMarker.Rotation.Y, fDelta * 10.0f);
+                    direction = Tool.FloatTo(direction, -cameraManager.cameraMarker.Rotation.Y, fDelta * 10.0f);
                 }
             }
             // 在地板上时有阻力

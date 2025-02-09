@@ -17,6 +17,10 @@ public class CameraManager: object {
     /// 相机标志的最大合适旋转角度
     /// </summary>
     public const float CameraMarkerRotationMaxX = 0.2f;
+    /// <summary>
+    /// 相机视角缩放速度
+    /// </summary>
+    public const float CameraZoomSpeed = 0.03f;
     public Shake cameraShake = new();
     private static Vector3 cameraVector = new(0.31f, 0, 1);
     public static readonly Vector3[] checkList = {
@@ -133,8 +137,8 @@ public class CameraManager: object {
         if (distance > maxDistance) {
             distance = maxDistance;
             SetCameraPosition();
-        } else if (distance < 0) {
-            distance = 1;
+        } else if (distance < minDistance) {
+            distance = minDistance;
             SetCameraPosition();
         }
         if (IsCameraTouching()) { // 相机穿模了
@@ -153,16 +157,16 @@ public class CameraManager: object {
         // 相机震动
         cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
         SetFov();
-        player.character.Visible = camera.Position.Z > 0.5f;
+        player.character.character.Visible = camera.Position.Z > 0.6f;
     }
     public void WheelUp() {
-        distance -= 0.2f;
+        distance -= CameraZoomSpeed;
         distance = MathF.Max(distance, minDistance);
         SetCameraPosition();
         SetFov();
     }
     public void WheelDown() {
-        distance += 0.2f;
+        distance += CameraZoomSpeed;
         distance = MathF.Min(distance, maxDistance);
         SetCameraPosition();
         SetFov();
