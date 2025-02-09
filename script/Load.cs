@@ -41,11 +41,9 @@ public partial class Load: Control {
                 break;
             }
             case 2: {
-                new Robot(ui.player).Position = new Vector3(7, 0, 7);
                 break;
             }
             case 3: {
-                new Robot(ui.player).Position = new Vector3(5, 0, 5);
                 break;
             }
             case 4: {

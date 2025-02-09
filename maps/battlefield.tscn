@@ -30,7 +30,7 @@ transform = Transform3D(5.99833, 6.38125, 0.938179, 0.585104, -0.0432273, -19.91
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 material_override = ExtResource("2_1ldno")
 use_collision = true
-size = Vector3(16, 1, 16)
+size = Vector3(32, 1, 32)
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(0.607542, 0, 0.794287, 0, 1, 0, -0.794287, 0, 0.607542, -6.21926, 1.55548, 0.936018)

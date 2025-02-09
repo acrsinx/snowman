@@ -82,6 +82,7 @@ public class CameraManager: object {
     /// 将相机位置与方向重置
     /// </summary>
     public void SetCameraPosition() {
+        cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
         camera.Position = cameraVector * distance;
         camera.Rotation = Vector3.Zero;
     }

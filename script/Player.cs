@@ -215,10 +215,7 @@ public partial class Player: Node3D {
             if (front != 0 || right != 0) { // 移动时
                 direction = new Vector2(-right, front).AngleTo(new(0, -1));
                 cameraManager.UpdateCameraWhenMoving(fDelta);
-            } else {
-                if (mouseMove.X != 0 && CanTurn) {
-                    direction = Tool.FloatTo(direction, -cameraManager.cameraMarker.Rotation.Y, fDelta * 10.0f);
-                }
+                character.character.Rotation = new Vector3(character.character.Rotation.X, Tool.FloatTo(character.character.Rotation.Y, direction, fDelta * 10.0f), character.character.Rotation.Z);
             }
             // 在地板上时有阻力
             thisVelocity *= 0.95f;
@@ -227,7 +224,6 @@ public partial class Player: Node3D {
             // 不在地板上时也有阻力，但阻力更小
             thisVelocity *= 0.99f;
         }
-        character.character.Rotation = new Vector3(character.character.Rotation.X, Tool.FloatTo(character.character.Rotation.Y, direction, fDelta * 10.0f), character.character.Rotation.Z);
         // 限速
         float lengthY = MathF.Abs(thisVelocity.Y);
         if (lengthY > 10.0f) {
