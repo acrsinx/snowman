@@ -1,3 +1,4 @@
+using System;
 using Godot;
 public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacter {
     public Node3D character;
@@ -65,7 +66,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         if (player.PlayerState == State.move) {
             // 刷新小地图标记
             mapFlag.Position = Map.GlobalPositionToMapPosition(player, character.GlobalPosition);
-            mapFlag.GlobalRotation = -character.GlobalRotation.Y;
+            mapFlag.GlobalRotation = -MathF.PI * 0.5f-character.GlobalRotation.Y;
         }
     }
     public void Attack() {
