@@ -50,16 +50,18 @@ public partial class Snowbear: GameCharacter {
                     state = State.StartAttack;
                     break;
                 }
-                Velocity = (target - GlobalPosition).Normalized() * speed;
+                // 转向并添加速度
+                Vector3 direction = (target - GlobalPosition).Normalized();
+                float directionAngle = new Vector2(direction.X, direction.Z).AngleTo(new Vector2(0, -1));
+                GlobalRotation = new Vector3(GlobalRotation.X, Tool.FloatTo(GlobalRotation.Y, directionAngle, fDelta * 10), GlobalRotation.Z);
+                Velocity = direction * speed;
                 break;
             }
             case State.StartAttack: {
                 if (!Attackable()) {
                     state = State.Idle;
                 }
-                player.ui.Log(GlobalPosition.DistanceTo(player.character.GlobalPosition).ToString());
                 if (GlobalPosition.DistanceTo(player.character.GlobalPosition) > 2) {
-                    player.ui.Log("--------------");
                     state = State.Idle;
                     break;
                 }
@@ -79,7 +81,6 @@ public partial class Snowbear: GameCharacter {
         // 重力
         Velocity += Player.gravity * fDelta;
         MoveAndSlide();
-        player.ui.Log(state.ToString());
     }
     public override int GetAttackWaitTime() {
         return 1000;
