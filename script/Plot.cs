@@ -35,6 +35,10 @@ public class Plot {
     /// <param name="instanceName">角色对象名字</param>
     /// <param name="position">角色位置</param>
     public static void LoadCharacter(string characterName, string instanceName, Vector3 position) {
+        if (InstanceName.ContainsKey(instanceName)) {
+            player.ui.Log("已存在角色：" + instanceName);
+            return;
+        }
         if (CharacterPath.ContainsKey(characterName)) {
             PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
             GameCharacter plotCharacter = new(character, player, false) {

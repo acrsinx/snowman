@@ -22,6 +22,7 @@ SetCameraPosition()
 ```
 ```
 LoadCharacter(snowbear, bear, (5, 1, 6));
+LoadCharacter(snowbear, bear1, (3, 1, 4));
 Exit(0)
 ```
 ## 战斗结束
