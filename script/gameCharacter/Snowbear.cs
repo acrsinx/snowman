@@ -53,8 +53,8 @@ public partial class Snowbear: GameCharacter {
                 // 转向并添加速度
                 Vector3 direction = (target - GlobalPosition).Normalized();
                 float directionAngle = new Vector2(direction.X, direction.Z).AngleTo(new Vector2(0, -1));
-                GlobalRotation = new Vector3(GlobalRotation.X, Tool.FloatTo(GlobalRotation.Y, directionAngle, fDelta * 10), GlobalRotation.Z);
-                Velocity = direction * speed;
+                GlobalRotation = new Vector3(GlobalRotation.X, Tool.FloatToAngle(GlobalRotation.Y, directionAngle, fDelta * 10), GlobalRotation.Z);
+                Velocity = Tool.Vector3To(Velocity, direction * speed, fDelta * 10);
                 break;
             }
             case State.StartAttack: {

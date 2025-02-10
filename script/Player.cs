@@ -204,7 +204,7 @@ public partial class Player: Node3D {
             if (front != 0 || right != 0) { // 移动时
                 direction = new Vector2(-right, front).AngleTo(new(0, -1));
                 cameraManager.UpdateCameraWhenMoving();
-                character.character.Rotation = new Vector3(character.character.Rotation.X, Tool.FloatTo(character.character.Rotation.Y, direction, fDelta * 10.0f), character.character.Rotation.Z);
+                character.character.Rotation = new Vector3(character.character.Rotation.X, Tool.FloatToAngle(character.character.Rotation.Y, direction, fDelta * 10.0f), character.character.Rotation.Z);
             }
             // 在地板上时有阻力
             character.Velocity *= 0.95f;

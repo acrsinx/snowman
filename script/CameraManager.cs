@@ -80,10 +80,10 @@ public class CameraManager: object {
         WheelDown();
         // 回正相机角度
         if (cameraMarker.Rotation.X > CameraMarkerRotationMaxX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatTo(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
         if (cameraMarker.Rotation.X < CameraMarkerRotationMinX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatTo(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
     }
     /// <summary>

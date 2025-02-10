@@ -26,7 +26,7 @@ public class Tool: object {
     /// <param name="to">到</param>
     /// <param name="speed">速度（选填）</param>
     /// <returns>新的值</returns>
-    public static float FloatTo(float from, float to, float speed = 0.1f) {
+    public static float FloatToAngle(float from, float to, float speed = 0.1f) {
         float PI2 = 2.0f * MathF.PI;
         float newTo = to - MathF.Floor(to / PI2) * PI2;
         newTo += MathF.Floor(from / PI2) * PI2;
@@ -41,6 +41,30 @@ public class Tool: object {
         } else {
             return MathF.Max(from - speed, newTo);
         }
+    }
+    /// <summary>
+    /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from
+    /// </summary>
+    /// <param name="from">从</param>
+    /// <param name="to">到</param>
+    /// <param name="speed">速度（选填）</param>
+    /// <returns>新的值</returns>
+    public static float FloatTo(float from, float to, float speed = 0.1f) {
+        if (to > from) {
+            return MathF.Min(from + speed, to);
+        } else {
+            return MathF.Max(from - speed, to);
+        }
+    }
+    /// <summary>
+    /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from
+    /// </summary>
+    /// <param name="from">从</param>
+    /// <param name="to">到</param>
+    /// <param name="speed">速度（选填）</param>
+    /// <returns>新的向量</returns>
+    public static Vector3 Vector3To(Vector3 from, Vector3 to, float speed = 0.1f) {
+        return new Vector3(FloatTo(from.X, to.X, speed), FloatTo(from.Y, to.Y, speed), FloatTo(from.Z, to.Z, speed));
     }
     /// <summary>
     /// 位置是否在指定范围内
