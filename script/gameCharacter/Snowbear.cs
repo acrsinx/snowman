@@ -72,8 +72,10 @@ public partial class Snowbear: GameCharacter {
             }
             case State.Attacking: {
                 if (Attackable()) { // 可以再次攻击，即攻击缓冲时间结束
+                    player.character.BeAttack((int)(20.0f / GlobalPosition.DistanceTo(player.character.GlobalPosition)), DamageType.sound, isEnemy);
                     ((PlotCharacter) this).PauseAnimation();
                     state = State.Idle;
+                    break;
                 }
                 break;
             }
@@ -83,7 +85,7 @@ public partial class Snowbear: GameCharacter {
         MoveAndSlide();
     }
     public override int GetAttackWaitTime() {
-        return 1000;
+        return 500;
     }
     public override void CharacterAttack() {
         base.CharacterAttack();
