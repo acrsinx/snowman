@@ -1,19 +1,92 @@
-using Godot;
 using System;
-public partial class Camera: CharacterBody3D, HaveCharacter {
+using Godot;
+/// <summary>
+/// 玩家
+/// </summary>
+public partial class Player: Node3D {
     /// <summary>
-    /// 相机标志的原位置
+    /// 用户界面管理器
     /// </summary>
-    public static readonly Vector3 CameraMarkerOrigin = new(0, 1.3f, 0);
+    public Ui ui;
+    /// <summary>
+    /// 相机管理器
+    /// </summary>
+    public CameraManager cameraManager;
+    /// <summary>
+    /// 屏幕着色器
+    /// </summary>
+    public MeshInstance3D screenShader;
+    /// <summary>
+    /// 玩家角色
+    /// </summary>
+    public GameCharacter character;
+    /// <summary>
+    /// 玩家欲移动方向
+    /// </summary>
+    public float front, right;
+    /// <summary>
+    /// 是否处于慢状态
+    /// </summary>
+    public bool isSlow = false;
+    /// <summary>
+    /// 移动速度（慢）
+    /// </summary>
+    public static readonly float moveSpeed = 0.2f;
+    /// <summary>
+    /// 移动速度（正常）
+    /// </summary>
+    public static readonly float runSpeed = 0.6f;
+    /// <summary>
+    /// 重力加速度 
+    /// </summary>
+    public static readonly Vector3 gravity = new(0, -30f, 0);
+    /// <summary>
+    /// 玩家移动方向（弧度制）
+    /// </summary>
     private float direction = 0.0f;
     /// <summary>
-    /// 玩家瞬时速度
+    /// 鼠标位移
     /// </summary>
-    public Vector3 thisVelocity = Vector3.Zero;
+    public Vector2 mouseMove;
+    /// <summary>
+    /// 鼠标移动最大距离
+    /// </summary>
+    public static readonly float maxMouseMove = 0.06f;
+    /// <summary>
+    /// 移动时的触摸屏索引
+    /// </summary>
+    public int moveIndex = -1;
+    /// <summary>
+    /// 旋转视角时的触摸屏索引
+    /// </summary>
+    public int rotateIndex = -1;
+    /// <summary>
+    /// 鼠标速度
+    /// </summary>
+    public static readonly float mouseSpeed = 0.003f;
+    private bool canTurn = false;
+    /// <summary>
+    /// 鼠标是否被隐藏，可以操控角色视角
+    /// </summary>
+    public bool CanTurn {
+        set {
+            if (ui.uiType == UiType.computer) {
+                if (value) { // 设置成可控制视角时，隐藏鼠标
+                    Input.MouseMode = Input.MouseModeEnum.Captured;
+                } else { // 设置成不可控制视角时，显示鼠标
+                    Input.MouseMode = Input.MouseModeEnum.Visible;
+                }
+            }
+            canTurn = value;
+        }
+        get {
+            return canTurn;
+        }
+    }
+    private State playerState = State.load;
     /// <summary>
     /// 玩家状态
     /// </summary>
-    private State playerState = State.load;
     public State PlayerState {
         set {
             switch (value) {
@@ -60,36 +133,9 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
             return playerState;
         }
     }
-    public Panel ControlPanel;
     /// <summary>
-    /// 移动时的触摸屏索引
+    /// 是否要跳
     /// </summary>
-    public int moveIndex = -1;
-    /// <summary>
-    /// 旋转视角时的触摸屏索引
-    /// </summary>
-    public int rotateIndex = -1;
-    public float front, right;
-    /// <summary>
-    /// 鼠标是否被隐藏，可以操控角色视角
-    /// </summary>
-    private bool canTurn = false;
-    public bool CanTurn {
-        set {
-            if (ui.uiType == UiType.computer) {
-                if (value) { // 设置成可控制视角时，隐藏鼠标
-                    Input.MouseMode = Input.MouseModeEnum.Captured;
-                } else { // 设置成不可控制视角时，显示鼠标
-                    Input.MouseMode = Input.MouseModeEnum.Visible;
-                }
-            }
-            canTurn = value;
-        }
-        get {
-            return canTurn;
-        }
-    }
-    public Vector2 mouseMove;
     public bool jump = false;
     /// <summary>
     /// 跳跃键上次被按下的时间
@@ -99,26 +145,21 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
     /// 跳跃延迟
     /// </summary>
     public const long jumpDelay = 100;
-    public bool isSlow = false;
-    public Shake cameraShake = new();
-    [Export] public Marker3D cameraMarker;
-    [Export] public MeshInstance3D screenShader;
-    [Export] public CollisionShape3D player;
-    public GameCharacter playerCharacter;
-    public CameraManager cameraManager;
-    [Export] public PackedScene snowball;
-    public static readonly Vector3 gravity = new(0, -30f, 0);
+    /// <summary>
+    /// 跳跃速度
+    /// </summary>
     public static readonly float jumpSpeed = 10.0f;
-    public static readonly float mouseSpeed = 0.003f;
-    public static readonly float moveSpeed = 0.2f;
-    public static readonly float runSpeed = 0.6f;
-    public static readonly float maxMouseMove = 0.1f;
-    [Export] public Ui ui;
-    [Export] public AudioStreamPlayer backgroundMusic;
     public override void _Ready() {
+        // 设置用户界面管理器
+        ui = GetTree().Root.GetNode<Ui>("Node/ui");
+        ui.player = this;
         ui.Log("_Ready");
-        Camera3D c = GetChild<Node3D>(1).GetChild<Camera3D>(0);
-        cameraManager = new(c, c.GetChild<RayCast3D>(1));
+        // 设置相机管理器
+        Marker3D m = GetChild<Marker3D>(0);
+        Camera3D c = m.GetChild<Camera3D>(0);
+        MeshInstance3D m3d = c.GetChild<MeshInstance3D>(0);
+        cameraManager = new(c, c.GetChild<ShapeCast3D>(1), this, m);
+        screenShader = m3d;
     }
     public override void _PhysicsProcess(double delta) {
         if (PlayerState != State.move) {
@@ -129,33 +170,13 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
             CanTurn = false;
         }
         // 鼠标限速
-        if (mouseMove.X > maxMouseMove) {
-            mouseMove.X = maxMouseMove;
-        } else if (mouseMove.X < -maxMouseMove) {
-            mouseMove.X = -maxMouseMove;
-        }
-        if (mouseMove.Y > maxMouseMove) {
-            mouseMove.Y = maxMouseMove;
-        } else if (mouseMove.Y < -maxMouseMove) {
-            mouseMove.Y = -maxMouseMove;
+        if (mouseMove.Length() > maxMouseMove) {
+            mouseMove = mouseMove.Normalized() * maxMouseMove;
         }
         if (PlayerState is State.move && CanTurn) {
-            // 处理cameraMarker.Rotation
-            cameraMarker.Rotation = new Vector3(cameraMarker.Rotation.X + mouseMove.Y, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-            // 处理this.Rotation
-            Rotation = new Vector3(Rotation.X, Rotation.Y + mouseMove.X, Rotation.Z);
-            // 限制视角
-            if (-1.2f > cameraMarker.Rotation.X) {
-                cameraMarker.Rotation = new Vector3(-1.2f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-            } else if (0.5f < cameraMarker.Rotation.X) {
-                cameraMarker.Rotation = new Vector3(0.5f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-            }
-            if (ui.uiType == UiType.computer) {
-                // 鼠标归中
-                Input.WarpMouse(0.5f * GetViewport().GetVisibleRect().Size);
-            }
+            cameraManager.UpdateCameraWhenTurning(mouseMove);
         }
-        if (IsOnFloor() && PlayerState == State.move) {
+        if (character.IsOnFloor() && PlayerState == State.move) {
             if (ui.uiType == UiType.computer) {
                 front = Input.GetAxis("up", "down");
                 right = Input.GetAxis("right", "left");
@@ -173,60 +194,51 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
                 front = 0;
                 right = 0;
             }
-            float sin = MathF.Sin(cameraMarker.GlobalRotation.Y);
-            float cos = MathF.Cos(cameraMarker.GlobalRotation.Y);
-            thisVelocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
+            float sin = MathF.Sin(cameraManager.cameraMarker.GlobalRotation.Y);
+            float cos = MathF.Cos(cameraManager.cameraMarker.GlobalRotation.Y);
+            character.Velocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
             // 在跳跃缓冲时间内可以跳跃
             if (lastJumpTime + jumpDelay > ui.totalGameTime) {
-                thisVelocity += new Vector3(0, jumpSpeed, 0);
+                character.Velocity += new Vector3(0, jumpSpeed, 0);
             }
-            if (front != 0 || right != 0) {
+            if (front != 0 || right != 0) { // 移动时
                 direction = new Vector2(-right, front).AngleTo(new(0, -1));
-            } else {
-                if (mouseMove.X != 0 && CanTurn) {
-                    direction = FloatTo1(direction, mouseMove.X, fDelta * 10.0f);
-                }
+                cameraManager.UpdateCameraWhenMoving();
+                character.character.Rotation = new Vector3(character.character.Rotation.X, Tool.FloatToAngle(character.character.Rotation.Y, direction, fDelta * 10.0f), character.character.Rotation.Z);
             }
             // 在地板上时有阻力
-            thisVelocity *= 0.95f;
+            character.Velocity *= 0.95f;
         } else {
-            thisVelocity += gravity * fDelta;
+            character.Velocity += gravity * fDelta;
             // 不在地板上时也有阻力，但阻力更小
-            thisVelocity *= 0.99f;
+            character.Velocity *= 0.99f;
         }
-        player.Rotation = new Vector3(player.Rotation.X, FloatTo1(player.Rotation.Y, direction, fDelta * 10.0f), player.Rotation.Z);
         // 限速
-        float lengthY = MathF.Abs(thisVelocity.Y);
+        float lengthY = MathF.Abs(character.Velocity.Y);
         if (lengthY > 10.0f) {
-            thisVelocity.Y *= 10.0f / lengthY;
+            character.Velocity = new Vector3(character.Velocity.X, character.Velocity.Y * 10.0f / lengthY, character.Velocity.Z);
         }
-        float lengthXZ = new Vector2(thisVelocity.X, thisVelocity.Z).Length();
+        float lengthXZ = new Vector2(character.Velocity.X, character.Velocity.Z).Length();
         float maxSpeed = isSlow?1.0f:3.0f;
         if (lengthXZ > maxSpeed) {
             float factor = maxSpeed / lengthXZ;
-            thisVelocity.X *= factor;
-            thisVelocity.Z *= factor;
+            character.Velocity = new Vector3(character.Velocity.X * factor, character.Velocity.Y, character.Velocity.Z * factor);
         }
-        Velocity = thisVelocity;
         // 移动
-        MoveAndSlide();
+        character.MoveAndSlide();
         if (playerState == State.move) {
-            cameraManager.UpdateCamera(fDelta, player);
+            cameraManager.UpdateCamera();
         }
-        cameraMarker.Position = cameraShake.GetShakeOffset(ui.totalGameTime) + CameraMarkerOrigin;
         mouseMove = Vector2.Zero;
         jump = false;
         isSlow = false;
-        if (!backgroundMusic.Playing) {
-            backgroundMusic.Playing = true;
-        }
     }
     public override void _Input(InputEvent @event) {
         if (@event is InputEventScreenDrag drag) {
             if (ui.uiType == UiType.phone) {
                 if (drag.Index == moveIndex) { // 移动
                     // 此处不用规格化，在移动时会规格化
-                    Vector2 moveVector = drag.Position - ControlPanel.GetGlobalRect().Position - ControlPanel.GetGlobalRect().Size / 2;
+                    Vector2 moveVector = drag.Position - ui.ControlPanel.GetGlobalRect().Position - ui.ControlPanel.GetGlobalRect().Size * 0.5f;
                     right = -moveVector.X;
                     front = moveVector.Y;
                     return;
@@ -237,16 +249,16 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
                     return;
                 }
                 // 首次滑动时，判断滑动索引
-                if (IsInArea(ui.phoneJump, drag.Position)) {
+                if (Tool.IsInArea(ui.phoneJump, drag.Position)) {
                     return;
                 }
-                if (IsInArea(ui.phoneAttack, drag.Position)) {
+                if (Tool.IsInArea(ui.phoneAttack, drag.Position)) {
                     return;
                 }
-                if (IsInArea(ui.phoneSlow, drag.Position)) {
+                if (Tool.IsInArea(ui.phoneSlow, drag.Position)) {
                     return;
                 }
-                if (IsInArea(ControlPanel, drag.Position)) {
+                if (Tool.IsInArea(ui.ControlPanel, drag.Position)) {
                     moveIndex = drag.Index;
                     return;
                 }
@@ -281,7 +293,7 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
                         switch (button.ButtonIndex) {
                             case MouseButton.Left: {
                                 if (CanTurn) { // 玩家可控制视角时，攻击
-                                    playerCharacter.Attack();
+                                    character.Attack();
                                     return;
                                 }
                                 // 玩家不可控制视角时，进入可控制视角的状态
@@ -324,60 +336,13 @@ public partial class Camera: CharacterBody3D, HaveCharacter {
             }
         }
     }
-    public GameCharacter GetCharacter() {
-        return playerCharacter;
-    }
+    /// <summary>
+    /// 跳
+    /// </summary>
     public void Jump() {
         if (PlayerState is State.move) {
             lastJumpTime = ui.totalGameTime;
             jump = true;
         }
-    }
-    public void Shake() {
-        cameraShake.StartShake(ui.totalGameTime, 200);
-    }
-    /// <summary>
-    /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from，from和to都是弧度
-    /// </summary>
-    /// <param name="from">从</param>
-    /// <param name="to">到</param>
-    /// <param name="speed">速度（选填）</param>
-    /// <returns>新的值</returns>
-    public static float FloatTo1(float from, float to, float speed = 0.1f) {
-        float PI2 = 2.0f * MathF.PI;
-        float newTo = to - Mathf.Floor(to / PI2) * PI2;
-        newTo += Mathf.Floor(from / PI2) * PI2;
-        if (MathF.Abs(newTo + PI2 - from) < MathF.Abs(newTo - from)) {
-            newTo += PI2;
-        }
-        if (MathF.Abs(newTo - PI2 - from) < MathF.Abs(newTo - from)) {
-            newTo -= PI2;
-        }
-        if (newTo > from) {
-            return MathF.Min(from + speed, newTo);
-        } else {
-            return MathF.Max(from - speed, newTo);
-        }
-    }
-    /// <summary>
-    /// 位置是否在指定范围内
-    /// </summary>
-    /// <param name="area">范围</param>
-    /// <param name="position">位置</param>
-    /// <returns>是否在</returns>
-    public static bool IsInArea(Control area, Vector2 position) {
-        return area.GetGlobalRect().HasPoint(position);
-    }
-    /// <summary>
-    /// 位置是否在指定范围内，不能处理旋转，缩放不均匀等情况
-    /// </summary>
-    /// <param name="area">范围</param>
-    /// <param name="position">位置</param>
-    /// <returns>是否在</returns>
-    public static bool IsInArea(TouchScreenButton area, Vector2 position) {
-        CircleShape2D shape = area.Shape as CircleShape2D;
-        float Scale = area.Scale.X;
-        float radius = shape.Radius * Scale;
-        return position.DistanceTo(area.GlobalPosition + 0.5f * Scale * area.TextureNormal.GetSize()) < radius;
     }
 }

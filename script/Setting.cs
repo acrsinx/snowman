@@ -3,6 +3,10 @@ using Godot.Collections;
 public partial class Setting: Control {
     public Ui ui;
     public OptionButton uiType;
+    /// <summary>
+    /// 开启垂直同步
+    /// </summary>
+    public CheckButton vsync;
     public OptionButton maxFps;
     /// <summary>
     /// 声音
@@ -16,20 +20,28 @@ public partial class Setting: Control {
     /// 文本转语音的ID
     /// </summary>
     public string ttsId = "";
-    public CheckButton useScreenShader;
     public CheckButton shadow;
+    public CheckButton develop;
+    public CheckButton useScreenShader;
     private Light3D light;
     public CheckButton showInfo;
+    /// <summary>
+    /// 窗口模式
+    /// </summary>
+    public CheckButton window;
     public SpinBox LOD;
     public Button exit;
     public void Init() {
         // 获取组件
         uiType = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/uiType");
+        vsync = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/vsync");
         maxFps = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/maxFps");
         tts = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/tts");
-        useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
         shadow = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/shadow");
+        develop = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/develop");
+        useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
         showInfo = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/showInfo");
+        window = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/window");
         exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
         LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
         // 设置初始值
@@ -41,8 +53,8 @@ public partial class Setting: Control {
             ui.Log(voices[i].ToString());
             tts.AddItem(voices[i]["name"].ToString());
         }
-        useScreenShader.ButtonPressed = ui.playerCamera.screenShader.Visible;
-        light = ui.playerCamera.GetTree().Root.GetChild<Node>(0).GetChild<Node>(0).GetChild<Light3D>(0);
+        useScreenShader.ButtonPressed = ui.player.screenShader.Visible;
+        light = ui.GetTree().Root.GetNode<Light3D>("Node/sunLight");
         if (light is null) {
             ui.Log("找不到灯光。");
         }
@@ -53,20 +65,29 @@ public partial class Setting: Control {
         uiType.ItemSelected += (index) => {
             SetUiType(index);
         };
+        vsync.Pressed += () => {
+            SetVsync();
+        };
         maxFps.ItemSelected += (index) => {
-            SetMaxFps(index);
+            SetMaxFps();
         };
         tts.ItemSelected += (index) => {
             SetTtsId(index);
         };
-        useScreenShader.Pressed += () => {
-            SetUseScreenShader();
-        };
         shadow.Pressed += () => {
             SetShadow();
         };
+        develop.Pressed += () => {
+            SetDevelop();
+        };
+        useScreenShader.Pressed += () => {
+            SetUseScreenShader();
+        };
         showInfo.Pressed += () => {
             SetShowInfo();
+        };
+        window.Pressed += () => {
+            SetWindow();
         };
         LOD.ValueChanged += (value) => {
             SetLOD(value);
@@ -77,8 +98,18 @@ public partial class Setting: Control {
     }
     public void SetUiType(long index) {
         ui.uiType = (UiType) index;
+        SetWindowVisible();
     }
-    public void SetMaxFps(long index) {
+    public void SetVsync() {
+        bool enabled = vsync.ButtonPressed;
+        DisplayServer.VSyncMode mode = enabled?DisplayServer.VSyncMode.Enabled:DisplayServer.VSyncMode.Disabled;
+        if (mode == DisplayServer.WindowGetVsyncMode()) {
+            return;
+        }
+        DisplayServer.WindowSetVsyncMode(mode);
+        maxFps.Visible = !enabled;
+    }
+    public void SetMaxFps() {
         Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
     }
     public void SetTtsId(long index) {
@@ -88,14 +119,31 @@ public partial class Setting: Control {
         }
         ttsId = voices[((int) index) - 1]["id"].ToString();
     }
-    public void SetUseScreenShader() {
-        ui.playerCamera.screenShader.Visible = useScreenShader.ButtonPressed;
-    }
     public void SetShadow() {
         light.ShadowEnabled = shadow.ButtonPressed;
     }
+    public void SetDevelop() {
+        bool dev = develop.ButtonPressed;
+        useScreenShader.Visible = dev;
+        showInfo.Visible = dev;
+        LOD.Visible = dev;
+        SetWindowVisible();
+    }
+    public void SetUseScreenShader() {
+        ui.player.screenShader.Visible = useScreenShader.ButtonPressed;
+    }
     public void SetShowInfo() {
         ui.infomation.Visible = showInfo.ButtonPressed;
+    }
+    public void SetWindow() {
+        DisplayServer.WindowMode mode = window.ButtonPressed?DisplayServer.WindowMode.Maximized:DisplayServer.WindowMode.ExclusiveFullscreen;
+        if (DisplayServer.WindowGetMode() == mode) {
+            return;
+        }
+        DisplayServer.WindowSetMode(mode);
+    }
+    public void SetWindowVisible() {
+        window.Visible = ui.uiType == UiType.computer && develop.ButtonPressed;
     }
     public void SetLOD(double value) {
         ui.GetTree().Root.MeshLodThreshold = (float) value;
