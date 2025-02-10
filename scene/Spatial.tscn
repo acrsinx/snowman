@@ -13,8 +13,6 @@ size = Vector2(20, 20)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4t0to"]
 render_priority = 0
 shader = ExtResource("3_sh47m")
-shader_parameter/range = 2.0
-shader_parameter/threshold = 0.9
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iwtqv"]
 radius = 0.3
