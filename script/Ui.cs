@@ -3,7 +3,7 @@ using Godot;
 using Godot.Collections;
 public partial class Ui: Control {
     public const string savePath = "user://save.json";
-    [Export] public Camera playerCamera;
+    public Player player;
     public GameInformation gameInformation;
     public UiType uiType;
     public Label infomation;
@@ -119,7 +119,6 @@ public partial class Ui: Control {
                 }
             }
         };
-        playerCamera.ControlPanel = ControlPanel;
         settingPanel.ui = this;
         packagePanel.ui = this;
         loadPanel.ui = this;
@@ -127,19 +126,19 @@ public partial class Ui: Control {
         packagePanel.Init();
         loadPanel.Init();
         ClearChoose();
-        // 设置为加载态，前面的ClearCaption();会把playerCamera.PlayerState设为State.move
-        playerCamera.PlayerState = State.load;
+        // 设置为加载态，前面的ClearCaption();会把player.PlayerState设为State.move
+        player.PlayerState = State.load;
     }
     public override void _Process(double delta) {
         if (settingPanel.showInfo.ButtonPressed) {
-            infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + "\nposition: (" + MathF.Round(playerCamera.player.GlobalPosition.X) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Y) + ", " + MathF.Round(playerCamera.player.GlobalPosition.Z) + ")" + ", state: " + playerCamera.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + playerCamera.playerCharacter?.health + "\n用户数据目录: " + OS.GetUserDataDir();
-            if (playerCamera.PlayerState == State.caption) {
+            infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            if (player.PlayerState == State.caption) {
                 infomation.Text += "\n剧情位置: " + Plot.paths[0] + ":" + captionIndex.ToString();
             }
         }
         // 计时器累加
         totalGameTime += (long)(delta * 1e3);
-        if (playerCamera.PlayerState == State.caption) {
+        if (player.PlayerState == State.caption) {
             if (totalGameTime - captionStartTime <= captionTime) {
                 captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
                 return;
@@ -147,9 +146,9 @@ public partial class Ui: Control {
             // 计时器结束，显示全部字符
             captionLabel.VisibleCharacters = -1;
         }
-        if (playerCamera.PlayerState == State.move) {
+        if (player.PlayerState == State.move) {
             // 更新小地图
-            map.Position = Map.GlobalPositionToMapPosition(playerCamera, Vector3.Zero);
+            map.Position = Map.GlobalPositionToMapPosition(player, Vector3.Zero);
             map.Scale = new Vector2(1.0f, 1.0f);
         }
     }
@@ -174,14 +173,14 @@ public partial class Ui: Control {
             if (@event.IsReleased()) {
                 return;
             }
-            playerCamera.Jump();
+            player.Jump();
             return;
         }
         if (@event.IsAction("attack")) {
             if (@event.IsReleased()) {
                 return;
             }
-            playerCamera.playerCharacter.Attack();
+            player.character.Attack();
             return;
         }
     }
@@ -197,7 +196,7 @@ public partial class Ui: Control {
     /// 跳过对话或开始选择
     /// </summary>
     public void NextCaption() {
-        if (playerCamera.PlayerState != State.caption) {
+        if (player.PlayerState != State.caption) {
             return;
         }
         DisplayServer.TtsStop();
@@ -214,7 +213,7 @@ public partial class Ui: Control {
         }
     }
     public void Choose(int index) {
-        if (playerCamera.PlayerState != State.caption) { // 如果不在对话态，提前返回
+        if (player.PlayerState != State.caption) { // 如果不在对话态，提前返回
             return;
         }
         if (captions[captionIndex].canChoose && chooseButtons[0].Visible && index < captions[captionIndex].choose.Length && index >= 0) { // 可选
@@ -225,7 +224,7 @@ public partial class Ui: Control {
         }
     }
     public void ShowCaption(Dictionary dict) {
-        if (playerCamera.PlayerState != State.caption) {
+        if (player.PlayerState != State.caption) {
             int i = 0;
             captions = new CaptionResource[dict.Count];
             while (dict.ContainsKey(i.ToString())) {
@@ -248,7 +247,7 @@ public partial class Ui: Control {
         }
     }
     private void SetCaption(string speakerName, string caption, int time) {
-        playerCamera.PlayerState = State.caption;
+        player.PlayerState = State.caption;
         captionStartTime = totalGameTime;
         speakerLabel.Text = speakerName;
         captionLabel.Text = caption;
@@ -263,20 +262,20 @@ public partial class Ui: Control {
         for (int i = 0; i < 3; i++) {
             chooseButtons[i].Visible = false;
         }
-        playerCamera.PlayerState = State.move;
+        player.PlayerState = State.move;
     }
     public void Setting() {
-        if (playerCamera.PlayerState != State.setting) {
-            playerCamera.PlayerState = State.setting;
-        } else if (playerCamera.PlayerState == State.setting) {
-            playerCamera.PlayerState = State.move;
+        if (player.PlayerState != State.setting) {
+            player.PlayerState = State.setting;
+        } else if (player.PlayerState == State.setting) {
+            player.PlayerState = State.move;
         }
     }
     public void Package() {
-        if (playerCamera.PlayerState != State.package) {
-            playerCamera.PlayerState = State.package;
-        } else if (playerCamera.PlayerState == State.package) {
-            playerCamera.PlayerState = State.move;
+        if (player.PlayerState != State.package) {
+            player.PlayerState = State.package;
+        } else if (player.PlayerState == State.package) {
+            player.PlayerState = State.move;
         }
     }
     public void Exit() {

@@ -28,7 +28,7 @@ public partial class Load: Control {
     private void Do() {
         switch (progress) {
             case 0: {
-                Plot.camera = ui.playerCamera;
+                Plot.player = ui.player;
                 map = GetTree().Root.GetNode<SubViewport>("Node/map");
                 map.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
                 map.GetChild<Camera3D>(0).Size = Map.mapSizes[0];
@@ -37,15 +37,13 @@ public partial class Load: Control {
                 break;
             }
             case 1: {
-                ui.playerCamera.playerCharacter = new Snowman(ui.playerCamera.player, ui.playerCamera);
+                ui.player.character = new Snowman(ui.player);
                 break;
             }
             case 2: {
-                new Robot(ui.playerCamera).Position = new Vector3(7, 0, 7);
                 break;
             }
             case 3: {
-                new Robot(ui.playerCamera).Position = new Vector3(5, 0, 5);
                 break;
             }
             case 4: {
@@ -54,7 +52,7 @@ public partial class Load: Control {
                 break;
             }
             case 5: {
-                ui.playerCamera.PlayerState = State.move;
+                ui.player.PlayerState = State.move;
                 Plot.Check(ui);
                 Visible = false;
                 ui.map.Texture = ImageTexture.CreateFromImage(Image.LoadFromFile("user://map.png"));

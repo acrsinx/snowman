@@ -1,61 +1,69 @@
-[gd_scene load_steps=4 format=3 uid="uid://bdvrhrrde3p0i"]
+[gd_scene load_steps=5 format=3 uid="uid://bdvrhrrde3p0i"]
 
 [ext_resource type="PackedScene" uid="uid://b8areypbptv4c" path="res://model/stone.gltf" id="1_8alg1"]
 [ext_resource type="Material" uid="uid://bv5ihviqqcmnl" path="res://material/snow.tres" id="2_1ldno"]
 [ext_resource type="Material" uid="uid://bq1g05akax757" path="res://material/stone.tres" id="2_qdvvq"]
 
+[sub_resource type="NavigationMesh" id="NavigationMesh_pde2o"]
+vertices = PackedVector3Array(-1.89117, 0.379036, -4.79843, -0.141174, 0.379036, -6.04843, -0.141174, 0.379036, -7.04843, -7.14117, 0.379036, -7.04843, -7.14117, 0.379036, -1.29843, -5.39117, 0.379036, -0.298431, -1.89117, 0.379036, -4.79843, -7.14117, 0.379036, -7.04843, -0.141174, 0.379036, -7.04843, -0.141174, 0.379036, -6.04843, 0.608826, 0.379036, -5.54843, 7.10883, 0.379036, -7.04843, -2.39117, 0.379036, 5.45157, -7.14117, 0.379036, 1.95157, -7.14117, 0.379036, 6.95157, -0.641174, 0.379036, 3.70157, -0.891174, 0.379036, 4.95157, 7.10883, 0.379036, 6.95157, 7.10883, 0.379036, -7.04843, 0.608826, 0.379036, -5.54843, 0.608826, 0.379036, -4.29843, 0.608826, 0.379036, -4.29843, -4.14117, 0.379036, 0.951569, -0.641174, 0.379036, 3.70157, 7.10883, 0.379036, 6.95157, 7.10883, 0.379036, -7.04843, -2.39117, 0.379036, 5.45157, -7.14117, 0.379036, 6.95157, 7.10883, 0.379036, 6.95157, -0.891174, 0.379036, 4.95157, -2.39117, 0.379036, 5.45157, 7.10883, 0.379036, 6.95157)
+polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(2, 0, 3), PackedInt32Array(5, 4, 6), PackedInt32Array(6, 4, 7), PackedInt32Array(9, 8, 10), PackedInt32Array(10, 8, 11), PackedInt32Array(14, 13, 12), PackedInt32Array(17, 16, 15), PackedInt32Array(20, 19, 18), PackedInt32Array(22, 21, 23), PackedInt32Array(23, 21, 25), PackedInt32Array(23, 25, 24), PackedInt32Array(28, 27, 26), PackedInt32Array(31, 30, 29)]
+region_min_size = 32.0
+
 [node name="battlefield" type="Node3D"]
 
-[node name="stone" parent="." instance=ExtResource("1_8alg1")]
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_pde2o")
+
+[node name="stone" parent="NavigationRegion3D" instance=ExtResource("1_8alg1")]
 transform = Transform3D(0.328877, 0, 0, 0, 0.328877, 0, 0, 0, 0.328877, 0.036068, 0, 0.721368)
 
-[node name="stone2" parent="." instance=ExtResource("1_8alg1")]
+[node name="stone2" parent="NavigationRegion3D" instance=ExtResource("1_8alg1")]
 transform = Transform3D(0.213923, -0.11396, 0, 0.11396, 0.213923, 0, 0, 0, 0.242384, 1.07003, 0, -0.929733)
 
-[node name="stone3" parent="." instance=ExtResource("1_8alg1")]
+[node name="stone3" parent="NavigationRegion3D" instance=ExtResource("1_8alg1")]
 transform = Transform3D(0.225224, 0.0895774, 1.06164e-08, 0.0295092, -0.0741949, 0.228854, 0.0845773, -0.212652, -0.0798478, -1.47411, 0, -0.540741)
 
-[node name="stone4" parent="." instance=ExtResource("1_8alg1")]
+[node name="stone4" parent="NavigationRegion3D" instance=ExtResource("1_8alg1")]
 transform = Transform3D(5.99833, 6.38125, 0.938179, 0.585104, -0.0432273, -19.9138, -5.80102, 6.59394, -1.03847, 20.3341, 5.68904, 25.3668)
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 material_override = ExtResource("2_1ldno")
 use_collision = true
-size = Vector3(16, 1, 16)
+size = Vector3(32, 1, 32)
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+[node name="CSGBox3D2" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(0.607542, 0, 0.794287, 0, 1, 0, -0.794287, 0, 0.607542, -6.21926, 1.55548, 0.936018)
 material_override = ExtResource("2_qdvvq")
 use_collision = true
-size = Vector3(1, 4.11096, 11.6284)
+size = Vector3(0.1, 4.111, 11.628)
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="."]
+[node name="CSGBox3D3" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(-0.760769, 0, 0.649023, 0, 1, 0, -0.649023, 0, -0.760769, -2.87929, 2.53403, -1.88612)
 material_override = ExtResource("2_qdvvq")
 use_collision = true
-size = Vector3(0.519653, 6.06805, 8.55298)
+size = Vector3(0.1, 6.068, 8.553)
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="."]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.0439782, 1.29064, 7.76669)
+[node name="CSGBox3D4" type="CSGBox3D" parent="NavigationRegion3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.0439782, 1.09439, 7.76669)
 material_override = ExtResource("2_qdvvq")
 use_collision = true
-size = Vector3(0.519653, 3.33078, 16.1344)
+size = Vector3(0.1, 3.331, 16.134)
 
-[node name="CSGBox3D5" type="CSGBox3D" parent="."]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.0439782, 2.09173, -7.89547)
+[node name="CSGBox3D5" type="CSGBox3D" parent="NavigationRegion3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.0439782, 1.42851, -7.89547)
 material_override = ExtResource("2_qdvvq")
 use_collision = true
-size = Vector3(0.519653, 4.93295, 16.1344)
+size = Vector3(0.1, 4.933, 16.134)
 
-[node name="CSGBox3D6" type="CSGBox3D" parent="."]
+[node name="CSGBox3D6" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9056, 1.3966, -0.0638408)
 material_override = ExtResource("2_qdvvq")
 use_collision = true
-size = Vector3(0.519653, 4.41228, 16.3415)
+size = Vector3(0.1, 4.412, 16.341)
 
-[node name="CSGBox3D7" type="CSGBox3D" parent="."]
+[node name="CSGBox3D7" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.14342, 1.58017, -0.127682)
 material_override = ExtResource("2_qdvvq")
 use_collision = true
-size = Vector3(0.519653, 4.41228, 16.3415)
+size = Vector3(0.1, 4.412, 16.341)
