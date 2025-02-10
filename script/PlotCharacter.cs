@@ -38,4 +38,11 @@ public interface PlotCharacter {
         AnimationPlayer ??= GetAnimationPlayer(GetCharacterNode());
         AnimationPlayer.Pause();
     }
+    public bool IsPlaying() {
+        AnimationPlayer ??= GetAnimationPlayer(GetCharacterNode());
+        if (AnimationPlayer == null) {
+            return false;
+        }
+        return AnimationPlayer.IsPlaying();
+    }
 }

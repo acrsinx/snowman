@@ -1,6 +1,24 @@
 using Godot;
 using System;
 public class Tool: object {
+    public static readonly Random random = new();
+    /// <summary>
+    /// 随机单精度浮点数
+    /// </summary>
+    /// <param name="min">最小值</param>
+    /// <param name="max">最大值</param>
+    /// <returns>随机数</returns>
+    public static float RandomFloat(float min, float max) {
+        return random.NextSingle() * (max - min) + min;
+    }
+    /// <summary>
+    /// 随机三维向量
+    /// </summary>
+    /// <param name="range">向量的范围(x, y, z), x ∈ [-range.X, range.X), y ∈ [-range.Y, range.Y), z ∈ [-range.Z, range.Z)</param>
+    /// <returns>随机向量</returns>
+    public static Vector3 RandomVector3(Vector3 range) {
+        return new Vector3(RandomFloat(-1, 1) * range.X, RandomFloat(-1, 1) * range.Y, RandomFloat(-1, 1) * range.Z);
+    }
     /// <summary>
     /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from，from和to都是弧度
     /// </summary>

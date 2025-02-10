@@ -18,7 +18,6 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     /// </summary>
     public Sprite2D mapFlag;
     public Player player;
-    public int attackWaitTime = 100;
     public Health health;
     public bool isEnemy = false;
     public bool isPlayer = false;
@@ -66,11 +65,14 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         if (player.PlayerState == State.move) {
             // 刷新小地图标记
             mapFlag.Position = Map.GlobalPositionToMapPosition(player, character.GlobalPosition);
-            mapFlag.GlobalRotation = -MathF.PI * 0.5f-character.GlobalRotation.Y;
+            mapFlag.GlobalRotation = -MathF.PI * 0.5f - character.GlobalRotation.Y;
         }
     }
+    public bool Attackable() {
+        return player.ui.totalGameTime - attackStartTime > GetAttackWaitTime() && player.PlayerState == State.move;
+    }
     public void Attack() {
-        if (player.ui.totalGameTime - attackStartTime > attackWaitTime && player.PlayerState == State.move) {
+        if (Attackable()) {
             CharacterAttack();
         }
     }
@@ -107,6 +109,9 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
             player.cameraManager.cameraShake.StartShake(player.ui.totalGameTime, 500);
         }
         return true;
+    }
+    public virtual int GetAttackWaitTime() {
+        return 100;
     }
     public virtual void CharacterAttack() {
         attackStartTime = player.ui.totalGameTime;
