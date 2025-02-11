@@ -27,6 +27,7 @@ public class CameraManager: object {
     private const float minSuitableDistance = 0.5f;
     private const float maxDistance = 2.0f;
     private float distance = maxDistance;
+    public bool playerSetZoom = false;
     public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
         this.camera = camera;
         this.cameraCast = cameraCast;
@@ -79,18 +80,18 @@ public class CameraManager: object {
         // 回正视场角
         WheelDown();
         // 回正相机角度
-        if (cameraMarker.Rotation.X > CameraMarkerRotationMaxX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-        }
-        if (cameraMarker.Rotation.X < CameraMarkerRotationMinX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-        }
+        ResetCameraRotation();
+        // 玩家移动了，重设该值
+        playerSetZoom = false;
     }
     /// <summary>
     /// 旋转视角
     /// </summary>
     /// <param name="mouseMove">鼠标位移</param>
     public void UpdateCameraWhenTurning(Vector2 mouseMove) {
+        if (!playerSetZoom) { // 玩家刚刚没设置缩放
+            WheelDown();
+        }
         // 处理cameraMarker.Rotation
         cameraMarker.Rotation = new Vector3(cameraMarker.Rotation.X + mouseMove.Y, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         // 处理player.character.Rotation
@@ -105,6 +106,8 @@ public class CameraManager: object {
             // 鼠标归中
             Input.WarpMouse(0.5f * player.GetViewport().GetVisibleRect().Size);
         }
+        // 自动回正相机角度
+        ResetCameraRotation();
     }
     /// <summary>
     /// 刷新相机
@@ -178,6 +181,17 @@ public class CameraManager: object {
         }
         distance = record + CameraZoomSpeed;
         SetCameraPosition();
+    }
+    /// <summary>
+    /// 回正相机角度
+    /// </summary>
+    public void ResetCameraRotation() {
+        if (cameraMarker.Rotation.X > CameraMarkerRotationMaxX) {
+            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        }
+        if (cameraMarker.Rotation.X < CameraMarkerRotationMinX) {
+            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        }
     }
     /// <summary>
     /// 单人机位
