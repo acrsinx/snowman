@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bdvrhrrde3p0i"]
 
 [ext_resource type="PackedScene" uid="uid://b8areypbptv4c" path="res://model/stone.gltf" id="1_8alg1"]
-[ext_resource type="Material" uid="uid://bv5ihviqqcmnl" path="res://material/snow.tres" id="2_1ldno"]
+[ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
 [ext_resource type="Material" uid="uid://bq1g05akax757" path="res://material/stone.tres" id="2_qdvvq"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_pde2o"]
@@ -28,7 +28,7 @@ transform = Transform3D(5.99833, 6.38125, 0.938179, 0.585104, -0.0432273, -19.91
 
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-material_override = ExtResource("2_1ldno")
+material_override = ExtResource("2_02hm0")
 use_collision = true
 size = Vector3(32, 1, 32)
 
