@@ -47,6 +47,16 @@ public partial class Ui: Control {
     public void Log(string s) {
         GD.Print("[" + totalGameTime + "] " + s);
     }
+    public void Log(params object[] objects) {
+        if (objects == null || objects.Length == 0) {
+            return;
+        }
+        string s = "";
+        foreach (var o in objects) {
+            s += o.ToString() + " ";
+        }
+        Log(s);
+    }
     public override void _Ready() {
         gameInformation = new(this);
         // 设备类型

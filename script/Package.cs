@@ -3,11 +3,15 @@ public partial class Package: Control {
     public Ui ui;
     public Button back;
     public GridContainer stuffTable;
+    public TextureRect image;
+    public Label label;
     public StuffBox[] stuffs;
     [Export] public PackedScene stuff;
     public override void _Ready() {
         back = GetNode<Button>("PanelContainer/VBoxContainer/leftUp/back");
         stuffTable = GetNode<GridContainer>("PanelContainer/VBoxContainer/HBoxContainer/Scroll/table");
+        image = GetNode<TextureRect>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/Image");
+        label = GetNode<Label>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/Label");
         stuffs = new StuffBox[64];
     }
     public void Init() {
