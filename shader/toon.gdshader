@@ -10,8 +10,8 @@ float getDepth(vec2 uv, mat4 matrix) {
 }
 void fragment() {
     vec2 uv = SCREEN_UV;
-    float dx = 1.0 / VIEWPORT_SIZE.x;
-    float dy = 1.0 / VIEWPORT_SIZE.y;
+    float dx = 3.0 / VIEWPORT_SIZE.x;
+    float dy = 3.0 / VIEWPORT_SIZE.y;
     // [0, 1, 2]
     // [3, 4, 5]
     // [6, 7, 8]
