@@ -14,7 +14,9 @@ public partial class Snowbear: GameCharacter {
     /// 疑似卡住次数
     /// </summary>
     private int stuckCount = 0;
-    public Snowbear(Player player): base(SnowbearScene, player, true) {
+    public Snowbear(Player player): base(SnowbearScene, player, new SphereShape3D() {
+        Radius = 0.5f
+    }, new Vector3(0, 0.5f, 0), true) {
         health.MaxHealth = 100;
         health.SetFullHealth();
         health.die += () => {

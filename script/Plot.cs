@@ -41,7 +41,9 @@ public class Plot {
         }
         if (CharacterPath.ContainsKey(characterName)) {
             PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
-            GameCharacter plotCharacter = new(character, player, false) {
+            GameCharacter plotCharacter = new(character, player, new SphereShape3D() {
+                Radius = 0.25f
+            }, new Vector3(0, 0.125f, 0), false) {
                 Position = position
             };
             InstanceName.Add(instanceName, plotCharacter);
@@ -49,6 +51,10 @@ public class Plot {
         }
         GameCharacter gameCharacter;
         switch (characterName) {
+            case "snowman": {
+                gameCharacter = new Snowman(player, false);
+                break;
+            }
             case "snowbear": {
                 gameCharacter = new Snowbear(player);
                 break;
@@ -126,6 +132,11 @@ public class Plot {
             }
             case "LookAtCharacter": {
                 LookAtCharacter(wordsList[1], float.Parse(wordsList[2]), float.Parse(wordsList[3]));
+                break;
+            }
+            case "PlayerTo": {
+                player.character.GlobalPosition = new Vector3(float.Parse(wordsList[1]), float.Parse(wordsList[2]), float.Parse(wordsList[3]));
+                SetCameraPosition();
                 break;
             }
             case "SetCameraPosition": {

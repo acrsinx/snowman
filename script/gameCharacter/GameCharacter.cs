@@ -22,7 +22,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     public bool isEnemy = false;
     public bool isPlayer = false;
     private long attackStartTime = 0;
-    public GameCharacter(PackedScene character, Player player, bool isEnemy, bool isPlayer = false) {
+    public GameCharacter(PackedScene character, Player player, Shape3D shape3D, Vector3 offsetPosition, bool isEnemy, bool isPlayer = false) {
         this.character = character.Instantiate<Node3D>();
         this.isEnemy = isEnemy;
         this.isPlayer = isPlayer;
@@ -35,9 +35,9 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         // 添加寻路节点
         agent = new NavigationAgent3D();
         AddChild(agent);
-        collisionShape3D = new CollisionShape3D {
-            Shape = new SphereShape3D() {Radius = 0.5f},
-            Position = new Vector3(0, 0.5f, 0)
+        collisionShape3D = new CollisionShape3D() {
+            Shape = shape3D,
+            Position = offsetPosition
         };
         AddChild(collisionShape3D);
         // 添加小地图标记

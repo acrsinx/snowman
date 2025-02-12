@@ -7,6 +7,10 @@
 `caption`  
 ```
 LoadCharacter(snowdog, dog, (-4, 0, -6));
+LoadCharacter(snowman, snowman1, (-3, 0, -4));
+LoadCharacter(snowman, snowman2, (-4, 0, -4));
+LoadCharacter(snowman, snowman3, (-5, 0, -4));
+PlayerTo(-4, 0, -2);
 PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```

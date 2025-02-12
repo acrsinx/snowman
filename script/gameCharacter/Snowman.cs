@@ -5,10 +5,15 @@ public partial class Snowman: GameCharacter {
     public static readonly PackedScene SnowballScene = ResourceLoader.Load<PackedScene>("res://model/snowball.gltf");
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
     public ObjectPool snowballPool = new(10);
-    public Snowman(Player player): base(SnowmanScene, player, false, true) {
-        Position += new Vector3(0, 2, 0);
-        player.cameraManager.cameraMarker.Reparent(this, false);
-        player.cameraManager.SetCameraPosition();
+    public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CylinderShape3D() {
+        Radius = 0.25f,
+        Height = 0.9f
+    }, new Vector3(0, 0.5f, 0), false, isPlayer) {
+        Position = new Vector3(0, 0.1f, 0);
+        if (isPlayer) {
+            player.cameraManager.cameraMarker.Reparent(this, false);
+            player.cameraManager.SetCameraPosition();
+        }
         health.MaxHealth = 1000;
         health.SetFullHealth();
     }

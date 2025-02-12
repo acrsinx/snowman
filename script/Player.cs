@@ -321,7 +321,14 @@ public partial class Player: Node3D {
             if (key.Pressed) {
                 switch (key.Keycode) {
                     case Key.Space: {
-                        Jump();
+                        if (PlayerState is State.move) {
+                            Jump();
+                            return;
+                        }
+                        if (PlayerState is State.caption) {
+                            ui.NextCaption();
+                            return;
+                        }
                         return;
                     }
                     case Key.Key1: {
