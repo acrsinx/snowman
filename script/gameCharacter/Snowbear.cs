@@ -22,6 +22,9 @@ public partial class Snowbear: GameCharacter {
         };
     }
     public override void _PhysicsProcess(double delta) {
+        if (player.PlayerState != global::State.move) {
+            return;
+        }
         float fDelta = (float) delta;
         switch (state) {
             case State.Idle: {

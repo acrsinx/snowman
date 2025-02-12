@@ -39,6 +39,9 @@ public partial class Snowman: GameCharacter {
         player.character.Velocity -= impuse * 0.1f;
     }
     public override void _PhysicsProcess(double delta) {
+        if (player.PlayerState != State.move) {
+            return;
+        }
         for (int i = 0; i < snowballPool.Count; i++) {
             if (!snowballPool.haveUsed[i]) {
                 continue;
