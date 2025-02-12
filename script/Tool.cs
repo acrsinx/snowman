@@ -87,4 +87,39 @@ public class Tool: object {
         float radius = shape.Radius * Scale;
         return position.DistanceTo(area.GlobalPosition + 0.5f * Scale * area.TextureNormal.GetSize()) < radius;
     }
+    /// <summary>
+    /// 混合
+    /// </summary>
+    /// <param name="a">甲</param>
+    /// <param name="b">乙</param>
+    /// <param name="factor">系数</param>
+    /// <returns>混合结果</returns>
+    public static Vector3 Mix(Vector3 a, Vector3 b, float factor) {
+        return a * (1 - factor) + b * factor;
+    }
+    /// <summary>
+    /// 混合
+    /// </summary>
+    /// <param name="a">甲</param>
+    /// <param name="b">乙</param>
+    /// <param name="factor">系数</param>
+    /// <returns>混合结果</returns>
+    public static Basis Mix(Basis a, Basis b, float factor) {
+        Vector3 column0 = Mix(a[0], b[0], factor);
+        Vector3 column1 = Mix(a[1], b[1], factor);
+        Vector3 column2 = Mix(a[2], b[2], factor);
+        return new Basis(column0, column1, column2);
+    }
+    /// <summary>
+    /// 混合
+    /// </summary>
+    /// <param name="a">甲</param>
+    /// <param name="b">乙</param>
+    /// <param name="factor">系数</param>
+    /// <returns>混合结果</returns>
+    public static Transform3D Mix(Transform3D a, Transform3D b, float factor) {
+        Basis basis = Mix(a.Basis, b.Basis, factor);
+        Vector3 origin = Mix(a.Origin, b.Origin, factor);
+        return new Transform3D(basis, origin);
+    }
 }

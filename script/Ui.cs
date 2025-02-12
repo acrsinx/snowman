@@ -146,8 +146,6 @@ public partial class Ui: Control {
                 infomation.Text += "\n剧情位置: " + Plot.paths[0] + ":" + captionIndex.ToString();
             }
         }
-        // 计时器累加
-        totalGameTime += (long)(delta * 1e3);
         if (player.PlayerState == State.caption) {
             if (totalGameTime - captionStartTime <= captionTime) {
                 captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
@@ -161,6 +159,12 @@ public partial class Ui: Control {
             map.Position = Map.GlobalPositionToMapPosition(player, Vector3.Zero);
             map.Scale = new Vector2(1.0f, 1.0f);
         }
+    }
+    public override void _PhysicsProcess(double delta) {
+        // 计时器累加
+        totalGameTime += (long)(delta * 1e3);
+        // 更新相机动画
+        player.cameraManager.PosesAnimation();
     }
     public override void _Input(InputEvent @event) {
         if (@event.IsAction("show_info")) {
@@ -219,6 +223,7 @@ public partial class Ui: Control {
                 ShowCaptionChoose(captionIndex);
             }
         } else { // 如果不需要选择，即普通对话，即可跳过
+            player.cameraManager.PauseCameraAnimation();
             Plot.ParseScript(captions[captionIndex].endCode);
         }
     }
@@ -248,6 +253,15 @@ public partial class Ui: Control {
         captionIndex = id;
         SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
         Plot.ParseScript(captions[id].startCode);
+        // 设置相机动画
+        if (captions[id].endCode == null) {
+            return;
+        }
+        player.cameraManager.SetPosesAnimationTime(captions[id].time);
+        player.cameraManager.PushCurrentCameraPose();
+        Plot.ParseCameraScript(captions[id].endCode);
+        player.cameraManager.PushCurrentCameraPose();
+        player.cameraManager.PosesAnimation();
     }
     public void ShowCaptionChoose(int id) {
         chooseBox.Visible = true;

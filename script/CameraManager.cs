@@ -28,6 +28,23 @@ public class CameraManager: object {
     private const float maxDistance = 2.0f;
     private float distance = maxDistance;
     public bool playerSetZoom = false;
+    public int posesAnimationTime;
+    private enum PushState {
+        timeSet,
+        pushed1,
+        playing,
+        none
+    };
+    private PushState pushState = PushState.none;
+    private Vector3 markerPosition1;
+    private Vector3 markerRotation1;
+    private Vector3 cameraPosition1;
+    private Vector3 cameraRotation1;
+    private Vector3 markerPosition2;
+    private Vector3 markerRotation2;
+    private Vector3 cameraPosition2;
+    private Vector3 cameraRotation2;
+    private long animationStartTime;
     public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
         this.camera = camera;
         this.cameraCast = cameraCast;
@@ -75,7 +92,6 @@ public class CameraManager: object {
     /// <summary>
     /// 玩家移动时回正相机
     /// </summary>
-    /// <param name="fDelta">时间增量</param>
     public void UpdateCameraWhenMoving() {
         // 回正视场角
         WheelDown();
@@ -127,6 +143,26 @@ public class CameraManager: object {
         // 相机震动
         cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
         player.character.character.Visible = distance > 0.9f;
+    }
+    /// <summary>
+    /// 处理相机动画
+    /// </summary>
+    public void PosesAnimation() {
+        if (pushState != PushState.playing) {
+            return;
+        }
+        // 混合系数
+        float factor = (float)(player.ui.totalGameTime - animationStartTime) / posesAnimationTime;
+        // 检测是否结束
+        if (factor > 1) {
+            factor = 1;
+            pushState = PushState.none;
+        }
+        // 混合起始与结束
+        cameraMarker.GlobalPosition = Tool.Mix(markerPosition1, markerPosition2, factor);
+        cameraMarker.GlobalRotation = Tool.Mix(markerRotation1, markerRotation2, factor);
+        camera.GlobalPosition = Tool.Mix(cameraPosition1, cameraPosition2, factor);
+        camera.GlobalRotation = Tool.Mix(cameraRotation1, cameraRotation2, factor);
     }
     /// <summary>
     /// 处理相机穿模
@@ -216,5 +252,49 @@ public class CameraManager: object {
     /// <returns>方向向量</returns>
     public static Vector3 GetDirection(Vector3 rotation) {
         return new Vector3(MathF.Cos(rotation.Y), 0, MathF.Sin(rotation.Y));
+    }
+    public void SetPosesAnimationTime(int time) {
+        if (pushState != PushState.none) {
+            player.ui.Log("在不合适的时机设置相机运动时间");
+        }
+        if (time < 0) {
+            player.ui.Log("相机运动时间不能小于0");
+            return;
+        }
+        posesAnimationTime = time;
+        pushState = PushState.timeSet;
+    }
+    public void PushCurrentCameraPose() {
+        switch (pushState) {
+            case PushState.timeSet: {
+                markerPosition1 = cameraMarker.GlobalPosition;
+                markerRotation1 = cameraMarker.GlobalRotation;
+                cameraPosition1 = camera.GlobalPosition;
+                cameraRotation1 = camera.GlobalRotation;
+                pushState = PushState.pushed1;
+                break;
+            }
+            case PushState.pushed1: {
+                markerPosition2 = cameraMarker.GlobalPosition;
+                markerRotation2 = cameraMarker.GlobalRotation;
+                cameraPosition2 = camera.GlobalPosition;
+                cameraRotation2 = camera.GlobalRotation;
+                pushState = PushState.playing;
+                animationStartTime = player.ui.totalGameTime;
+                break;
+            }
+            case PushState.playing: {
+                player.ui.Log("在相机动画时压入");
+                return;
+            }
+            case PushState.none: {
+                player.ui.Log("在写入相机动画时间前压入");
+                return;
+            }
+        }
+    }
+    public void PauseCameraAnimation() {
+        animationStartTime = player.ui.totalGameTime - posesAnimationTime;
+        pushState = PushState.none;
     }
 }

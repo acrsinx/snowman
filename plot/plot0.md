@@ -15,6 +15,7 @@ PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```
+LookAtCharacter(dog, 1.1, 1)
 PauseAnimation(dog);
 Goto(1)
 ```
@@ -22,9 +23,10 @@ Goto(1)
 `雪狗`: `雪人们，开战！`  
 `caption`  
 ```
-SetCameraPosition()
+LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
+LookAtCharacter(snowman3, 0.7, 1.2)
 LoadCharacter(snowbear, bear, (5, 1, 6));
 LoadCharacter(snowbear, bear1, (3, 1, 4));
 Exit(0)

@@ -98,9 +98,29 @@ public class Plot {
         player.cameraManager.SetCameraPosition();
     }
     /// <summary>
-    /// 解析剧情脚本
+    /// 判断是否是相机脚本
     /// </summary>
-    public static void ParseScriptLine(string scriptLine) {
+    /// <param name="word">剧情指令</param>
+    /// <returns>是否是</returns>
+    public static bool IsCameraScriptLine(string word) {
+        switch (word) {
+            case "LookAtCharacter": {
+                return true;
+            }
+            case "SetCameraPosition": {
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
+    }
+    /// <summary>
+    /// 分词
+    /// </summary>
+    /// <param name="scriptLine">剧情脚本</param>
+    /// <returns>词</returns>
+    public static List<string> DevideWord(string scriptLine) {
         // 去除多余的空格
         scriptLine = scriptLine.Trim();
         // 将","，"("，")"替换为空格
@@ -116,6 +136,12 @@ public class Plot {
                 wordsList.Add(word);
             }
         }
+        return wordsList;
+    }
+    /// <summary>
+    /// 解析剧情脚本
+    /// </summary>
+    public static void ParseScriptLine(List<string> wordsList) {
         // 解析核心词
         switch (wordsList[0]) {
             case "LoadCharacter": {
@@ -160,7 +186,16 @@ public class Plot {
     public static void ParseScript(string script) {
         string[] lines = script.Split(';');
         foreach (string line in lines) {
-            ParseScriptLine(line);
+            ParseScriptLine(DevideWord(line));
+        }
+    }
+    public static void ParseCameraScript(string script) {
+        string[] lines = script.Split(';');
+        foreach (string line in lines) {
+            List<string> wordsList = DevideWord(line);
+            if (IsCameraScriptLine(wordsList[0])) {
+                ParseScriptLine(wordsList);
+            }
         }
     }
     public static void Open(Ui ui, int n) {
