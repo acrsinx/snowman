@@ -15,7 +15,7 @@ render_priority = 0
 shader = ExtResource("3_sh47m")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iwtqv"]
-radius = 0.3
+radius = 0.1
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_atgam"]
 
