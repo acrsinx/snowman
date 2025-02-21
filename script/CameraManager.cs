@@ -168,9 +168,7 @@ public class CameraManager: object {
     /// 处理相机穿模
     /// </summary>
     private void DealWithCameraTouch() {
-        // 前移相机
-        // 相机不穿模次数
-        int i = 0;
+        // 前移相机，直到不碰为止
         while (true) {
             distance -= CameraZoomSpeed;
             SetCameraPosition();
@@ -179,9 +177,6 @@ public class CameraManager: object {
                 return;
             }
             if (!IsCameraTouching()) {
-                i++;
-            }
-            if (i > 3) {
                 return;
             }
         }
