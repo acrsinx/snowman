@@ -34,6 +34,9 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         AddChild(this.character);
         // 添加寻路节点
         agent = new NavigationAgent3D();
+        # if TOOLS
+        agent.DebugEnabled = true;
+        # endif
         AddChild(agent);
         collisionShape3D = new CollisionShape3D() {
             Shape = shape3D,

@@ -66,10 +66,11 @@ def is_num(num: str) -> bool:
 
 class NoteType(Enum):
     """
-    类型
+    注释类型
     - 0 普通
     - 1 注释
     - 2 行末注释
+    - 注意C#等语言中以#开头的不是注释，但当作注释处理，以求方便
     """
     NORMAL = 0
     NOTE = 1
@@ -133,7 +134,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
             word += data[i]
             continue
         # 注释
-        if data[i] == "/" and data[i+1] == "/":
+        if (data[i] == "/" and data[i+1] == "/") or (data[i] == "#" and data[i+1] == " "):
             if len(word) > 0:
                 words.append((word, NoteType.NORMAL))
                 word = ""
