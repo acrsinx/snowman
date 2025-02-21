@@ -120,7 +120,7 @@ public class Plot {
     /// </summary>
     /// <param name="scriptLine">剧情脚本</param>
     /// <returns>词</returns>
-    public static List<string> DevideWord(string scriptLine) {
+    public static List<string> SplitWord(string scriptLine) {
         // 去除多余的空格
         scriptLine = scriptLine.Trim();
         // 将","，"("，")"替换为空格
@@ -186,13 +186,13 @@ public class Plot {
     public static void ParseScript(string script) {
         string[] lines = script.Split(';');
         foreach (string line in lines) {
-            ParseScriptLine(DevideWord(line));
+            ParseScriptLine(SplitWord(line));
         }
     }
     public static void ParseCameraScript(string script) {
         string[] lines = script.Split(';');
         foreach (string line in lines) {
-            List<string> wordsList = DevideWord(line);
+            List<string> wordsList = SplitWord(line);
             if (IsCameraScriptLine(wordsList[0])) {
                 ParseScriptLine(wordsList);
             }
