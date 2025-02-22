@@ -20,6 +20,7 @@ public partial class Setting: Control {
     /// 文本转语音的ID
     /// </summary>
     public string ttsId = "";
+    public OptionButton translation;
     public CheckButton shadow;
     public CheckButton develop;
     public CheckButton useScreenShader;
@@ -37,6 +38,7 @@ public partial class Setting: Control {
         vsync = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/vsync");
         maxFps = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/maxFps");
         tts = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/tts");
+        translation = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/translation");
         shadow = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/shadow");
         develop = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/develop");
         useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
@@ -52,6 +54,10 @@ public partial class Setting: Control {
         for (int i = 0; i < voices.Count; i++) {
             ui.Log(voices[i].ToString());
             tts.AddItem(voices[i]["name"].ToString());
+        }
+        string[] languages = Translation.GetLanguages();
+        for (int i = 0; i < languages.Length; i++) {
+            translation.AddItem(languages[i]);
         }
         useScreenShader.ButtonPressed = ui.player.screenShader.Visible;
         light = ui.GetTree().Root.GetNode<Light3D>("Node/sunLight");
@@ -73,6 +79,20 @@ public partial class Setting: Control {
         };
         tts.ItemSelected += (index) => {
             SetTtsId(index);
+        };
+        translation.ItemSelected += (index) => {
+            string language = translation.GetItemText((int) index);
+            if (language == null) {
+                return;
+            }
+            if (language == Translation.Locale) {
+                return;
+            }
+            if (language == "简体中文") {
+                Translation.Locale = "";
+                return;
+            }
+            Translation.Locale = language;
         };
         shadow.Pressed += () => {
             SetShadow();

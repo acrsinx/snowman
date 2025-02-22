@@ -23,7 +23,8 @@ public class GameInformation: object {
             {"useScreenShader", ui.settingPanel.useScreenShader.ButtonPressed?"1":"0"},
             {"showInfo", ui.settingPanel.showInfo.ButtonPressed?"1":"0"},
             {"window", ui.settingPanel.window.ButtonPressed?"1":"0"},
-            {"LOD", ui.settingPanel.LOD.Value.ToString()}
+            {"LOD", ui.settingPanel.LOD.Value.ToString()},
+            {"local", Translation.Locale}
         };
         FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
         file.StoreLine(Json.Stringify(information));
@@ -67,6 +68,14 @@ public class GameInformation: object {
         double lod = double.Parse(SafeRead(information, "LOD") ?? "1");
         ui.settingPanel.LOD.Value = lod;
         ui.settingPanel.SetLOD(lod);
+        string locale = SafeRead(information, "local") ?? TranslationServer.GetLocale();
+        Translation.Locale = locale;
+        for (int i = 0; i < ui.settingPanel.translation.ItemCount; i++) {
+            if (ui.settingPanel.translation.GetItemText(i) == locale) {
+                ui.settingPanel.translation.Selected = i;
+                break;
+            }
+        }
         file.Close();
     }
     public static string SafeRead(Dictionary<string, string> dict, string key) {

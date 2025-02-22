@@ -144,7 +144,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_qh1ee")
 theme_type_variation = &"HeaderLarge"
-text = "跳"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -164,7 +163,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_qh1ee")
 theme_type_variation = &"HeaderLarge"
-text = "攻"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -184,7 +182,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_qh1ee")
 theme_type_variation = &"HeaderLarge"
-text = "慢"
 horizontal_alignment = 1
 vertical_alignment = 1
 

@@ -273,6 +273,8 @@ def output(path: str, words: list[tuple[str, NoteType]]):
             if i in indexs or i+1 in indexs: # 泛型尖括号周围不加空格
                 if words[i][0] != ">":
                     continue
+                if i+1 in indexs and words[i+1][0] == ">":
+                    continue
             if i+1 >= len(words): # 最后一行
                 f.write("\n")
                 return

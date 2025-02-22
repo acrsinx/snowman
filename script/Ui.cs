@@ -1,4 +1,3 @@
-using System;
 using Godot;
 using Godot.Collections;
 public partial class Ui: Control {
@@ -56,6 +55,16 @@ public partial class Ui: Control {
             s += o.ToString() + " ";
         }
         Log(s);
+    }
+    public static void LogStatic(params object[] objects) {
+        if (objects == null || objects.Length == 0) {
+            return;
+        }
+        string s = "";
+        foreach (var o in objects) {
+            s += o.ToString() + " ";
+        }
+        GD.Print("[???]", s);
     }
     public override void _Ready() {
         gameInformation = new(this);
@@ -135,13 +144,18 @@ public partial class Ui: Control {
         settingPanel.Init();
         packagePanel.Init();
         loadPanel.Init();
+        Translation.LangageChanged += () => {
+            phoneJump.GetChild<Label>(0).Text = Translation.Translate("跳");
+            phoneAttack.GetChild<Label>(0).Text = Translation.Translate("攻");
+            phoneSlow.GetChild<Label>(0).Text = Translation.Translate("慢");
+        };
         ClearChoose();
         // 设置为加载态，前面的ClearCaption();会把player.PlayerState设为State.move
         player.PlayerState = State.load;
     }
     public override void _Process(double delta) {
         if (settingPanel.showInfo.ButtonPressed) {
-            infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             if (player.PlayerState == State.caption) {
                 infomation.Text += "\n剧情位置: " + Plot.path + ":" + captionIndex.ToString();
             }
