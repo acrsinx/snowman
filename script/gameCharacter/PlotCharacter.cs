@@ -31,18 +31,41 @@ public interface PlotCharacter {
         return null;
     }
     public void PlayAnimation(string animationName) {
-        AnimationPlayer ??= GetAnimationPlayer(GetCharacterNode());
+        if (!CheckAnimationPlayer()) {
+            return;
+        }
         AnimationPlayer.Play(animationName);
     }
     public void PauseAnimation() {
-        AnimationPlayer ??= GetAnimationPlayer(GetCharacterNode());
+        if (!CheckAnimationPlayer()) {
+            return;
+        }
         AnimationPlayer.Pause();
     }
     public bool IsPlaying() {
+        if (!CheckAnimationPlayer()) {
+            return false;
+        }
+        return AnimationPlayer.IsPlaying();
+    }
+    /// <summary>
+    /// 获取当前播放的动画名称。如果动画播放器不存在，返回空字符串。如果当前没有播放动画，返回空字符串。
+    /// </summary>
+    /// <returns>返回动画名</returns>
+    public string GetAnimationName() {
+        if (!CheckAnimationPlayer()) {
+            return "";
+        }
+        if (AnimationPlayer.CurrentAnimation == null) {
+            return "";
+        }
+        return AnimationPlayer.CurrentAnimation;
+    }
+    private bool CheckAnimationPlayer() {
         AnimationPlayer ??= GetAnimationPlayer(GetCharacterNode());
         if (AnimationPlayer == null) {
             return false;
         }
-        return AnimationPlayer.IsPlaying();
+        return true;
     }
 }

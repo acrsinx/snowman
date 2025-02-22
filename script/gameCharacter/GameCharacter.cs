@@ -74,12 +74,17 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     public bool Attackable() {
         return player.ui.totalGameTime - attackStartTime > GetAttackWaitTime() && player.PlayerState == State.move;
     }
-    public void Attack() {
-        if (Attackable()) {
-            CharacterAttack();
+    public bool Attack() {
+        if (!Attackable()) {
+            return false;
         }
+        CharacterAttack();
+        return true;
     }
     public GameCharacter GetCharacter() {
+        return this;
+    }
+    public PlotCharacter GetPlotCharacter() {
         return this;
     }
     /// <summary>
@@ -118,6 +123,8 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     }
     public virtual void CharacterAttack() {
         attackStartTime = player.ui.totalGameTime;
+    }
+    public virtual void PlayWalkAnimation() {
     }
     public void Die() {
         mapFlag.QueueFree();
