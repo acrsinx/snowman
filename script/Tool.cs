@@ -1,6 +1,7 @@
 using Godot;
 using System;
 public class Tool: object {
+    public delegate void Void();
     public static readonly Random random = new();
     /// <summary>
     /// 随机单精度浮点数

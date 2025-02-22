@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Godot;
 public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacter {
+    public readonly static List<GameCharacter> gameCharacters = new();
+    public Tool.Void die;
     public Node3D character;
     public PhysicsBody3D physicsBody3D;
     public CollisionShape3D collisionShape3D;
@@ -23,6 +26,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     public bool isPlayer = false;
     private long attackStartTime = 0;
     public GameCharacter(PackedScene character, Player player, Shape3D shape3D, Vector3 offsetPosition, bool isEnemy, bool isPlayer = false) {
+        gameCharacters.Add(this);
         this.character = character.Instantiate<Node3D>();
         this.isEnemy = isEnemy;
         this.isPlayer = isPlayer;
@@ -121,6 +125,9 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     public virtual int GetAttackWaitTime() {
         return 100;
     }
+    public virtual float GetAttackRange() {
+        return 2;
+    }
     public virtual void CharacterAttack() {
         attackStartTime = player.ui.totalGameTime;
     }
@@ -128,6 +135,10 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     }
     public void Die() {
         mapFlag.QueueFree();
+        if (!gameCharacters.Remove(this)) {
+            player.ui.Log("角色无法从列表中移除");
+        }
+        die.Invoke();
         QueueFree();
     }
     public Node3D GetCharacterNode() {

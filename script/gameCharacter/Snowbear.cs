@@ -1,4 +1,3 @@
-using System;
 using Godot;
 public partial class Snowbear: GameCharacter {
     public AutoCharacterManager auto;
@@ -6,7 +5,7 @@ public partial class Snowbear: GameCharacter {
     public Snowbear(Player player): base(SnowbearScene, player, new SphereShape3D() {
         Radius = 0.5f
     }, new Vector3(0, 0.5f, 0), true) {
-        auto = new AutoCharacterManager(this, player, player.character);
+        auto = new AutoCharacterManager(this, player);
         auto.afterAttack += () => {
             player.character.BeAttack((int)(20.0f / character.GlobalPosition.DistanceTo(player.character.GlobalPosition)), DamageType.sound, isEnemy);
             GetPlotCharacter().PauseAnimation();

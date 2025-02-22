@@ -7,8 +7,7 @@ public class AutoCharacterManager: object {
     public GameCharacter character;
     public Player player;
     public GameCharacter target;
-    public delegate void voidDelegate();
-    public voidDelegate afterAttack;
+    public Tool.Void afterAttack;
     private enum State {
         Idle,
         Walk,
@@ -20,10 +19,15 @@ public class AutoCharacterManager: object {
     /// 疑似卡住次数
     /// </summary>
     private int stuckCount = 0;
-    public AutoCharacterManager(GameCharacter character, Player player, GameCharacter target) {
+    public AutoCharacterManager(GameCharacter character, Player player) {
         this.character = character;
         this.player = player;
-        this.target = target;
+    }
+    private bool IsCloseToTarget() {
+        if (target == null) {
+            return false;
+        }
+        return character.GlobalPosition.DistanceTo(target.GlobalPosition) <= character.GetAttackRange();
     }
     public void PhysicsProcess(float fDelta) {
         if (player.PlayerState != global::State.move) {
@@ -31,6 +35,20 @@ public class AutoCharacterManager: object {
         }
         switch (state) {
             case State.Idle: {
+                if (target == null) {
+                    target = GameCharacter.gameCharacters.Find(x => x != character && x.isEnemy != character.isEnemy);
+                    if (target == null) { // 没有敌人
+                        // 闲逛
+                        character.agent.TargetPosition = character.GlobalPosition + Tool.RandomVector3(new Vector3(5, 0, 5));
+                        state = State.Walk;
+                        break;
+                    }
+                    target.die += () => {
+                        target = null;
+                        state = State.Idle;
+                    };
+                    break;
+                }
                 character.agent.TargetPosition = target.GlobalPosition + Tool.RandomVector3(new Vector3(1, 0, 1));
                 if (character.agent.IsTargetReachable()) {
                     state = State.Walk;
@@ -50,7 +68,7 @@ public class AutoCharacterManager: object {
                 }
                 Vector3 target = character.agent.GetNextPathPosition();
                 character.PlayWalkAnimation();
-                if (character.agent.IsNavigationFinished()) {
+                if (IsCloseToTarget() || character.agent.IsNavigationFinished()) {
                     state = State.StartAttack;
                     break;
                 }
@@ -62,7 +80,7 @@ public class AutoCharacterManager: object {
                 break;
             }
             case State.StartAttack: {
-                if (character.GlobalPosition.DistanceTo(player.character.GlobalPosition) > 2) {
+                if (!IsCloseToTarget()) {
                     state = State.Idle;
                     break;
                 }

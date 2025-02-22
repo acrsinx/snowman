@@ -10,13 +10,21 @@ public class CameraManager: object {
     /// </summary>
     public static readonly Vector3 CameraMarkerOrigin = new(0, 0.5f, 0);
     /// <summary>
+    /// 相机标志的最小旋转角度
+    /// </summary>
+    public const float CameraMarkerRotationMinX = -1.2f;
+    /// <summary>
+    /// 相机标志的最大旋转角度
+    /// </summary>
+    public const float CameraMarkerRotationMaxX = 0.5f;
+    /// <summary>
     /// 相机标志的最小合适旋转角度
     /// </summary>
-    public const float CameraMarkerRotationMinX = -0.5f;
+    public const float CameraMarkerRotationSuitMinX = -0.5f;
     /// <summary>
     /// 相机标志的最大合适旋转角度
     /// </summary>
-    public const float CameraMarkerRotationMaxX = 0.1f;
+    public const float CameraMarkerRotationSuitMaxX = 0.1f;
     /// <summary>
     /// 相机视角缩放速度
     /// </summary>
@@ -113,10 +121,10 @@ public class CameraManager: object {
         // 处理player.character.Rotation
         player.character.Rotation = new Vector3(player.character.Rotation.X, player.character.Rotation.Y + mouseMove.X, player.character.Rotation.Z);
         // 限制视角
-        if (-1.2f > cameraMarker.Rotation.X) {
-            cameraMarker.Rotation = new Vector3(-1.2f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-        } else if (0.5f < cameraMarker.Rotation.X) {
-            cameraMarker.Rotation = new Vector3(0.5f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        if (CameraMarkerRotationMinX > cameraMarker.Rotation.X) {
+            cameraMarker.Rotation = new Vector3(CameraMarkerRotationMinX, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        } else if (CameraMarkerRotationMaxX < cameraMarker.Rotation.X) {
+            cameraMarker.Rotation = new Vector3(CameraMarkerRotationMaxX, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
         if (player.ui.uiType == UiType.computer) {
             // 鼠标归中
@@ -217,11 +225,11 @@ public class CameraManager: object {
     /// 回正相机角度
     /// </summary>
     public void ResetCameraRotation() {
-        if (cameraMarker.Rotation.X > CameraMarkerRotationMaxX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        if (cameraMarker.Rotation.X > CameraMarkerRotationSuitMaxX) {
+            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationSuitMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
-        if (cameraMarker.Rotation.X < CameraMarkerRotationMinX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        if (cameraMarker.Rotation.X < CameraMarkerRotationSuitMinX) {
+            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationSuitMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
     }
     /// <summary>
