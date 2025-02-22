@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://dp7dkljcbwvkj"]
+
+[ext_resource type="Shader" path="res://shader/stone_snow.gdshader" id="1_ubwub"]
+[ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="2_ltyjq"]
+[ext_resource type="Texture2D" uid="uid://ci3jfkgts87f7" path="res://material/雪_法线.png" id="3_m4nus"]
+[ext_resource type="Texture2D" uid="uid://vaxospxhme1x" path="res://material/石头_法线.png" id="4_wauuw"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_ubwub")
+shader_parameter/noise = ExtResource("2_ltyjq")
+shader_parameter/stone = ExtResource("4_wauuw")
+shader_parameter/snow = ExtResource("3_m4nus")

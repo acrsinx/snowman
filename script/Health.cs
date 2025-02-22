@@ -1,8 +1,7 @@
 public partial class Health {
     private int maxHealth;
-    public delegate void Void();
-    public Void die;
-    public Void healthChanged;
+    public Tool.Void die;
+    public Tool.Void healthChanged;
     public int MaxHealth {
         set {
             maxHealth = value;

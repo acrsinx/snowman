@@ -10,13 +10,21 @@ public class CameraManager: object {
     /// </summary>
     public static readonly Vector3 CameraMarkerOrigin = new(0, 0.5f, 0);
     /// <summary>
+    /// 相机标志的最小旋转角度
+    /// </summary>
+    public const float CameraMarkerRotationMinX = -1.2f;
+    /// <summary>
+    /// 相机标志的最大旋转角度
+    /// </summary>
+    public const float CameraMarkerRotationMaxX = 0.5f;
+    /// <summary>
     /// 相机标志的最小合适旋转角度
     /// </summary>
-    public const float CameraMarkerRotationMinX = -0.5f;
+    public const float CameraMarkerRotationSuitMinX = -0.5f;
     /// <summary>
     /// 相机标志的最大合适旋转角度
     /// </summary>
-    public const float CameraMarkerRotationMaxX = 0.1f;
+    public const float CameraMarkerRotationSuitMaxX = 0.1f;
     /// <summary>
     /// 相机视角缩放速度
     /// </summary>
@@ -27,6 +35,24 @@ public class CameraManager: object {
     private const float minSuitableDistance = 0.5f;
     private const float maxDistance = 2.0f;
     private float distance = maxDistance;
+    public bool playerSetZoom = false;
+    public int posesAnimationTime;
+    private enum PushState {
+        timeSet,
+        pushed1,
+        playing,
+        none
+    };
+    private PushState pushState = PushState.none;
+    private Vector3 markerPosition1;
+    private Vector3 markerRotation1;
+    private Vector3 cameraPosition1;
+    private Vector3 cameraRotation1;
+    private Vector3 markerPosition2;
+    private Vector3 markerRotation2;
+    private Vector3 cameraPosition2;
+    private Vector3 cameraRotation2;
+    private long animationStartTime;
     public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
         this.camera = camera;
         this.cameraCast = cameraCast;
@@ -74,37 +100,38 @@ public class CameraManager: object {
     /// <summary>
     /// 玩家移动时回正相机
     /// </summary>
-    /// <param name="fDelta">时间增量</param>
     public void UpdateCameraWhenMoving() {
         // 回正视场角
         WheelDown();
         // 回正相机角度
-        if (cameraMarker.Rotation.X > CameraMarkerRotationMaxX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-        }
-        if (cameraMarker.Rotation.X < CameraMarkerRotationMinX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-        }
+        ResetCameraRotation();
+        // 玩家移动了，重设该值
+        playerSetZoom = false;
     }
     /// <summary>
     /// 旋转视角
     /// </summary>
     /// <param name="mouseMove">鼠标位移</param>
     public void UpdateCameraWhenTurning(Vector2 mouseMove) {
+        if (!playerSetZoom) { // 玩家刚刚没设置缩放
+            WheelDown();
+        }
         // 处理cameraMarker.Rotation
         cameraMarker.Rotation = new Vector3(cameraMarker.Rotation.X + mouseMove.Y, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         // 处理player.character.Rotation
         player.character.Rotation = new Vector3(player.character.Rotation.X, player.character.Rotation.Y + mouseMove.X, player.character.Rotation.Z);
         // 限制视角
-        if (-1.2f > cameraMarker.Rotation.X) {
-            cameraMarker.Rotation = new Vector3(-1.2f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
-        } else if (0.5f < cameraMarker.Rotation.X) {
-            cameraMarker.Rotation = new Vector3(0.5f, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        if (CameraMarkerRotationMinX > cameraMarker.Rotation.X) {
+            cameraMarker.Rotation = new Vector3(CameraMarkerRotationMinX, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        } else if (CameraMarkerRotationMaxX < cameraMarker.Rotation.X) {
+            cameraMarker.Rotation = new Vector3(CameraMarkerRotationMaxX, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
         if (player.ui.uiType == UiType.computer) {
             // 鼠标归中
             Input.WarpMouse(0.5f * player.GetViewport().GetVisibleRect().Size);
         }
+        // 自动回正相机角度
+        ResetCameraRotation();
     }
     /// <summary>
     /// 刷新相机
@@ -126,12 +153,30 @@ public class CameraManager: object {
         player.character.character.Visible = distance > 0.9f;
     }
     /// <summary>
+    /// 处理相机动画
+    /// </summary>
+    public void PosesAnimation() {
+        if (pushState != PushState.playing) {
+            return;
+        }
+        // 混合系数
+        float factor = (float)(player.ui.totalGameTime - animationStartTime) / posesAnimationTime;
+        // 检测是否结束
+        if (factor > 1) {
+            factor = 1;
+            pushState = PushState.none;
+        }
+        // 混合起始与结束
+        cameraMarker.GlobalPosition = Tool.Mix(markerPosition1, markerPosition2, factor);
+        cameraMarker.GlobalRotation = Tool.Mix(markerRotation1, markerRotation2, factor);
+        camera.GlobalPosition = Tool.Mix(cameraPosition1, cameraPosition2, factor);
+        camera.GlobalRotation = Tool.Mix(cameraRotation1, cameraRotation2, factor);
+    }
+    /// <summary>
     /// 处理相机穿模
     /// </summary>
     private void DealWithCameraTouch() {
-        // 前移相机
-        // 相机不穿模次数
-        int i = 0;
+        // 前移相机，直到不碰为止
         while (true) {
             distance -= CameraZoomSpeed;
             SetCameraPosition();
@@ -140,9 +185,6 @@ public class CameraManager: object {
                 return;
             }
             if (!IsCameraTouching()) {
-                i++;
-            }
-            if (i > 3) {
                 return;
             }
         }
@@ -180,6 +222,17 @@ public class CameraManager: object {
         SetCameraPosition();
     }
     /// <summary>
+    /// 回正相机角度
+    /// </summary>
+    public void ResetCameraRotation() {
+        if (cameraMarker.Rotation.X > CameraMarkerRotationSuitMaxX) {
+            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationSuitMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        }
+        if (cameraMarker.Rotation.X < CameraMarkerRotationSuitMinX) {
+            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationSuitMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+        }
+    }
+    /// <summary>
     /// 单人机位
     /// </summary>
     /// <param name="character">角色</param>
@@ -202,5 +255,49 @@ public class CameraManager: object {
     /// <returns>方向向量</returns>
     public static Vector3 GetDirection(Vector3 rotation) {
         return new Vector3(MathF.Cos(rotation.Y), 0, MathF.Sin(rotation.Y));
+    }
+    public void SetPosesAnimationTime(int time) {
+        if (pushState != PushState.none) {
+            player.ui.Log("在不合适的时机设置相机运动时间");
+        }
+        if (time < 0) {
+            player.ui.Log("相机运动时间不能小于0");
+            return;
+        }
+        posesAnimationTime = time;
+        pushState = PushState.timeSet;
+    }
+    public void PushCurrentCameraPose() {
+        switch (pushState) {
+            case PushState.timeSet: {
+                markerPosition1 = cameraMarker.GlobalPosition;
+                markerRotation1 = cameraMarker.GlobalRotation;
+                cameraPosition1 = camera.GlobalPosition;
+                cameraRotation1 = camera.GlobalRotation;
+                pushState = PushState.pushed1;
+                break;
+            }
+            case PushState.pushed1: {
+                markerPosition2 = cameraMarker.GlobalPosition;
+                markerRotation2 = cameraMarker.GlobalRotation;
+                cameraPosition2 = camera.GlobalPosition;
+                cameraRotation2 = camera.GlobalRotation;
+                pushState = PushState.playing;
+                animationStartTime = player.ui.totalGameTime;
+                break;
+            }
+            case PushState.playing: {
+                player.ui.Log("在相机动画时压入");
+                return;
+            }
+            case PushState.none: {
+                player.ui.Log("在写入相机动画时间前压入");
+                return;
+            }
+        }
+    }
+    public void PauseCameraAnimation() {
+        animationStartTime = player.ui.totalGameTime - posesAnimationTime;
+        pushState = PushState.none;
     }
 }

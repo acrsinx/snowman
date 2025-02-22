@@ -7,14 +7,10 @@ public class Plot {
     };
     public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
     };
-    public static string[] paths;
+    public static string path;
     public static Player player;
     public static void Check(Ui ui) {
-        paths = new string[] {
-            "res://plotJson/plot0/plot0_0.json",
-            "res://plotJson/plot0/plot0_1.json",
-            "res://plotJson/plot0/plot0_2.json",
-        };
+        path = "res://plotJson/plot0/plot0_0.json";
         Open(ui);
     }
     /// <summary>
@@ -41,14 +37,20 @@ public class Plot {
         }
         if (CharacterPath.ContainsKey(characterName)) {
             PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
-            GameCharacter plotCharacter = new(character, player, false) {
+            GameCharacter plotCharacter = new(character, player, new SphereShape3D() {
+                Radius = 0.25f
+            }, new Vector3(0, 0.125f, 0), false) {
                 Position = position
             };
-            InstanceName.Add(instanceName, plotCharacter);
+            AddCharacterInstance(instanceName, plotCharacter);
             return;
         }
         GameCharacter gameCharacter;
         switch (characterName) {
+            case "snowman": {
+                gameCharacter = new Snowman(player, false);
+                break;
+            }
             case "snowbear": {
                 gameCharacter = new Snowbear(player);
                 break;
@@ -59,7 +61,16 @@ public class Plot {
             }
         }
         gameCharacter.Position = position;
+        AddCharacterInstance(instanceName, gameCharacter);
+    }
+    /// <summary>
+    /// 添加角色到实例列表中
+    /// </summary>
+    /// <param name="instanceName">角色名</param>
+    /// <param name="gameCharacter">角色实例</param>
+    public static void AddCharacterInstance(string instanceName, GameCharacter gameCharacter) {
         InstanceName.Add(instanceName, gameCharacter);
+        gameCharacter.Name = instanceName;
     }
     /// <summary>
     /// 播放动画
@@ -92,9 +103,29 @@ public class Plot {
         player.cameraManager.SetCameraPosition();
     }
     /// <summary>
-    /// 解析剧情脚本
+    /// 判断是否是相机脚本
     /// </summary>
-    public static void ParseScriptLine(string scriptLine) {
+    /// <param name="word">剧情指令</param>
+    /// <returns>是否是</returns>
+    public static bool IsCameraScriptLine(string word) {
+        switch (word) {
+            case "LookAtCharacter": {
+                return true;
+            }
+            case "SetCameraPosition": {
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
+    }
+    /// <summary>
+    /// 分词
+    /// </summary>
+    /// <param name="scriptLine">剧情脚本</param>
+    /// <returns>词</returns>
+    public static List<string> SplitWord(string scriptLine) {
         // 去除多余的空格
         scriptLine = scriptLine.Trim();
         // 将","，"("，")"替换为空格
@@ -109,6 +140,15 @@ public class Plot {
             if (word != "") {
                 wordsList.Add(word);
             }
+        }
+        return wordsList;
+    }
+    /// <summary>
+    /// 解析剧情脚本
+    /// </summary>
+    public static void ParseScriptLine(List<string> wordsList) {
+        if (wordsList.Count == 0) {
+            return;
         }
         // 解析核心词
         switch (wordsList[0]) {
@@ -128,12 +168,24 @@ public class Plot {
                 LookAtCharacter(wordsList[1], float.Parse(wordsList[2]), float.Parse(wordsList[3]));
                 break;
             }
+            case "PlayerTo": {
+                player.character.GlobalPosition = new Vector3(float.Parse(wordsList[1]), float.Parse(wordsList[2]), float.Parse(wordsList[3]));
+                SetCameraPosition();
+                break;
+            }
             case "SetCameraPosition": {
                 SetCameraPosition();
                 break;
             }
             case "Goto": {
                 player.ui.ShowCaption(int.Parse(wordsList[1]));
+                break;
+            }
+            case "AddTrigger": {
+                TriggerSystem.AddTrigger(wordsList[1], () => {
+                    path = wordsList[2];
+                    Open(player.ui);
+                });
                 break;
             }
             case "Exit": {
@@ -147,24 +199,33 @@ public class Plot {
         }
     }
     public static void ParseScript(string script) {
-        string[] lines = script.Split(';');
-        foreach (string line in lines) {
-            ParseScriptLine(line);
-        }
-    }
-    public static void Open(Ui ui, int n) {
-        if (!FileAccess.FileExists(paths[n])) {
-            ui.Log("未找到文件: " + paths[n]);
+        if (script == "" || script == null) {
             return;
         }
-        if (paths == null) {
-            ui.Log("未设置剧情文件路径");
+        string[] lines = script.Split(';');
+        foreach (string line in lines) {
+            ParseScriptLine(SplitWord(line));
         }
-        FileAccess fileAccess = FileAccess.Open(paths[n], FileAccess.ModeFlags.Read);
-        ui.ShowCaption((Dictionary) Json.ParseString(fileAccess.GetAsText()));
-        fileAccess.Close();
+    }
+    public static void ParseCameraScript(string script) {
+        string[] lines = script.Split(';');
+        foreach (string line in lines) {
+            List<string> wordsList = SplitWord(line);
+            if (IsCameraScriptLine(wordsList[0])) {
+                ParseScriptLine(wordsList);
+            }
+        }
     }
     public static void Open(Ui ui) {
-        Open(ui, 0);
+        if (path == null) {
+            ui.Log("未设置剧情文件路径");
+        }
+        if (!FileAccess.FileExists(path)) {
+            ui.Log("未找到文件: " + path);
+            return;
+        }
+        FileAccess fileAccess = FileAccess.Open(path, FileAccess.ModeFlags.Read);
+        ui.ShowCaption((Dictionary) Json.ParseString(fileAccess.GetAsText()));
+        fileAccess.Close();
     }
 }

@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://c0q0p13xevtrf"]
+[gd_scene load_steps=3 format=3 uid="uid://c0q0p13xevtrf"]
 
 [ext_resource type="Script" path="res://script/Package.cs" id="1_d5kvb"]
 [ext_resource type="PackedScene" uid="uid://b4cpskud1ff2n" path="res://scene/stuff.tscn" id="2_2nhpl"]
-[ext_resource type="Texture2D" uid="uid://ctmxqxyhfs3j0" path="res://image/icon.png" id="3_c4ef1"]
 
 [node name="Package" type="Control"]
 layout_mode = 3
@@ -65,12 +64,10 @@ custom_minimum_size = Vector2(256, 256)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = ExtResource("3_c4ef1")
 expand_mode = 2
 
 [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 size_flags_vertical = 3
-text = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test "
 autowrap_mode = 2

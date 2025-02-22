@@ -47,6 +47,16 @@ public partial class Ui: Control {
     public void Log(string s) {
         GD.Print("[" + totalGameTime + "] " + s);
     }
+    public void Log(params object[] objects) {
+        if (objects == null || objects.Length == 0) {
+            return;
+        }
+        string s = "";
+        foreach (var o in objects) {
+            s += o.ToString() + " ";
+        }
+        Log(s);
+    }
     public override void _Ready() {
         gameInformation = new(this);
         // 设备类型
@@ -133,11 +143,9 @@ public partial class Ui: Control {
         if (settingPanel.showInfo.ButtonPressed) {
             infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             if (player.PlayerState == State.caption) {
-                infomation.Text += "\n剧情位置: " + Plot.paths[0] + ":" + captionIndex.ToString();
+                infomation.Text += "\n剧情位置: " + Plot.path + ":" + captionIndex.ToString();
             }
         }
-        // 计时器累加
-        totalGameTime += (long)(delta * 1e3);
         if (player.PlayerState == State.caption) {
             if (totalGameTime - captionStartTime <= captionTime) {
                 captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
@@ -151,6 +159,12 @@ public partial class Ui: Control {
             map.Position = Map.GlobalPositionToMapPosition(player, Vector3.Zero);
             map.Scale = new Vector2(1.0f, 1.0f);
         }
+    }
+    public override void _PhysicsProcess(double delta) {
+        // 计时器累加
+        totalGameTime += (long)(delta * 1e3);
+        // 更新相机动画
+        player.cameraManager.PosesAnimation();
     }
     public override void _Input(InputEvent @event) {
         if (@event.IsAction("show_info")) {
@@ -209,6 +223,7 @@ public partial class Ui: Control {
                 ShowCaptionChoose(captionIndex);
             }
         } else { // 如果不需要选择，即普通对话，即可跳过
+            player.cameraManager.PauseCameraAnimation();
             Plot.ParseScript(captions[captionIndex].endCode);
         }
     }
@@ -238,6 +253,15 @@ public partial class Ui: Control {
         captionIndex = id;
         SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
         Plot.ParseScript(captions[id].startCode);
+        // 设置相机动画
+        if (captions[id].endCode == null) {
+            return;
+        }
+        player.cameraManager.SetPosesAnimationTime(captions[id].time);
+        player.cameraManager.PushCurrentCameraPose();
+        Plot.ParseCameraScript(captions[id].endCode);
+        player.cameraManager.PushCurrentCameraPose();
+        player.cameraManager.PosesAnimation();
     }
     public void ShowCaptionChoose(int id) {
         chooseBox.Visible = true;

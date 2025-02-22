@@ -15,7 +15,7 @@ render_priority = 0
 shader = ExtResource("3_sh47m")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iwtqv"]
-radius = 0.3
+radius = 0.1
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_atgam"]
 
@@ -24,9 +24,10 @@ radius = 0.3
 [node name="sunLight" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.8011, -0.00264175, -0.598524, -0.431951, 0.694765, 0.575083, 0.414314, 0.719232, -0.557717, 3.89103, 9.6729, 0)
 light_color = Color(0.728749, 0.719017, 0.608124, 1)
-light_energy = 16.0
+light_energy = 4.0
 light_bake_mode = 1
 shadow_enabled = true
+shadow_bias = 0.0
 shadow_opacity = 0.88
 directional_shadow_mode = 0
 

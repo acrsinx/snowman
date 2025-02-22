@@ -44,7 +44,7 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
                 lines.pop(i)
         return lines, suffix
 
-operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>", "??", "<<=", ">>=", "??="]
+operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>", "??", "::", "<<=", ">>=", "??="]
 """
 符号列表
 从短到长
@@ -66,10 +66,11 @@ def is_num(num: str) -> bool:
 
 class NoteType(Enum):
     """
-    类型
+    注释类型
     - 0 普通
     - 1 注释
     - 2 行末注释
+    - 注意C#等语言中以#开头的不是注释，但当作注释处理，以求方便
     """
     NORMAL = 0
     NOTE = 1
@@ -133,7 +134,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
             word += data[i]
             continue
         # 注释
-        if data[i] == "/" and data[i+1] == "/":
+        if (data[i] == "/" and data[i+1] == "/") or (data[i] == "#" and data[i+1] == " "):
             if len(word) > 0:
                 words.append((word, NoteType.NORMAL))
                 word = ""
@@ -303,7 +304,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                         in_array = False
                         tab_level_in_array = 0
                     continue
-                if (words[i+1][0] not in ["else", "elif"]) and (not words[i+1][0] == ";"):
+                if (words[i+1][0] not in ["else", "elif", ")"]) and (not words[i+1][0] == ";"):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
@@ -332,9 +333,9 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 continue
             if words[i][0] == "-" and (is_operator(words[i-1][0]) or words[i-1][0] in ["(", "[", ",", "return"]): # 如果是算符后加"-"，则不加空格
                 continue
-            if words[i][0] in ["(", "[", "\"", "'", "?", "!", "++", "--"]: # 如果是(或[或"或'或?或!或++或--之后，则不加空格
+            if words[i][0] in ["(", "[", "\"", "'", "?", "!", "::", "++", "--"]: # 如果是(或[或"或'或?或!或::或++或--之后，则不加空格
                 continue
-            if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "++", "--"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?或++或--之前，且不是算符，则不加空格
+            if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "::", "++", "--"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?或::或++或--之前，且不是算符，则不加空格
                 continue
             if words[i+1][0] == "(" and words[i][0] not in [",", "{", "for", "foreach", "elif", "switch", "if", "while", "return"] and not is_operator(words[i][0]): # 如果是(之前且不是关键词，则不加空格
                 continue
