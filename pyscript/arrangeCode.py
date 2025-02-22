@@ -304,7 +304,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                         in_array = False
                         tab_level_in_array = 0
                     continue
-                if (words[i+1][0] not in ["else", "elif"]) and (not words[i+1][0] == ";"):
+                if (words[i+1][0] not in ["else", "elif", ")"]) and (not words[i+1][0] == ";"):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue

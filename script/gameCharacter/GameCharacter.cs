@@ -138,7 +138,8 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         if (!gameCharacters.Remove(this)) {
             player.ui.Log("角色无法从列表中移除");
         }
-        die.Invoke();
+        TriggerSystem.SendTrigger(Name + "_die");
+        die?.Invoke();
         QueueFree();
     }
     public Node3D GetCharacterNode() {

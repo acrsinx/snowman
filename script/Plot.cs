@@ -7,14 +7,10 @@ public class Plot {
     };
     public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
     };
-    public static string[] paths;
+    public static string path;
     public static Player player;
     public static void Check(Ui ui) {
-        paths = new string[] {
-            "res://plotJson/plot0/plot0_0.json",
-            "res://plotJson/plot0/plot0_1.json",
-            "res://plotJson/plot0/plot0_2.json",
-        };
+        path = "res://plotJson/plot0/plot0_0.json";
         Open(ui);
     }
     /// <summary>
@@ -46,7 +42,7 @@ public class Plot {
             }, new Vector3(0, 0.125f, 0), false) {
                 Position = position
             };
-            InstanceName.Add(instanceName, plotCharacter);
+            AddCharacterInstance(instanceName, plotCharacter);
             return;
         }
         GameCharacter gameCharacter;
@@ -65,7 +61,16 @@ public class Plot {
             }
         }
         gameCharacter.Position = position;
+        AddCharacterInstance(instanceName, gameCharacter);
+    }
+    /// <summary>
+    /// 添加角色到实例列表中
+    /// </summary>
+    /// <param name="instanceName">角色名</param>
+    /// <param name="gameCharacter">角色实例</param>
+    public static void AddCharacterInstance(string instanceName, GameCharacter gameCharacter) {
         InstanceName.Add(instanceName, gameCharacter);
+        gameCharacter.Name = instanceName;
     }
     /// <summary>
     /// 播放动画
@@ -142,6 +147,9 @@ public class Plot {
     /// 解析剧情脚本
     /// </summary>
     public static void ParseScriptLine(List<string> wordsList) {
+        if (wordsList.Count == 0) {
+            return;
+        }
         // 解析核心词
         switch (wordsList[0]) {
             case "LoadCharacter": {
@@ -173,6 +181,13 @@ public class Plot {
                 player.ui.ShowCaption(int.Parse(wordsList[1]));
                 break;
             }
+            case "AddTrigger": {
+                TriggerSystem.AddTrigger(wordsList[1], () => {
+                    path = wordsList[2];
+                    Open(player.ui);
+                });
+                break;
+            }
             case "Exit": {
                 player.PlayerState = State.move;
                 break;
@@ -184,6 +199,9 @@ public class Plot {
         }
     }
     public static void ParseScript(string script) {
+        if (script == "" || script == null) {
+            return;
+        }
         string[] lines = script.Split(';');
         foreach (string line in lines) {
             ParseScriptLine(SplitWord(line));
@@ -198,19 +216,16 @@ public class Plot {
             }
         }
     }
-    public static void Open(Ui ui, int n) {
-        if (!FileAccess.FileExists(paths[n])) {
-            ui.Log("未找到文件: " + paths[n]);
-            return;
-        }
-        if (paths == null) {
+    public static void Open(Ui ui) {
+        if (path == null) {
             ui.Log("未设置剧情文件路径");
         }
-        FileAccess fileAccess = FileAccess.Open(paths[n], FileAccess.ModeFlags.Read);
+        if (!FileAccess.FileExists(path)) {
+            ui.Log("未找到文件: " + path);
+            return;
+        }
+        FileAccess fileAccess = FileAccess.Open(path, FileAccess.ModeFlags.Read);
         ui.ShowCaption((Dictionary) Json.ParseString(fileAccess.GetAsText()));
         fileAccess.Close();
-    }
-    public static void Open(Ui ui) {
-        Open(ui, 0);
     }
 }

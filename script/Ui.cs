@@ -143,7 +143,7 @@ public partial class Ui: Control {
         if (settingPanel.showInfo.ButtonPressed) {
             infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             if (player.PlayerState == State.caption) {
-                infomation.Text += "\n剧情位置: " + Plot.paths[0] + ":" + captionIndex.ToString();
+                infomation.Text += "\n剧情位置: " + Plot.path + ":" + captionIndex.ToString();
             }
         }
         if (player.PlayerState == State.caption) {

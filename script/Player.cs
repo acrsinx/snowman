@@ -89,9 +89,9 @@ public partial class Player: Node3D {
     /// </summary>
     public State PlayerState {
         set {
+            CanTurn = false;
             switch (value) {
                 case State.move: {
-                    canTurn = false;
                     ui.rightUp.Visible = true;
                     ui.captionContainer.Visible = false;
                     ui.speakerLabel.Text = "";
@@ -246,7 +246,7 @@ public partial class Player: Node3D {
                     return;
                 }
                 if (drag.Index == rotateIndex) { // 转动视角
-                    canTurn = true;
+                    CanTurn = true;
                     mouseMove = -drag.Relative * mouseSpeed;
                     return;
                 }
