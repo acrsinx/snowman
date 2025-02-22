@@ -82,7 +82,6 @@ def make_json() -> None:
                 with open(fileName, "w", encoding='utf-8') as file_output:
                     i += 2
                     json_file_data = {}
-                    json_line = {}
                     while i < len(tookens) and tookens[i] != "file":
                         caption_index: str = tookens[i]
                         actorName: str = tookens[i+1]
