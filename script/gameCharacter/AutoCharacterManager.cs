@@ -2,13 +2,13 @@ using Godot;
 /// <summary>
 /// 自动寻路角色管理器
 /// </summary>
-public class AutoCharacterManager : object {
+public class AutoCharacterManager: object {
     public const float speed = 1f;
-	public GameCharacter character;
-	public Player player;
-	public GameCharacter target;
-	public delegate void voidDelegate();
-	public voidDelegate afterAttack;
+    public GameCharacter character;
+    public Player player;
+    public GameCharacter target;
+    public delegate void voidDelegate();
+    public voidDelegate afterAttack;
     private enum State {
         Idle,
         Walk,
@@ -20,12 +20,12 @@ public class AutoCharacterManager : object {
     /// 疑似卡住次数
     /// </summary>
     private int stuckCount = 0;
-	public AutoCharacterManager(GameCharacter character, Player player, GameCharacter target) {
-	    this.character = character;
+    public AutoCharacterManager(GameCharacter character, Player player, GameCharacter target) {
+        this.character = character;
         this.player = player;
         this.target = target;
-	}
-	public void PhysicsProcess(float fDelta) {
+    }
+    public void PhysicsProcess(float fDelta) {
         if (player.PlayerState != global::State.move) {
             return;
         }
@@ -49,7 +49,7 @@ public class AutoCharacterManager : object {
                     stuckCount = 0;
                 }
                 Vector3 target = character.agent.GetNextPathPosition();
-				character.PlayWalkAnimation();
+                character.PlayWalkAnimation();
                 if (character.agent.IsNavigationFinished()) {
                     state = State.StartAttack;
                     break;
@@ -67,14 +67,14 @@ public class AutoCharacterManager : object {
                     break;
                 }
                 if (!character.Attack()) {
-					state = State.Idle;
+                    state = State.Idle;
                     break;
-				}
+                }
                 break;
             }
             case State.Attacking: {
                 if (character.Attackable()) { // 可以再次攻击，即攻击缓冲时间结束
-					afterAttack.Invoke();
+                    afterAttack.Invoke();
                     state = State.Idle;
                     break;
                 }
@@ -84,8 +84,8 @@ public class AutoCharacterManager : object {
         // 重力
         character.Velocity += Player.gravity * fDelta;
         character.MoveAndSlide();
-	}
-	public void Attack() {
-		state = State.Attacking;
-	}
+    }
+    public void Attack() {
+        state = State.Attacking;
+    }
 }
