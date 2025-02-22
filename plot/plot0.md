@@ -7,10 +7,15 @@
 `caption`  
 ```
 LoadCharacter(snowdog, dog, (-4, 0, -6));
+LoadCharacter(snowman, snowman1, (-3, 0, -4));
+LoadCharacter(snowman, snowman2, (-4, 0, -4));
+LoadCharacter(snowman, snowman3, (-5, 0, -4));
+PlayerTo(-4, 0, -2);
 PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```
+LookAtCharacter(dog, 1.1, 1)
 PauseAnimation(dog);
 Goto(1)
 ```
@@ -18,11 +23,12 @@ Goto(1)
 `雪狗`: `雪人们，开战！`  
 `caption`  
 ```
-SetCameraPosition()
+SetCameraPosition();
 ```
 ```
 LoadCharacter(snowbear, bear, (5, 1, 6));
 LoadCharacter(snowbear, bear1, (3, 1, 4));
+AddTrigger(bear1_die, plotJson\plot0\plot0_1.json);
 Exit(0)
 ```
 ## 战斗结束
@@ -32,6 +38,7 @@ Exit(0)
 `雪狗`: `雪人们，我们胜利了！`  
 `caption`  
 ```
+LookAtCharacter(dog, 0.3, 1)
 ```
 ```
 Goto(1)
@@ -48,6 +55,7 @@ Goto(2)
 `愤怒的雪人`: `每次胜利，都是雪狗请功去了。`  
 `caption`  
 ```
+LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
 Goto(3)
@@ -56,6 +64,7 @@ Goto(3)
 `冷静的雪人`: `是啊，它们总不把我们当成生物。`  
 `caption`  
 ```
+LookAtCharacter(snowman2, 0.7, 1.2)
 ```
 ```
 Goto(4)
@@ -64,6 +73,7 @@ Goto(4)
 `不屑的雪人`: `雪狗们自以为是，自矜攻伐。`  
 `caption`  
 ```
+LookAtCharacter(snowman3, 0.7, 1.2)
 ```
 ```
 Goto(5)
@@ -72,8 +82,10 @@ Goto(5)
 `众雪人`: `就是！就是！`  
 `caption`  
 ```
+LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
+LookAtCharacter(snowman3, 0.7, 1.2);
 Goto(6)
 ```
 ### `6`
@@ -81,8 +93,10 @@ Goto(6)
 `你`: `（或许，成为一个独立自主的雪人要取一个名字。）`  
 `caption`  
 ```
+SetCameraPosition()
 ```
 ```
+AddTrigger(playerNamed, plotJson\plot0\plot0_2.json);
 Exit(0)
 ```
 ## 取完名字

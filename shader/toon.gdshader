@@ -10,31 +10,27 @@ float getDepth(vec2 uv, mat4 matrix) {
 }
 void fragment() {
     vec2 uv = SCREEN_UV;
-    float dx = 1.0 / VIEWPORT_SIZE.x;
-    float dy = 1.0 / VIEWPORT_SIZE.y;
+    float dx = 3.0 / VIEWPORT_SIZE.x;
+    float dy = 3.0 / VIEWPORT_SIZE.y;
     // [0, 1, 2]
     // [3, 4, 5]
     // [6, 7, 8]
     float depth1 = getDepth(uv - vec2(0.0, dy), INV_PROJECTION_MATRIX);
     float depth3 = getDepth(uv - vec2(dx, 0.0), INV_PROJECTION_MATRIX);
     float depth4 = getDepth(uv, INV_PROJECTION_MATRIX);
-    float depth5 = getDepth(uv - vec2(-dx, 0.0), INV_PROJECTION_MATRIX);
-    float depth7 = getDepth(uv - vec2(0.0, -dy), INV_PROJECTION_MATRIX);
+    float depth5 = getDepth(uv + vec2(dx, 0.0), INV_PROJECTION_MATRIX);
+    float depth7 = getDepth(uv + vec2(0.0, dy), INV_PROJECTION_MATRIX);
     // a
     // b
     // c
-    float depthA = depth1;
     vec3 depthB = vec3(depth3, depth4, depth5);
-    float depthC = depth7;
     // 卷积核
     // [0, 1, 0] d
     // [1, -4, 1] e
     // [0, 1, 0] f
-    float depthD = 1.0;
     vec3 depthE = vec3(1, -4, 1);
-    float depthF = 1.0;
     // 卷积
-    float a = depthA * depthD + dot(depthB, depthE) + depthC * depthF;
+    float a = depth1 + dot(depthB, depthE) + depth7;
     a = abs(a);
     vec3 color = texture(screen_texture, uv).rgb;
     ALBEDO = a > 0.1 && depth4 < 100.0?vec3(0):color;

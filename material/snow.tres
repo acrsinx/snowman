@@ -1,8 +1,10 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bv5ihviqqcmnl"]
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://bv5ihviqqcmnl"]
 
 [ext_resource type="Texture2D" uid="uid://ci3jfkgts87f7" path="res://material/雪_法线.png" id="1_d5anj"]
+[ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="1_sawrl"]
 
 [resource]
+albedo_texture = ExtResource("1_sawrl")
 roughness = 0.44
 normal_enabled = true
 normal_scale = 0.5

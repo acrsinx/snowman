@@ -4,13 +4,24 @@ public partial class Snowman: GameCharacter {
     public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
     public static readonly PackedScene SnowballScene = ResourceLoader.Load<PackedScene>("res://model/snowball.gltf");
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
+    public AutoCharacterManager auto;
     public ObjectPool snowballPool = new(10);
-    public Snowman(Player player): base(SnowmanScene, player, false, true) {
-        Position += new Vector3(0, 2, 0);
-        player.cameraManager.cameraMarker.Reparent(this, false);
-        player.cameraManager.SetCameraPosition();
+    public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CylinderShape3D() {
+        Radius = 0.25f,
+        Height = 0.9f
+    }, new Vector3(0, 0.5f, 0), false, isPlayer) {
+        Position = new Vector3(0, 0.1f, 0);
+        if (isPlayer) {
+            player.cameraManager.cameraMarker.Reparent(this, false);
+            player.cameraManager.SetCameraPosition();
+        } else {
+            auto = new AutoCharacterManager(this, player);
+        }
         health.MaxHealth = 1000;
         health.SetFullHealth();
+    }
+    public override float GetAttackRange() {
+        return 7;
     }
     public override void CharacterAttack() {
         base.CharacterAttack();
@@ -27,16 +38,16 @@ public partial class Snowman: GameCharacter {
         rigidBody.ContactMonitor = true;
         rigidBody.MaxContactsReported = 1;
         // 设置雪球位置
-        snowball.GlobalPosition = player.character.GlobalPosition + snowballOffset;
-        snowball.GlobalRotation = new(player.cameraManager.cameraMarker.Rotation.X, character.GlobalRotation.Y, 0);
+        snowball.GlobalPosition = GlobalPosition + snowballOffset;
+        snowball.GlobalRotation = new(isPlayer?player.cameraManager.cameraMarker.Rotation.X:Tool.RandomFloat(.5f, .5001f), character.GlobalRotation.Y, 0);
         snowball.Translate(new Vector3(0, 0, -0.6f));
         // 设置速度
         Vector3 direction = new Vector3(0, 0, -1).Rotated(new(0, 1, 0), snowball.GlobalRotation.Y).Rotated(new(1, 0, 0), snowball.GlobalRotation.X) + new Vector3(0, 0.5f, 0);
-        rigidBody.SetAxisVelocity(player.character.Velocity);
+        rigidBody.SetAxisVelocity(Velocity);
         Vector3 impuse = direction.Normalized() * 10;
         rigidBody.ApplyImpulse(impuse, new Vector3(0, 0, 0));
         // I = mv => v = I/m
-        player.character.Velocity -= impuse * 0.1f;
+        Velocity -= impuse * 0.1f;
     }
     public override void _PhysicsProcess(double delta) {
         for (int i = 0; i < snowballPool.Count; i++) {
@@ -53,5 +64,12 @@ public partial class Snowman: GameCharacter {
                 continue;
             }
         }
+        if (player.PlayerState != State.move) {
+            return;
+        }
+        if (auto == null) {
+            return;
+        }
+        auto.PhysicsProcess((float) delta);
     }
 }
