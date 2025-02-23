@@ -34,7 +34,6 @@ offset_top = 10.0
 offset_right = 100.0
 offset_bottom = 60.0
 theme_type_variation = &"CircleButton"
-text = "退"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2

@@ -225,13 +225,11 @@ layout_mode = 2
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 theme_type_variation = &"CircleButton"
-text = "包"
 
 [node name="setting" type="Button" parent="RightUp"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 theme_type_variation = &"CircleButton"
-text = "设"
 
 [node name="Setting" parent="." instance=ExtResource("3_dduwx")]
 visible = false

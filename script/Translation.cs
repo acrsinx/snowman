@@ -59,6 +59,9 @@ public class Translation: object {
         if (Locale == "") {
             return source;
         }
+        if (source == "") {
+            return source;
+        }
         string fileName = GetDir() + content + ".json";
         // 已经加载过该文件
         if (loaded.ContainsKey(fileName)) {

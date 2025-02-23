@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://b4cpskud1ff2n"]
+[gd_scene load_steps=2 format=3 uid="uid://b4cpskud1ff2n"]
 
 [ext_resource type="Script" path="res://script/gameStuff/StuffBox.cs" id="1_5pk2f"]
-[ext_resource type="Texture2D" uid="uid://ctmxqxyhfs3j0" path="res://image/icon.png" id="1_xb037"]
 
 [node name="stuff" type="VBoxContainer"]
 anchors_preset = 8
@@ -24,7 +23,6 @@ custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = ExtResource("1_xb037")
 expand_mode = 4
 stretch_mode = 5
 
@@ -32,10 +30,8 @@ stretch_mode = 5
 custom_minimum_size = Vector2(128, 50)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "something"
 
 [node name="Button" type="Button" parent="."]
 custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 theme_type_variation = &"CircleButton"
-text = "使用"

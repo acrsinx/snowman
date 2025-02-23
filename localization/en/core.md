@@ -14,3 +14,7 @@
 |窗口模式|Window mode|
 |退出|Exit|
 |加载中|Loading|
+|包|Bag|
+|设|Set|
+|退|Back|
+|使用|Use|

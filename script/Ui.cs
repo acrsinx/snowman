@@ -148,6 +148,8 @@ public partial class Ui: Control {
             phoneJump.GetChild<Label>(0).Text = Translation.Translate("跳");
             phoneAttack.GetChild<Label>(0).Text = Translation.Translate("攻");
             phoneSlow.GetChild<Label>(0).Text = Translation.Translate("慢");
+            package.Text = Translation.Translate("包");
+            setting.Text = Translation.Translate("设");
         };
         ClearChoose();
         // 设置为加载态，前面的ClearCaption();会把player.PlayerState设为State.move

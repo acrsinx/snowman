@@ -40,13 +40,18 @@ public partial class StuffBox: BoxContainer {
             ui.Use(this.stuff);
             Num--;
         };
+        Translation.LangageChanged += () => {
+            use.Text = Translation.Translate("使用");
+            Focus();
+            Update();
+        };
     }
     /// <summary>
     /// 鼠标悬停或被聚焦
     /// </summary>
     public void Focus() {
         ui.packagePanel.image.Texture = stuff.GetTexture();
-        ui.packagePanel.label.Text = stuff.GetName();
+        ui.packagePanel.label.Text = Translation.Translate(stuff.GetName(), "stuff");
     }
     public void Update() {
         if (Num < 0) {
@@ -62,6 +67,6 @@ public partial class StuffBox: BoxContainer {
             return;
         }
         GetChild<TextureRect>(0).Texture = stuff.GetTexture();
-        GetChild<Label>(1).Text = stuff.GetName() + ": " + num.ToString();
+        GetChild<Label>(1).Text = Translation.Translate(stuff.GetName(), "stuff") + ": " + num.ToString();
     }
 }
