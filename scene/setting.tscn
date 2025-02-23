@@ -28,6 +28,7 @@ grow_horizontal = 0
 grow_vertical = 2
 
 [node name="Scroll" type="ScrollContainer" parent="PanelContainer"]
+custom_minimum_size = Vector2(800, 0)
 layout_mode = 2
 follow_focus = true
 
@@ -39,14 +40,13 @@ size_flags_vertical = 3
 [node name="uiType" type="OptionButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
 item_count = 2
-popup/item_0/text = "计算机"
+popup/item_0/text = ""
 popup/item_0/id = 1
-popup/item_1/text = "手机"
+popup/item_1/text = ""
 popup/item_1/id = 0
 
 [node name="vsync" type="CheckButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
-text = "开启垂直同步"
 
 [node name="maxFps" type="OptionButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
@@ -73,7 +73,7 @@ popup/item_7/id = 7
 layout_mode = 2
 item_count = 1
 selected = 0
-popup/item_0/text = "禁用"
+popup/item_0/text = ""
 popup/item_0/id = 0
 
 [node name="translation" type="OptionButton" parent="PanelContainer/Scroll/VBoxContainer"]
@@ -85,23 +85,18 @@ popup/item_0/id = 0
 
 [node name="shadow" type="CheckButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
-text = "开启阴影"
 
 [node name="develop" type="CheckButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
-text = "开发者选项"
 
 [node name="useScreenShader" type="CheckButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
-text = "使用屏幕着色器"
 
 [node name="showInfo" type="CheckButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
-text = "开启调试信息"
 
 [node name="window" type="CheckButton" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
-text = "窗口模式"
 
 [node name="LOD" type="SpinBox" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
@@ -110,4 +105,3 @@ step = 0.01
 
 [node name="exit" type="Button" parent="PanelContainer/Scroll/VBoxContainer"]
 layout_mode = 2
-text = "退出"

@@ -46,6 +46,19 @@ public partial class Setting: Control {
         window = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/window");
         exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
         LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
+        // 设置文字
+        Translation.LangageChanged += () => {
+            uiType.SetItemText(0, Translation.Translate("计算机"));
+            uiType.SetItemText(1, Translation.Translate("手机"));
+            vsync.Text = Translation.Translate("开启垂直同步");
+            tts.SetItemText(0, Translation.Translate("禁用"));
+            shadow.Text = Translation.Translate("开启阴影");
+            develop.Text = Translation.Translate("开发者选项");
+            useScreenShader.Text = Translation.Translate("使用屏幕着色器");
+            showInfo.Text = Translation.Translate("开启调试信息");
+            window.Text = Translation.Translate("窗口模式");
+            exit.Text = Translation.Translate("退出");
+        };
         // 设置初始值
         uiType.Selected = (int) ui.uiType;
         Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();

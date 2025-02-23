@@ -3,6 +3,7 @@ import json
 import re
 
 import arrangeCode
+import makeTranslate
 
 def decode_mdplot(data: str) -> list[str]:
     in_tooken: bool = False
@@ -147,3 +148,4 @@ if __name__ == '__main__':
     make_dir()
     arrangeCode.arrange_whole_project()
     make_json()
+    makeTranslate.make_translate_all()
