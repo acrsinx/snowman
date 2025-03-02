@@ -7,6 +7,9 @@ public class Plot {
     };
     public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
     };
+    /// <summary>
+    /// 剧情文件路径
+    /// </summary>
     public static string path;
     public static Player player;
     public static void Check(Ui ui) {
@@ -227,5 +230,13 @@ public class Plot {
         FileAccess fileAccess = FileAccess.Open(path, FileAccess.ModeFlags.Read);
         ui.ShowCaption((Dictionary) Json.ParseString(fileAccess.GetAsText()));
         fileAccess.Close();
+    }
+    /// <summary>
+    /// 把剧情文件路径转换为本地化所用的上下文
+    /// </summary>
+    /// <param name="path">剧情文件路径</param>
+    /// <returns>本地化文件的上下文</returns>
+    public static string PlotPathToLocalizationContent(string path) {
+        return "plot/" + path.Replace("\\", "/").Replace("res://", "").Replace("plotJson/", "").Replace(".json", "").Replace("/", "_");
     }
 }

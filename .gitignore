@@ -13,3 +13,5 @@ copy/
 .idea/
 # 翻译文件
 localization/localization/
+# 翻译模板文件
+localization/template/plot/

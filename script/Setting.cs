@@ -11,7 +11,11 @@ public partial class Setting: Control {
     /// <summary>
     /// 声音
     /// </summary>
-    private Array<Dictionary> voices;
+    public Array<Dictionary> voices;
+    /// <summary>
+    /// 声音索引
+    /// </summary>
+    public int voiceIndex;
     /// <summary>
     /// 文本转语音的声音选择
     /// </summary>
@@ -147,10 +151,12 @@ public partial class Setting: Control {
     }
     public void SetTtsId(long index) {
         if (index == 0) { // 不使用TTS
+            voiceIndex = -1;
             ttsId = "";
             return;
         }
-        ttsId = voices[((int) index) - 1]["id"].ToString();
+        voiceIndex = ((int) index) - 1;
+        ttsId = voices[voiceIndex]["id"].ToString();
     }
     public void SetShadow() {
         light.ShadowEnabled = shadow.ButtonPressed;

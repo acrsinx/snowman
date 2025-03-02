@@ -148,4 +148,5 @@ if __name__ == '__main__':
     make_dir()
     arrangeCode.arrange_whole_project()
     make_json()
+    makeTranslate.create_localization_template_all()
     makeTranslate.make_translate_all()

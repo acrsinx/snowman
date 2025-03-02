@@ -289,13 +289,15 @@ public partial class Ui: Control {
     private void SetCaption(string speakerName, string caption, int time) {
         player.PlayerState = State.caption;
         captionStartTime = totalGameTime;
-        speakerLabel.Text = speakerName;
-        captionLabel.Text = caption;
+        speakerLabel.Text = Translation.Translate(speakerName, "character");
+        captionLabel.Text = Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path));
         captionTime = time;
         if (settingPanel.ttsId == "") {
             return;
         }
-        DisplayServer.TtsSpeak(caption, settingPanel.ttsId);
+        // 使用TTS读出台词
+        string ttsTranslate = Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path), (string) settingPanel.voices[settingPanel.voiceIndex]["language"]);
+        DisplayServer.TtsSpeak(ttsTranslate, settingPanel.ttsId);
     }
     public void ClearChoose() {
         chooseBox.Visible = false;
