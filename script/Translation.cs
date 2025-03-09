@@ -28,6 +28,10 @@ public class Translation: object {
     };
     public static Dictionary<string, Dictionary<string, string>> loaded = new();
     public static string[] GetLanguages() {
+        string path = OS.GetUserDataDir() + "/localization/";
+        if (!DirAccess.DirExistsAbsolute(path)) {
+            return System.Array.Empty<string>();
+        }
         string[] list = DirAccess.Open(OS.GetUserDataDir() + "/localization/").GetDirectories();
         return list;
     }

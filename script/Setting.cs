@@ -69,7 +69,6 @@ public partial class Setting: Control {
         tts.Selected = 0;
         voices = DisplayServer.TtsGetVoices();
         for (int i = 0; i < voices.Count; i++) {
-            Ui.Log(voices[i].ToString());
             tts.AddItem(voices[i]["name"].ToString());
         }
         string[] languages = Translation.GetLanguages();

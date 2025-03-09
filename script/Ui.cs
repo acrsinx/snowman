@@ -43,8 +43,13 @@ public partial class Ui: Control {
     private long captionStartTime = 0;
     public CaptionResource[] captions;
     private int captionIndex = 0;
+    private static readonly string[] Logs = new string[3];
     public static void Log(string s) {
-        GD.Print("[" + totalGameTime + "] " + s);
+        string toLog = "[" + totalGameTime + "] " + s;
+        Logs[0] = Logs[1];
+        Logs[1] = Logs[2];
+        Logs[2] = toLog;
+        GD.Print(toLog);
     }
     public static void Log(params object[] objects) {
         if (objects == null || objects.Length == 0) {
@@ -147,10 +152,14 @@ public partial class Ui: Control {
     }
     public override void _Process(double delta) {
         if (settingPanel.showInfo.ButtonPressed) {
-            infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            text += "\n" + Logs[0];
+            text += "\n" + Logs[1];
+            text += "\n" + Logs[2];
             if (player.PlayerState == State.caption) {
-                infomation.Text += "\n剧情位置: " + Plot.path + ":" + captionIndex.ToString();
+                text += "\n剧情位置: " + Plot.path + ":" + captionIndex.ToString();
             }
+            infomation.Text = text;
         }
         if (player.PlayerState == State.caption) {
             if (totalGameTime - captionStartTime <= captionTime) {
