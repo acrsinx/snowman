@@ -14,7 +14,7 @@ public class GameInformation: object {
     /// <param name="path">文件路径</param>
     public void SaveInformation(string path) {
         Dictionary<string, string> information = new() {
-            {"totalGameTime", ui.totalGameTime.ToString()},
+            {"totalGameTime", Ui.totalGameTime.ToString()},
             {"vsync", ui.settingPanel.vsync.ButtonPressed?"1":"0"},
             {"maxFps", ui.settingPanel.maxFps.Selected.ToString()},
             {"tts", ui.settingPanel.tts.Selected.ToString()},
@@ -37,11 +37,11 @@ public class GameInformation: object {
     public void LoadInformation(string path) {
         FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
         if (file == null) {
-            ui.Log("读取游戏信息失败，文件不存在");
+            Ui.Log("读取游戏信息失败，文件不存在");
             return;
         }
         Dictionary<string, string> information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
-        ui.totalGameTime = long.Parse(SafeRead(information, "totalGameTime") ?? "0");
+        Ui.totalGameTime = long.Parse(SafeRead(information, "totalGameTime") ?? "0");
         bool vsync = (SafeRead(information, "vsync") ?? "1") == "1";
         ui.settingPanel.vsync.ButtonPressed = vsync;
         ui.settingPanel.SetVsync();

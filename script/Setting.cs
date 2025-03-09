@@ -69,7 +69,7 @@ public partial class Setting: Control {
         tts.Selected = 0;
         voices = DisplayServer.TtsGetVoices();
         for (int i = 0; i < voices.Count; i++) {
-            ui.Log(voices[i].ToString());
+            Ui.Log(voices[i].ToString());
             tts.AddItem(voices[i]["name"].ToString());
         }
         string[] languages = Translation.GetLanguages();
@@ -79,7 +79,7 @@ public partial class Setting: Control {
         useScreenShader.ButtonPressed = ui.player.screenShader.Visible;
         light = ui.GetTree().Root.GetNode<Light3D>("Node/sunLight");
         if (light is null) {
-            ui.Log("找不到灯光。");
+            Ui.Log("找不到灯光。");
         }
         shadow.ButtonPressed = light.ShadowEnabled;
         showInfo.ButtonPressed = ui.infomation.Visible;

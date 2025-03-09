@@ -38,15 +38,15 @@ public partial class Ui: Control {
     /// <summary>
     /// 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
     /// </summary>
-    public long totalGameTime = 0;
+    public static long totalGameTime = 0;
     private int captionTime = 0;
     private long captionStartTime = 0;
     public CaptionResource[] captions;
     private int captionIndex = 0;
-    public void Log(string s) {
+    public static void Log(string s) {
         GD.Print("[" + totalGameTime + "] " + s);
     }
-    public void Log(params object[] objects) {
+    public static void Log(params object[] objects) {
         if (objects == null || objects.Length == 0) {
             return;
         }
@@ -55,16 +55,6 @@ public partial class Ui: Control {
             s += o.ToString() + " ";
         }
         Log(s);
-    }
-    public static void LogStatic(params object[] objects) {
-        if (objects == null || objects.Length == 0) {
-            return;
-        }
-        string s = "";
-        foreach (var o in objects) {
-            s += o.ToString() + " ";
-        }
-        GD.Print("[???]", s);
     }
     public override void _Ready() {
         gameInformation = new(this);

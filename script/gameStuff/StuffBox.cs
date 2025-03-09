@@ -55,7 +55,7 @@ public partial class StuffBox: BoxContainer {
     }
     public void Update() {
         if (Num < 0) {
-            ui.Log("为什么会有负数的物品？");
+            Ui.Log("为什么会有负数的物品？");
             return;
         }
         if (Num == 0) {

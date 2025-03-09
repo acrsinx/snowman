@@ -23,7 +23,7 @@ public class Plot {
     /// <returns>返回角色名字</returns>
     public static PlotCharacter GetPlotCharacter(string instanceName) {
         if (!InstanceName.ContainsKey(instanceName)) {
-            player.ui.Log("未找到剧情角色：" + instanceName);
+            Ui.Log("未找到剧情角色：" + instanceName);
         }
         return InstanceName[instanceName];
     }
@@ -35,7 +35,7 @@ public class Plot {
     /// <param name="position">角色位置</param>
     public static void LoadCharacter(string characterName, string instanceName, Vector3 position) {
         if (InstanceName.ContainsKey(instanceName)) {
-            player.ui.Log("已存在角色：" + instanceName);
+            Ui.Log("已存在角色：" + instanceName);
             return;
         }
         if (CharacterPath.ContainsKey(characterName)) {
@@ -59,7 +59,7 @@ public class Plot {
                 break;
             }
             default: {
-                player.ui.Log("未找到角色：" + characterName);
+                Ui.Log("未找到角色：" + characterName);
                 return;
             }
         }
@@ -196,7 +196,7 @@ public class Plot {
                 break;
             }
             default: {
-                player.ui.Log("未知的剧情指令: " + wordsList[0]);
+                Ui.Log("未知的剧情指令: " + wordsList[0]);
                 break;
             }
         }
@@ -221,10 +221,10 @@ public class Plot {
     }
     public static void Open(Ui ui) {
         if (path == null) {
-            ui.Log("未设置剧情文件路径");
+            Ui.Log("未设置剧情文件路径");
         }
         if (!FileAccess.FileExists(path)) {
-            ui.Log("未找到文件: " + path);
+            Ui.Log("未找到文件: " + path);
             return;
         }
         FileAccess fileAccess = FileAccess.Open(path, FileAccess.ModeFlags.Read);

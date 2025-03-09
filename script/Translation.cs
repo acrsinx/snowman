@@ -83,13 +83,13 @@ public class Translation: object {
         }
         // 尝试加载文件
         if (!FileAccess.FileExists(fileName)) {
-            Ui.LogStatic("找不到翻译文件: ", fileName);
+            Ui.Log("找不到翻译文件: ", fileName);
             return source;
         }
         // 打开文件
         FileAccess file = FileAccess.Open(fileName, FileAccess.ModeFlags.Read);
         if (file == null) {
-            Ui.LogStatic("无法打开翻译文件: ", fileName);
+            Ui.Log("无法打开翻译文件: ", fileName);
             return source;
         }
         string json = file.GetAsText();
