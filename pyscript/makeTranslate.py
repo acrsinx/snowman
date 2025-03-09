@@ -1,12 +1,17 @@
 import json
 import os
 
+import arrangeCode
+
 def make_translate(path: str, output: str) -> None:
     """
     生成翻译文件
     - path: 源文件路径
     - output: 输出文件路径
     """
+    # 未被修改则跳过
+    if arrangeCode.check_time(path, output):
+        return
     print(path)
     translation_json: dict[str, str] = {}
     with open(path, "r", encoding="utf-8") as file:
@@ -63,6 +68,9 @@ def create_localization_template(path: str) -> None:
     创建翻译模板
     """
     output: str = plot_json_path_to_template_path(path)
+    # 未被修改则跳过
+    if arrangeCode.check_time(path, output):
+        return
     print(output)
     toTranslate: dict[str, str] = {}
     with open(path, "r", encoding="utf-8") as file:

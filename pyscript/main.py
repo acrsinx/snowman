@@ -145,8 +145,13 @@ def make_dir() -> None:
             print("创建目录: ", dir)
 
 if __name__ == '__main__':
+    # 生成必要的目录
     make_dir()
+    # 整理代码
     arrangeCode.arrange_whole_project()
+    # 生成剧本json文件
     make_json()
+    # 创建翻译模板
     makeTranslate.create_localization_template_all()
+    # 生成翻译json文件
     makeTranslate.make_translate_all()
