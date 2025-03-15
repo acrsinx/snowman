@@ -28,7 +28,7 @@ SetCameraPosition();
 ```
 LoadCharacter(snowbear, bear, (5, 1, 6));
 LoadCharacter(snowbear, bear1, (3, 1, 4));
-AddTrigger(bear1_die, plotJson\plot0\plot0_1.json);
+AddTrigger(bear1_die, plot0/plot0_1.json);
 Exit(0)
 ```
 ## 战斗结束
@@ -96,7 +96,7 @@ Goto(6)
 SetCameraPosition()
 ```
 ```
-AddTrigger(playerNamed, plotJson\plot0\plot0_2.json);
+AddTrigger(playerNamed, plot0/plot0_2.json);
 Exit(0)
 ```
 ## 取完名字
