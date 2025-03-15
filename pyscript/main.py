@@ -25,7 +25,7 @@ def decode_mdplot(data: str) -> list[str]:
         i += 1
     return tookens
 
-def simplify_script (code: str) -> str:
+def simplify_script(code: str) -> str:
     """
     简化剧情脚本
     将无用符号换为空格
@@ -136,7 +136,7 @@ def make_json() -> None:
                         json_file_data.update(json_line)
                     json.dump(json_file_data, file_output, ensure_ascii=False)
 
-need_dirs: list[str] = ["export\\export\\"]
+need_dirs: list[str] = ["export\\export\\", "localization\\template\\plot\\"]
 
 def make_dir() -> None:
     for dir in need_dirs:
