@@ -1,4 +1,3 @@
-using System;
 using Godot;
 using Godot.Collections;
 public partial class Ui: Control {
@@ -39,15 +38,20 @@ public partial class Ui: Control {
     /// <summary>
     /// 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
     /// </summary>
-    public long totalGameTime = 0;
+    public static long totalGameTime = 0;
     private int captionTime = 0;
     private long captionStartTime = 0;
     public CaptionResource[] captions;
     private int captionIndex = 0;
-    public void Log(string s) {
-        GD.Print("[" + totalGameTime + "] " + s);
+    private static readonly string[] Logs = new string[3];
+    public static void Log(string s) {
+        string toLog = "[" + totalGameTime + "] " + s;
+        Logs[0] = Logs[1];
+        Logs[1] = Logs[2];
+        Logs[2] = toLog;
+        GD.Print(toLog);
     }
-    public void Log(params object[] objects) {
+    public static void Log(params object[] objects) {
         if (objects == null || objects.Length == 0) {
             return;
         }
@@ -135,16 +139,27 @@ public partial class Ui: Control {
         settingPanel.Init();
         packagePanel.Init();
         loadPanel.Init();
+        Translation.LangageChanged += () => {
+            phoneJump.GetChild<Label>(0).Text = Translation.Translate("跳");
+            phoneAttack.GetChild<Label>(0).Text = Translation.Translate("攻");
+            phoneSlow.GetChild<Label>(0).Text = Translation.Translate("慢");
+            package.Text = Translation.Translate("包");
+            setting.Text = Translation.Translate("设");
+        };
         ClearChoose();
         // 设置为加载态，前面的ClearCaption();会把player.PlayerState设为State.move
         player.PlayerState = State.load;
     }
     public override void _Process(double delta) {
         if (settingPanel.showInfo.ButtonPressed) {
-            infomation.Text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", LOD: " + GetTree().Root.MeshLodThreshold + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            text += "\n" + Logs[0];
+            text += "\n" + Logs[1];
+            text += "\n" + Logs[2];
             if (player.PlayerState == State.caption) {
-                infomation.Text += "\n剧情位置: " + Plot.path + ":" + captionIndex.ToString();
+                text += "\n剧情位置: " + Plot.path + ":" + captionIndex.ToString();
             }
+            infomation.Text = text;
         }
         if (player.PlayerState == State.caption) {
             if (totalGameTime - captionStartTime <= captionTime) {
@@ -273,13 +288,15 @@ public partial class Ui: Control {
     private void SetCaption(string speakerName, string caption, int time) {
         player.PlayerState = State.caption;
         captionStartTime = totalGameTime;
-        speakerLabel.Text = speakerName;
-        captionLabel.Text = caption;
+        speakerLabel.Text = Translation.Translate(speakerName, "character");
+        captionLabel.Text = Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path));
         captionTime = time;
         if (settingPanel.ttsId == "") {
             return;
         }
-        DisplayServer.TtsSpeak(caption, settingPanel.ttsId);
+        // 使用TTS读出台词
+        string ttsTranslate = Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path), (string) settingPanel.voices[settingPanel.voiceIndex]["language"]);
+        DisplayServer.TtsSpeak(ttsTranslate, settingPanel.ttsId);
     }
     public void ClearChoose() {
         chooseBox.Visible = false;

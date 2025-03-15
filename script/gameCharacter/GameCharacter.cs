@@ -76,7 +76,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         }
     }
     public bool Attackable() {
-        return player.ui.totalGameTime - attackStartTime > GetAttackWaitTime() && player.PlayerState == State.move;
+        return Ui.totalGameTime - attackStartTime > GetAttackWaitTime() && player.PlayerState == State.move;
     }
     public bool Attack() {
         if (!Attackable()) {
@@ -118,7 +118,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
             r.ApplyCentralImpulse(Vector3.Up * 1000);
         }
         if (isPlayer) {
-            player.cameraManager.cameraShake.StartShake(player.ui.totalGameTime, 500);
+            player.cameraManager.cameraShake.StartShake(Ui.totalGameTime, 500);
         }
         return true;
     }
@@ -129,14 +129,14 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         return 2;
     }
     public virtual void CharacterAttack() {
-        attackStartTime = player.ui.totalGameTime;
+        attackStartTime = Ui.totalGameTime;
     }
     public virtual void PlayWalkAnimation() {
     }
     public void Die() {
         mapFlag.QueueFree();
         if (!gameCharacters.Remove(this)) {
-            player.ui.Log("角色无法从列表中移除");
+            Ui.Log("角色无法从列表中移除");
         }
         TriggerSystem.SendTrigger(Name + "_die");
         die?.Invoke();

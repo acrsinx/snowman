@@ -153,7 +153,7 @@ public partial class Player: Node3D {
         // 设置用户界面管理器
         ui = GetTree().Root.GetNode<Ui>("Node/ui");
         ui.player = this;
-        ui.Log("_Ready");
+        Ui.Log("_Ready");
         // 设置相机管理器
         Marker3D m = GetChild<Marker3D>(0);
         Camera3D c = m.GetChild<Camera3D>(0);
@@ -198,7 +198,7 @@ public partial class Player: Node3D {
             float cos = MathF.Cos(cameraManager.cameraMarker.GlobalRotation.Y);
             character.Velocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
             // 在跳跃缓冲时间内可以跳跃
-            if (lastJumpTime + jumpDelay > ui.totalGameTime) {
+            if (lastJumpTime + jumpDelay > Ui.totalGameTime) {
                 character.Velocity += new Vector3(0, jumpSpeed, 0);
             }
             if (front != 0 || right != 0) { // 移动时
@@ -352,7 +352,7 @@ public partial class Player: Node3D {
     /// </summary>
     public void Jump() {
         if (PlayerState is State.move) {
-            lastJumpTime = ui.totalGameTime;
+            lastJumpTime = Ui.totalGameTime;
             jump = true;
         }
     }

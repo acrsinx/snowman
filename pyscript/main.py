@@ -3,6 +3,7 @@ import json
 import re
 
 import arrangeCode
+import makeTranslate
 
 def decode_mdplot(data: str) -> list[str]:
     in_tooken: bool = False
@@ -24,7 +25,7 @@ def decode_mdplot(data: str) -> list[str]:
         i += 1
     return tookens
 
-def simplify_script (code: str) -> str:
+def simplify_script(code: str) -> str:
     """
     简化剧情脚本
     将无用符号换为空格
@@ -82,7 +83,6 @@ def make_json() -> None:
                 with open(fileName, "w", encoding='utf-8') as file_output:
                     i += 2
                     json_file_data = {}
-                    json_line = {}
                     while i < len(tookens) and tookens[i] != "file":
                         caption_index: str = tookens[i]
                         actorName: str = tookens[i+1]
@@ -136,7 +136,7 @@ def make_json() -> None:
                         json_file_data.update(json_line)
                     json.dump(json_file_data, file_output, ensure_ascii=False)
 
-need_dirs: list[str] = ["export\\export\\"]
+need_dirs: list[str] = ["export\\export\\", "localization\\template\\plot\\"]
 
 def make_dir() -> None:
     for dir in need_dirs:
@@ -145,6 +145,13 @@ def make_dir() -> None:
             print("创建目录: ", dir)
 
 if __name__ == '__main__':
+    # 生成必要的目录
     make_dir()
+    # 整理代码
     arrangeCode.arrange_whole_project()
+    # 生成剧本json文件
     make_json()
+    # 创建翻译模板
+    makeTranslate.create_localization_template_all()
+    # 生成翻译json文件
+    makeTranslate.make_translate_all()

@@ -5,7 +5,7 @@ public partial class GameStuff: object {
         this.ui = ui;
     }
     public virtual string GetName() {
-        return "???";
+        return "";
     }
     public virtual Texture2D GetTexture() {
         return Images.nothing;

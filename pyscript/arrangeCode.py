@@ -76,6 +76,12 @@ class NoteType(Enum):
     NOTE = 1
     NOTE_END = 2
 
+def package(tooken: str) -> tuple[str, NoteType]:
+    """
+    将字符串封装成特定的元组
+    """
+    return tooken, NoteType.NORMAL
+
 def split_word(data: str) -> list[tuple[str, NoteType]]:
     """
     分词
@@ -98,7 +104,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         if i - operator_start < operator_length:
             continue
         if operator_start != -1 and i - operator_start >= operator_length:
-            words.append((operator_list[operator], NoteType.NORMAL))
+            words.append(package(operator_list[operator]))
             operator_start = -1
             operator_length = -1
             operator = -1
@@ -117,7 +123,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         if data[i] == "\"":
             if not is_string:
                 if len(word) > 0:
-                    words.append((word, NoteType.NORMAL))
+                    words.append(package(word))
                     word = ""
             is_string = not is_string
         if is_string:
@@ -127,7 +133,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         if data[i] == "'":
             if not is_char:
                 if len(word) > 0:
-                    words.append((word, NoteType.NORMAL))
+                    words.append(package(word))
                     word = ""
             is_char = not is_char
         if is_char:
@@ -136,7 +142,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         # 注释
         if (data[i] == "/" and data[i+1] == "/") or (data[i] == "#" and data[i+1] == " "):
             if len(word) > 0:
-                words.append((word, NoteType.NORMAL))
+                words.append(package(word))
                 word = ""
             # 是否是行末注释
             is_note = NoteType.NOTE
@@ -151,13 +157,13 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         # 空白
         if data[i].isspace():
             if len(word) > 0:
-                words.append((word, NoteType.NORMAL))
+                words.append(package(word))
                 word = ""
             continue
         # 算符
         if data[i:].startswith(tuple(operator_list)):
             if len(word) > 0:
-                words.append((word, NoteType.NORMAL))
+                words.append(package(word))
                 word = ""
             # 匹配是哪一个算符
             for j in range(len(operator_list)-1, -1, -1):
@@ -170,50 +176,13 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         # 特殊符号
         if data[i] in [",", ";", "{", "}", "(", ")", "[", "]", "?", ":"]:
             if len(word) > 0:
-                words.append((word, NoteType.NORMAL))
+                words.append(package(word))
                 word = ""
-            words.append((data[i], NoteType.NORMAL))
+            words.append(package(data[i]))
             continue
         word += data[i]
     if len(word) > 0:
-        words.append((word, NoteType.NORMAL))
-    # 为case: 语句补充大括号，使之格式更好看
-    i: int = 0
-    state: int = 0
-    level: int = 0
-    have_switch: bool = False
-    already_have_bracket: bool = False
-    while True:
-        if i+2 >= len(words):
-            break
-        if words[i][0] == "switch":
-            have_switch = True
-        if words[i][0] == "{":
-            if have_switch:
-                level += 1
-        if words[i][0] == "}":
-            if level > 0 and not already_have_bracket:
-                words.insert(i, ("}", NoteType.NORMAL))
-                i += 1
-                level -= 2
-        if words[i][0] in ["case", "default"]:
-            state = 1
-            if (not have_switch) and (not already_have_bracket):
-                words.insert(i, ("}", NoteType.NORMAL))
-                i += 1
-                level -= 1
-            have_switch = False
-        if words[i][0] == ":" and state == 1:
-            if words[i+1][0] == "{":
-                already_have_bracket = True
-                state = 0
-                i += 1
-                continue
-            state = 0
-            words.insert(i+1, ("{", NoteType.NORMAL))
-            i += 1
-            level += 1
-        i += 1
+        words.append(package(word))
     return words
 
 def output(path: str, words: list[tuple[str, NoteType]]):
@@ -272,6 +241,8 @@ def output(path: str, words: list[tuple[str, NoteType]]):
             f.write(words[i][0])
             if i in indexs or i+1 in indexs: # 泛型尖括号周围不加空格
                 if words[i][0] != ">":
+                    continue
+                if i+1 in indexs and words[i+1][0] == ">":
                     continue
             if i+1 >= len(words): # 最后一行
                 f.write("\n")

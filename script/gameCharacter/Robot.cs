@@ -20,7 +20,7 @@ public partial class Robot: GameCharacter {
     }
     public override void _PhysicsProcess(double delta) {
         weapon.Position = new Vector3(0, 2, 0);
-        weapon.Rotation = new Vector3(1.8f, player.ui.totalGameTime * 0.01f, 0);
+        weapon.Rotation = new Vector3(1.8f, Ui.totalGameTime * 0.01f, 0);
         weapon.Translate(new Vector3(0, 0.2f, 0));
         weapon.Scale = new Vector3(1.0f, 5.0f, 1.0f);
     }
