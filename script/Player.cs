@@ -202,14 +202,14 @@ public partial class Player: Node3D {
                 character.Velocity += new Vector3(0, jumpSpeed, 0);
             }
             if (front != 0 || right != 0) { // 移动时
-                direction = Tool.FloatToAngle(direction, new Vector2(-right, front).AngleTo(new(0, -1)), fDelta * 5.0f);
+                direction = Mathf.LerpAngle(direction, new Vector2(-right, front).AngleTo(new(0, -1)), fDelta * 5.0f);
                 cameraManager.UpdateCameraWhenMoving();
             } else {
                 if (mouseMove.X != 0 && CanTurn) {
-                    direction = Tool.FloatTo(direction, -cameraManager.cameraMarker.Rotation.Y, fDelta * 10.0f);
+                    direction = Mathf.Lerp(direction, -cameraManager.cameraMarker.Rotation.Y, fDelta * 10.0f);
                 }
             }
-            character.character.Rotation = new Vector3(character.character.Rotation.X, Tool.FloatToAngle(character.character.Rotation.Y, direction, fDelta * 5.0f), character.character.Rotation.Z);
+            character.character.Rotation = new Vector3(character.character.Rotation.X, Mathf.LerpAngle(character.character.Rotation.Y, direction, fDelta * 5.0f), character.character.Rotation.Z);
             // 在地板上时有阻力
             character.Velocity *= 0.95f;
         } else {

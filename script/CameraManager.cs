@@ -226,10 +226,10 @@ public class CameraManager: object {
     /// </summary>
     public void ResetCameraRotation() {
         if (cameraMarker.Rotation.X > CameraMarkerRotationSuitMaxX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationSuitMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+            cameraMarker.Rotation = new Vector3(Mathf.LerpAngle(cameraMarker.Rotation.X, CameraMarkerRotationSuitMaxX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
         if (cameraMarker.Rotation.X < CameraMarkerRotationSuitMinX) {
-            cameraMarker.Rotation = new Vector3(Tool.FloatToAngle(cameraMarker.Rotation.X, CameraMarkerRotationSuitMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
+            cameraMarker.Rotation = new Vector3(Mathf.LerpAngle(cameraMarker.Rotation.X, CameraMarkerRotationSuitMinX, 0.01f), cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
     }
     /// <summary>

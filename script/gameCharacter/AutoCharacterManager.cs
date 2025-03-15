@@ -75,7 +75,7 @@ public class AutoCharacterManager: object {
                 // 转向并添加速度
                 Vector3 direction = (target - character.GlobalPosition).Normalized();
                 float directionAngle = new Vector2(direction.X, direction.Z).AngleTo(new Vector2(0, -1));
-                character.GlobalRotation = new Vector3(character.GlobalRotation.X, Tool.FloatToAngle(character.GlobalRotation.Y, directionAngle, fDelta * 10), character.GlobalRotation.Z);
+                character.GlobalRotation = new Vector3(character.GlobalRotation.X, Mathf.LerpAngle(character.GlobalRotation.Y, directionAngle, fDelta * 10), character.GlobalRotation.Z);
                 character.Velocity = Tool.Vector3To(character.Velocity, direction * speed, fDelta * 10);
                 break;
             }
