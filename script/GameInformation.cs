@@ -36,11 +36,10 @@ public class GameInformation: object {
     /// <param name="path">文件路径</param>
     public void LoadInformation(string path) {
         FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
-        if (file == null) {
-            Ui.Log("读取游戏信息失败，文件不存在");
-            return;
+        Dictionary<string, string> information = null;
+        if (file != null) {
+            information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
         }
-        Dictionary<string, string> information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
         Ui.totalGameTime = long.Parse(SafeRead(information, "totalGameTime") ?? "0");
         bool vsync = (SafeRead(information, "vsync") ?? "1") == "1";
         ui.settingPanel.vsync.ButtonPressed = vsync;
@@ -76,7 +75,7 @@ public class GameInformation: object {
                 break;
             }
         }
-        file.Close();
+        file?.Close();
     }
     public static string SafeRead(Dictionary<string, string> dict, string key) {
         if (dict == null) {
