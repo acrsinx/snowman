@@ -130,6 +130,12 @@ show_info={
 
 pointing/emulate_touch_from_mouse=true
 
+[internationalization]
+
+locale/locale_filter_mode=1
+locale/language_filter=["en", "zh"]
+locale/country_filter=["HK", "TW"]
+
 [layer_names]
 
 3d_render/layer_1="静物"

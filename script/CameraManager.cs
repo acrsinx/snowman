@@ -92,7 +92,7 @@ public class CameraManager: object {
     /// 将相机位置与方向重置
     /// </summary>
     public void SetCameraPosition() {
-        cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
+        cameraMarker.Position = cameraShake.GetShakeOffset(Ui.totalGameTime) + CameraMarkerOrigin;
         camera.Position = cameraVector * distance;
         camera.Rotation = Vector3.Zero;
         SetFov();
@@ -149,7 +149,7 @@ public class CameraManager: object {
         }
         SetCameraPosition();
         // 相机震动
-        cameraMarker.Position = cameraShake.GetShakeOffset(player.ui.totalGameTime) + CameraMarkerOrigin;
+        cameraMarker.Position = cameraShake.GetShakeOffset(Ui.totalGameTime) + CameraMarkerOrigin;
         player.character.character.Visible = distance > 0.9f;
     }
     /// <summary>
@@ -160,7 +160,7 @@ public class CameraManager: object {
             return;
         }
         // 混合系数
-        float factor = (float)(player.ui.totalGameTime - animationStartTime) / posesAnimationTime;
+        float factor = (float)(Ui.totalGameTime - animationStartTime) / posesAnimationTime;
         // 检测是否结束
         if (factor > 1) {
             factor = 1;
@@ -181,7 +181,7 @@ public class CameraManager: object {
             distance -= CameraZoomSpeed;
             SetCameraPosition();
             if (distance < minDistance) {
-                player.ui.Log("相机穿模，找不到合适的位置");
+                Ui.Log("相机穿模，找不到合适的位置");
                 return;
             }
             if (!IsCameraTouching()) {
@@ -258,10 +258,10 @@ public class CameraManager: object {
     }
     public void SetPosesAnimationTime(int time) {
         if (pushState != PushState.none) {
-            player.ui.Log("在不合适的时机设置相机运动时间");
+            Ui.Log("在不合适的时机设置相机运动时间");
         }
         if (time < 0) {
-            player.ui.Log("相机运动时间不能小于0");
+            Ui.Log("相机运动时间不能小于0");
             return;
         }
         posesAnimationTime = time;
@@ -283,21 +283,21 @@ public class CameraManager: object {
                 cameraPosition2 = camera.GlobalPosition;
                 cameraRotation2 = camera.GlobalRotation;
                 pushState = PushState.playing;
-                animationStartTime = player.ui.totalGameTime;
+                animationStartTime = Ui.totalGameTime;
                 break;
             }
             case PushState.playing: {
-                player.ui.Log("在相机动画时压入");
+                Ui.Log("在相机动画时压入");
                 return;
             }
             case PushState.none: {
-                player.ui.Log("在写入相机动画时间前压入");
+                Ui.Log("在写入相机动画时间前压入");
                 return;
             }
         }
     }
     public void PauseCameraAnimation() {
-        animationStartTime = player.ui.totalGameTime - posesAnimationTime;
+        animationStartTime = Ui.totalGameTime - posesAnimationTime;
         pushState = PushState.none;
     }
 }

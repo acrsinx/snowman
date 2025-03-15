@@ -14,7 +14,7 @@ public class GameInformation: object {
     /// <param name="path">文件路径</param>
     public void SaveInformation(string path) {
         Dictionary<string, string> information = new() {
-            {"totalGameTime", ui.totalGameTime.ToString()},
+            {"totalGameTime", Ui.totalGameTime.ToString()},
             {"vsync", ui.settingPanel.vsync.ButtonPressed?"1":"0"},
             {"maxFps", ui.settingPanel.maxFps.Selected.ToString()},
             {"tts", ui.settingPanel.tts.Selected.ToString()},
@@ -23,7 +23,8 @@ public class GameInformation: object {
             {"useScreenShader", ui.settingPanel.useScreenShader.ButtonPressed?"1":"0"},
             {"showInfo", ui.settingPanel.showInfo.ButtonPressed?"1":"0"},
             {"window", ui.settingPanel.window.ButtonPressed?"1":"0"},
-            {"LOD", ui.settingPanel.LOD.Value.ToString()}
+            {"LOD", ui.settingPanel.LOD.Value.ToString()},
+            {"local", Translation.Locale}
         };
         FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
         file.StoreLine(Json.Stringify(information));
@@ -35,12 +36,11 @@ public class GameInformation: object {
     /// <param name="path">文件路径</param>
     public void LoadInformation(string path) {
         FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
-        if (file == null) {
-            ui.Log("读取游戏信息失败，文件不存在");
-            return;
+        Dictionary<string, string> information = null;
+        if (file != null) {
+            information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
         }
-        Dictionary<string, string> information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
-        ui.totalGameTime = long.Parse(SafeRead(information, "totalGameTime") ?? "0");
+        Ui.totalGameTime = long.Parse(SafeRead(information, "totalGameTime") ?? "0");
         bool vsync = (SafeRead(information, "vsync") ?? "1") == "1";
         ui.settingPanel.vsync.ButtonPressed = vsync;
         ui.settingPanel.SetVsync();
@@ -67,7 +67,15 @@ public class GameInformation: object {
         double lod = double.Parse(SafeRead(information, "LOD") ?? "1");
         ui.settingPanel.LOD.Value = lod;
         ui.settingPanel.SetLOD(lod);
-        file.Close();
+        string locale = SafeRead(information, "local") ?? TranslationServer.GetLocale();
+        Translation.Locale = locale;
+        for (int i = 0; i < ui.settingPanel.translation.ItemCount; i++) {
+            if (ui.settingPanel.translation.GetItemText(i) == locale) {
+                ui.settingPanel.translation.Selected = i;
+                break;
+            }
+        }
+        file?.Close();
     }
     public static string SafeRead(Dictionary<string, string> dict, string key) {
         if (dict == null) {

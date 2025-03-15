@@ -13,14 +13,17 @@ public partial class Package: Control {
         image = GetNode<TextureRect>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/Image");
         label = GetNode<Label>("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/Label");
         stuffs = new StuffBox[64];
+        Translation.LangageChanged += () => {
+            back.Text = Translation.Translate("退");
+        };
     }
     public void Init() {
         back.Pressed += () => {
             ui.Package();
         };
         for (int i = 0; i < 64; i++) {
-            stuffTable.AddChild(stuff.Instantiate());
-            stuffs[i] = stuffTable.GetChild<StuffBox>(i);
+            stuffs[i] = (StuffBox) stuff.Instantiate();
+            stuffTable.AddChild(stuffs[i]);
             stuffs[i].Init(i, new RedFruit(ui), ui, 5);
         }
     }

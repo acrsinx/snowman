@@ -11,7 +11,11 @@ public partial class Setting: Control {
     /// <summary>
     /// 声音
     /// </summary>
-    private Array<Dictionary> voices;
+    public Array<Dictionary> voices;
+    /// <summary>
+    /// 声音索引
+    /// </summary>
+    public int voiceIndex;
     /// <summary>
     /// 文本转语音的声音选择
     /// </summary>
@@ -20,6 +24,7 @@ public partial class Setting: Control {
     /// 文本转语音的ID
     /// </summary>
     public string ttsId = "";
+    public OptionButton translation;
     public CheckButton shadow;
     public CheckButton develop;
     public CheckButton useScreenShader;
@@ -37,6 +42,7 @@ public partial class Setting: Control {
         vsync = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/vsync");
         maxFps = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/maxFps");
         tts = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/tts");
+        translation = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/translation");
         shadow = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/shadow");
         develop = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/develop");
         useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
@@ -44,19 +50,35 @@ public partial class Setting: Control {
         window = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/window");
         exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
         LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
+        // 设置文字
+        Translation.LangageChanged += () => {
+            uiType.SetItemText(0, Translation.Translate("计算机"));
+            uiType.SetItemText(1, Translation.Translate("手机"));
+            vsync.Text = Translation.Translate("开启垂直同步");
+            tts.SetItemText(0, Translation.Translate("禁用"));
+            shadow.Text = Translation.Translate("开启阴影");
+            develop.Text = Translation.Translate("开发者选项");
+            useScreenShader.Text = Translation.Translate("使用屏幕着色器");
+            showInfo.Text = Translation.Translate("开启调试信息");
+            window.Text = Translation.Translate("窗口模式");
+            exit.Text = Translation.Translate("退出");
+        };
         // 设置初始值
         uiType.Selected = (int) ui.uiType;
         Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
         tts.Selected = 0;
         voices = DisplayServer.TtsGetVoices();
         for (int i = 0; i < voices.Count; i++) {
-            ui.Log(voices[i].ToString());
             tts.AddItem(voices[i]["name"].ToString());
+        }
+        string[] languages = Translation.GetLanguages();
+        for (int i = 0; i < languages.Length; i++) {
+            translation.AddItem(languages[i]);
         }
         useScreenShader.ButtonPressed = ui.player.screenShader.Visible;
         light = ui.GetTree().Root.GetNode<Light3D>("Node/sunLight");
         if (light is null) {
-            ui.Log("找不到灯光。");
+            Ui.Log("找不到灯光。");
         }
         shadow.ButtonPressed = light.ShadowEnabled;
         showInfo.ButtonPressed = ui.infomation.Visible;
@@ -73,6 +95,20 @@ public partial class Setting: Control {
         };
         tts.ItemSelected += (index) => {
             SetTtsId(index);
+        };
+        translation.ItemSelected += (index) => {
+            string language = translation.GetItemText((int) index);
+            if (language == null) {
+                return;
+            }
+            if (language == Translation.Locale) {
+                return;
+            }
+            if (language == "简体中文") {
+                Translation.Locale = "";
+                return;
+            }
+            Translation.Locale = language;
         };
         shadow.Pressed += () => {
             SetShadow();
@@ -114,10 +150,12 @@ public partial class Setting: Control {
     }
     public void SetTtsId(long index) {
         if (index == 0) { // 不使用TTS
+            voiceIndex = -1;
             ttsId = "";
             return;
         }
-        ttsId = voices[((int) index) - 1]["id"].ToString();
+        voiceIndex = ((int) index) - 1;
+        ttsId = voices[voiceIndex]["id"].ToString();
     }
     public void SetShadow() {
         light.ShadowEnabled = shadow.ButtonPressed;

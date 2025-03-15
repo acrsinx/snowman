@@ -5,6 +5,7 @@ public class TriggerSystem: object {
         if (!TriggerList.ContainsKey(triggerName)) {
             return false;
         }
+        Ui.Log("触发器: ", triggerName);
         TriggerList[triggerName].Invoke();
         return true;
     }
