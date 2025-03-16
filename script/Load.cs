@@ -44,11 +44,29 @@ public partial class Load: Control {
                 break;
             }
             case 2: {
-                // 强行刷新，防止语言不变未刷新
-                Translation.LangageChanged.Invoke();
-                break;
+                // 检查语言包是否存在，不存在则下载
+                if (DirAccess.DirExistsAbsolute("user://localization")) {
+                    break;
+                }
+                // 下载语言包
+                if (Tool.isDownloading) { // 正在下载
+                    return;
+                }
+                Ui.Log("下载语言包");
+                string path = Tool.Download(ui, "https://gitee.com/acrsinx/snowman/releases/download/v0.0/localization.zip", (downloadPath) => {
+                    Tool.Unzip(downloadPath);
+                    progress++;
+                });
+                return;
             }
             case 3: {
+                // 加载语言列表
+                string[] languages = Translation.GetLanguages();
+                for (int i = 0; i < languages.Length; i++) {
+                    ui.settingPanel.translation.AddItem(languages[i]);
+                }
+                // 强行刷新，防止语言不变未刷新
+                Translation.LangageChanged.Invoke();
                 break;
             }
             case 4: {

@@ -71,10 +71,6 @@ public partial class Setting: Control {
         for (int i = 0; i < voices.Count; i++) {
             tts.AddItem(voices[i]["name"].ToString());
         }
-        string[] languages = Translation.GetLanguages();
-        for (int i = 0; i < languages.Length; i++) {
-            translation.AddItem(languages[i]);
-        }
         useScreenShader.ButtonPressed = ui.player.screenShader.Visible;
         light = ui.GetTree().Root.GetNode<Light3D>("Node/sunLight");
         if (light is null) {
