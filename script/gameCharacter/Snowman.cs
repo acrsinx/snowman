@@ -1,4 +1,3 @@
-using System;
 using Godot;
 public partial class Snowman: GameCharacter {
     public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
