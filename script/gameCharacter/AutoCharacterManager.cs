@@ -70,6 +70,11 @@ public class AutoCharacterManager: object {
                 } else {
                     stuckCount = 0;
                 }
+                character.PlayWalkAnimation();
+                if (IsCloseToTarget() || character.agent.IsNavigationFinished()) {
+                    state = State.StartAttack;
+                    return;
+                }
                 Move(fDelta);
                 break;
             }
@@ -106,11 +111,6 @@ public class AutoCharacterManager: object {
     /// <param name="fDelta">时间增量</param>
     public void Move(float fDelta) {
         Vector3 target = character.agent.GetNextPathPosition();
-        character.PlayWalkAnimation();
-        if (IsCloseToTarget() || character.agent.IsNavigationFinished()) {
-            state = State.StartAttack;
-            return;
-        }
         // 转向并添加速度
         Vector3 direction = (target - character.GlobalPosition).Normalized();
         float directionAngle = new Vector2(direction.X, direction.Z).AngleTo(new Vector2(0, -1));
