@@ -1,9 +1,0 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://m140soafk6t"]
-
-[ext_resource type="Texture2D" uid="uid://dyh4pqyyahfjc" path="res://material/木头_法线.png" id="3_m72r2"]
-
-[resource]
-albedo_color = Color(0.235407, 0.18408, 0.17762, 1)
-normal_enabled = true
-normal_texture = ExtResource("3_m72r2")
-uv1_scale = Vector3(10, 10, 10)
