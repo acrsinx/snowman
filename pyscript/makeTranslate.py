@@ -33,15 +33,17 @@ def make_translate(path: str, output: str) -> None:
     - path: 源文件路径
     - output: 输出文件路径
     """
+    # 本地化模板路径
+    template_path: str = localization_path_to_template_path(path)
     # 未被修改则跳过
-    if arrangeCode.check_time(path, output):
+    if arrangeCode.check_time(path, output) and arrangeCode.check_time(template_path, output):
         return
-    print(path)
+    print("生成翻译文件: ", path)
     translation_json: dict[str, str] = {}
     # 读取翻译文件
     translation_file: list[tuple[str, str]] = read_translation_file(path)
     # 读取本地化模板
-    template_file: list[tuple[str, str]] = read_translation_file(localization_path_to_template_path(path))
+    template_file: list[tuple[str, str]] = read_translation_file(template_path)
     for i in range(len(translation_file)):
         if i >= len(template_file): # 加入了不需要翻译的语段
             print("无需加入", translation_file[i][0])
@@ -106,7 +108,7 @@ def create_localization_template(path: str) -> None:
     # 未被修改则跳过
     if arrangeCode.check_time(path, output):
         return
-    print(output)
+    print("创建翻译模板: ", output)
     toTranslate: dict[str, str] = {}
     with open(path, "r", encoding="utf-8") as file:
         plotJson: dict[str, dict] = json.load(file)

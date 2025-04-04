@@ -377,7 +377,7 @@ def arrange(path: str):
             return
     else:
         os.makedirs(os.path.dirname(copy_path), exist_ok=True)
-    print(path)
+    print("整理代码: ", path)
     shutil.copy(path, copy_file)
     with open(path, "r", encoding="utf-8") as f:
         data: str = f.read()
