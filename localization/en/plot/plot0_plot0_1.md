@@ -1,7 +1,9 @@
 |||
 |---|---|
-|雪人们，我们胜利了！|Snowmen, we've won!|
-|在此等待，我去请功了。|I'll go and report our victory. Wait here.|
+|雪人们，在我的带领下，我们胜利了！|Snowmen, under my leadship, we've won!|
+|就像之前一样，这次的功劳就由我上报。|Just like before, I'll report our victory.|
+|可是……|But...|
+|“可是”什么“可是”，我说话你们听着就行了。|"But" what? Just listen to me.|
 |每次胜利，都是雪狗请功去了。|Every victory, it's the snowdogs that take the credit.|
 |是啊，它们总不把我们当成生物。|Yes, they never regarded us as living beings.|
 |雪狗们自以为是，自矜攻伐。|They're so full of themselves.|

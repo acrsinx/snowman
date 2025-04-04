@@ -1,4 +1,3 @@
-using System;
 using Godot;
 public partial class Snowman: GameCharacter {
     public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
@@ -15,7 +14,9 @@ public partial class Snowman: GameCharacter {
             player.cameraManager.cameraMarker.Reparent(this, false);
             player.cameraManager.SetCameraPosition();
         } else {
-            auto = new AutoCharacterManager(this, player);
+            auto = new AutoCharacterManager(this, player) {
+                canAttackWhenMoving = true
+            };
         }
         health.MaxHealth = 1000;
         health.SetFullHealth();

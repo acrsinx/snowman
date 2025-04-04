@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 public class Plot {
-    public static Dictionary CharacterPath = new() {
+    public static readonly Dictionary CharacterPath = new() {
         {"snowdog", "res://model/snowdog.gltf"}
     };
     public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
@@ -186,7 +186,7 @@ public class Plot {
             }
             case "AddTrigger": {
                 TriggerSystem.AddTrigger(wordsList[1], () => {
-                    path = wordsList[2];
+                    path = PlotPathToAbsolutePath(wordsList[2]);
                     Open(player.ui);
                 });
                 break;
@@ -238,5 +238,13 @@ public class Plot {
     /// <returns>本地化文件的上下文</returns>
     public static string PlotPathToLocalizationContent(string path) {
         return "plot/" + path.Replace("\\", "/").Replace("res://", "").Replace("plotJson/", "").Replace(".json", "").Replace("/", "_");
+    }
+    /// <summary>
+    /// 把相对plotJson文件夹的剧情文件路径转换为绝对路径
+    /// </summary>
+    /// <param name="path">相对plotJson文件夹的剧情文件路径</param>
+    /// <returns>绝对路径</returns>
+    public static string PlotPathToAbsolutePath(string path) {
+        return "res://plotJson/" + path.Replace("\\", "/");
     }
 }

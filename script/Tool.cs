@@ -21,43 +21,6 @@ public class Tool: object {
         return new Vector3(RandomFloat(-1, 1) * range.X, RandomFloat(-1, 1) * range.Y, RandomFloat(-1, 1) * range.Z);
     }
     /// <summary>
-    /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from，from和to都是弧度
-    /// </summary>
-    /// <param name="from">从</param>
-    /// <param name="to">到</param>
-    /// <param name="speed">速度（选填）</param>
-    /// <returns>新的值</returns>
-    public static float FloatToAngle(float from, float to, float speed = 0.1f) {
-        float PI2 = 2.0f * MathF.PI;
-        float newTo = to - MathF.Floor(to / PI2) * PI2;
-        newTo += MathF.Floor(from / PI2) * PI2;
-        if (MathF.Abs(newTo + PI2 - from) < MathF.Abs(newTo - from)) {
-            newTo += PI2;
-        }
-        if (MathF.Abs(newTo - PI2 - from) < MathF.Abs(newTo - from)) {
-            newTo -= PI2;
-        }
-        if (newTo > from) {
-            return MathF.Min(from + speed, newTo);
-        } else {
-            return MathF.Max(from - speed, newTo);
-        }
-    }
-    /// <summary>
-    /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from
-    /// </summary>
-    /// <param name="from">从</param>
-    /// <param name="to">到</param>
-    /// <param name="speed">速度（选填）</param>
-    /// <returns>新的值</returns>
-    public static float FloatTo(float from, float to, float speed = 0.1f) {
-        if (to > from) {
-            return MathF.Min(from + speed, to);
-        } else {
-            return MathF.Max(from - speed, to);
-        }
-    }
-    /// <summary>
     /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from
     /// </summary>
     /// <param name="from">从</param>
@@ -65,7 +28,7 @@ public class Tool: object {
     /// <param name="speed">速度（选填）</param>
     /// <returns>新的向量</returns>
     public static Vector3 Vector3To(Vector3 from, Vector3 to, float speed = 0.1f) {
-        return new Vector3(FloatTo(from.X, to.X, speed), FloatTo(from.Y, to.Y, speed), FloatTo(from.Z, to.Z, speed));
+        return new Vector3(Mathf.Lerp(from.X, to.X, speed), Mathf.Lerp(from.Y, to.Y, speed), Mathf.Lerp(from.Z, to.Z, speed));
     }
     /// <summary>
     /// 位置是否在指定范围内
@@ -97,30 +60,5 @@ public class Tool: object {
     /// <returns>混合结果</returns>
     public static Vector3 Mix(Vector3 a, Vector3 b, float factor) {
         return a * (1 - factor) + b * factor;
-    }
-    /// <summary>
-    /// 混合
-    /// </summary>
-    /// <param name="a">甲</param>
-    /// <param name="b">乙</param>
-    /// <param name="factor">系数</param>
-    /// <returns>混合结果</returns>
-    public static Basis Mix(Basis a, Basis b, float factor) {
-        Vector3 column0 = Mix(a[0], b[0], factor);
-        Vector3 column1 = Mix(a[1], b[1], factor);
-        Vector3 column2 = Mix(a[2], b[2], factor);
-        return new Basis(column0, column1, column2);
-    }
-    /// <summary>
-    /// 混合
-    /// </summary>
-    /// <param name="a">甲</param>
-    /// <param name="b">乙</param>
-    /// <param name="factor">系数</param>
-    /// <returns>混合结果</returns>
-    public static Transform3D Mix(Transform3D a, Transform3D b, float factor) {
-        Basis basis = Mix(a.Basis, b.Basis, factor);
-        Vector3 origin = Mix(a.Origin, b.Origin, factor);
-        return new Transform3D(basis, origin);
     }
 }

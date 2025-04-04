@@ -4,6 +4,10 @@ using Godot;
 /// </summary>
 public class AutoCharacterManager: object {
     public const float speed = 1f;
+    /// <summary>
+    /// 是否可以边移动边攻击
+    /// </summary>
+    public bool canAttackWhenMoving = false;
     public GameCharacter character;
     public Player player;
     public GameCharacter target;
@@ -66,17 +70,12 @@ public class AutoCharacterManager: object {
                 } else {
                     stuckCount = 0;
                 }
-                Vector3 target = character.agent.GetNextPathPosition();
                 character.PlayWalkAnimation();
                 if (IsCloseToTarget() || character.agent.IsNavigationFinished()) {
                     state = State.StartAttack;
-                    break;
+                    return;
                 }
-                // 转向并添加速度
-                Vector3 direction = (target - character.GlobalPosition).Normalized();
-                float directionAngle = new Vector2(direction.X, direction.Z).AngleTo(new Vector2(0, -1));
-                character.GlobalRotation = new Vector3(character.GlobalRotation.X, Tool.FloatToAngle(character.GlobalRotation.Y, directionAngle, fDelta * 10), character.GlobalRotation.Z);
-                character.Velocity = Tool.Vector3To(character.Velocity, direction * speed, fDelta * 10);
+                Move(fDelta);
                 break;
             }
             case State.StartAttack: {
@@ -96,12 +95,27 @@ public class AutoCharacterManager: object {
                     state = State.Idle;
                     break;
                 }
+                if (canAttackWhenMoving) { // 可以边移动边攻击
+                    Move(fDelta);
+                }
                 break;
             }
         }
         // 重力
         character.Velocity += Player.gravity * fDelta;
         character.MoveAndSlide();
+    }
+    /// <summary>
+    /// 移动
+    /// </summary>
+    /// <param name="fDelta">时间增量</param>
+    public void Move(float fDelta) {
+        Vector3 target = character.agent.GetNextPathPosition();
+        // 转向并添加速度
+        Vector3 direction = (target - character.GlobalPosition).Normalized();
+        float directionAngle = new Vector2(direction.X, direction.Z).AngleTo(new Vector2(0, -1));
+        character.GlobalRotation = new Vector3(character.GlobalRotation.X, Mathf.LerpAngle(character.GlobalRotation.Y, directionAngle, fDelta * 10), character.GlobalRotation.Z);
+        character.Velocity = Tool.Vector3To(character.Velocity, direction * speed, fDelta * 10);
     }
     public void Attack() {
         state = State.Attacking;

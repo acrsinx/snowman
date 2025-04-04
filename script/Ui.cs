@@ -228,11 +228,11 @@ public partial class Ui: Control {
         if (player.PlayerState != State.caption) {
             return;
         }
-        DisplayServer.TtsStop();
         if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完，让文字直接显示完
             captionStartTime = totalGameTime - captionTime;
             return;
         }
+        DisplayServer.TtsStop();
         if (captions[captionIndex].canChoose) { // 如果可以选择
             if (!chooseButtons[0].Visible) { // 如果还没显示选择按钮
                 ShowCaptionChoose(captionIndex);

@@ -304,6 +304,21 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 continue
             if words[i][0] == "-" and (is_operator(words[i-1][0]) or words[i-1][0] in ["(", "[", ",", "return"]): # 如果是算符后加"-"，则不加空格
                 continue
+            if words[i][0] == ":": # 如果是case后的":"，且后无"{"，加换行
+                if words[i+1][0] == "{":
+                    f.write(" ")
+                    continue
+                flag: bool = False
+                for j in range(i-1, 0, -1):
+                    if words[j][0] == "case":
+                        flag = True
+                        break
+                    if is_operator(words[j][0]):
+                        break
+                if flag:
+                    f.write("\n")
+                    f.write(" " * 4 * tab_level)
+                    continue
             if words[i][0] in ["(", "[", "\"", "'", "?", "!", "::", "++", "--"]: # 如果是(或[或"或'或?或!或::或++或--之后，则不加空格
                 continue
             if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "::", "++", "--"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?或::或++或--之前，且不是算符，则不加空格
@@ -362,7 +377,7 @@ def arrange(path: str):
             return
     else:
         os.makedirs(os.path.dirname(copy_path), exist_ok=True)
-    print(path)
+    print("整理代码: ", path)
     shutil.copy(path, copy_file)
     with open(path, "r", encoding="utf-8") as f:
         data: str = f.read()
