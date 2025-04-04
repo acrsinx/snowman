@@ -1,9 +1,7 @@
 using Godot;
 using System;
 public class Tool: object {
-    public static bool isDownloading = false;
     public delegate void Void();
-    public delegate void Str(string str);
     public static readonly Random random = new();
     /// <summary>
     /// 随机单精度浮点数
@@ -62,77 +60,5 @@ public class Tool: object {
     /// <returns>混合结果</returns>
     public static Vector3 Mix(Vector3 a, Vector3 b, float factor) {
         return a * (1 - factor) + b * factor;
-    }
-    /// <summary>
-    /// 解压
-    /// </summary>
-    /// <param name="zipFilePath">路径</param>
-    public static void Unzip(string zipFilePath) {
-        if (zipFilePath == null) {
-            return;
-        }
-        // 解压
-        ZipReader zip = new();
-        Error error = zip.Open(zipFilePath);
-        if (error != Error.Ok) {
-            Ui.Log("解压错误", zipFilePath);
-        }
-        string[] s = zip.GetFiles();
-        for (int i = 0; i < s.Length; i++) {
-            if (s[i].EndsWith("/")) {
-                string dirPath = "user://" + s[i];
-                if (!DirAccess.DirExistsAbsolute(dirPath)) {
-                    DirAccess.MakeDirAbsolute(dirPath);
-                }
-                continue;
-            }
-            byte[] content = zip.ReadFile(s[i]);
-            if (content == null) {
-                Ui.Log("读取错误", zipFilePath, s[i]);
-                continue;
-            }
-            string path = "user://" + s[i];
-            FileAccess subFile = FileAccess.Open(path, FileAccess.ModeFlags.Write);
-            subFile.StoreBuffer(content);
-            subFile.Close();
-        }
-        zip.Close();
-    }
-    /// <summary>
-    /// 下载文件
-    /// </summary>
-    /// <param name="url">网址</param>
-    /// <param name="complete">完成回调，返回下载到的位置</param>
-    /// <returns>下载到的位置</returns>
-    public static string Download(Ui ui, string url, Str complete) {
-        if (isDownloading) {
-            return null;
-        }
-        if (url == null) {
-            return null;
-        }
-        string path = "user://" + url.Split("/")[^ 1];
-        HttpRequest request = new();
-        ui.GetTree().Root.AddChild(request);
-        request.RequestCompleted += (result, resutCode, headers, body) => {
-            if (resutCode != 200) {
-                Ui.Log("下载错误", url, resutCode);
-                complete.Invoke(null);
-                isDownloading = false;
-                return;
-            }
-            Ui.Log("下载完成", url, resutCode);
-            FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
-            file.StoreBuffer(body);
-            file.Close();
-            complete.Invoke(path);
-            isDownloading = false;
-        };
-        isDownloading = true;
-        Error error = request.Request(url);
-        if (error != Error.Ok) {
-            Ui.Log("下载错误");
-        }
-        return path;
     }
 }
