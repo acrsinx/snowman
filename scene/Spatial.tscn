@@ -1,5 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://cfuse5s8ctik2"]
+[gd_scene load_steps=12 format=3 uid="uid://cfuse5s8ctik2"]
 
+[ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="1_dsso2"]
 [ext_resource type="Script" path="res://script/Player.cs" id="2_5vpts"]
 [ext_resource type="Shader" path="res://shader/toon.gdshader" id="3_sh47m"]
 [ext_resource type="PackedScene" uid="uid://d1ag14jieptrf" path="res://scene/ui.tscn" id="4_8tfp8"]
@@ -21,15 +22,8 @@ radius = 0.1
 
 [node name="Node" type="Node"]
 
-[node name="sunLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.8011, -0.00264175, -0.598524, -0.431951, 0.694765, 0.575083, 0.414314, 0.719232, -0.557717, 3.89103, 9.6729, 0)
-light_color = Color(0.728749, 0.719017, 0.608124, 1)
-light_energy = 4.0
-light_bake_mode = 1
-shadow_enabled = true
-shadow_bias = 0.0
-shadow_opacity = 0.88
-directional_shadow_mode = 0
+[node name="sunLight" parent="." instance=ExtResource("1_dsso2")]
+transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.994522, 0.064928, -0.0819187, 0, 0, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("5_vtop7")

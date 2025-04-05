@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cw61wb80nj4lg"]
+[gd_scene load_steps=7 format=3 uid="uid://cw61wb80nj4lg"]
 
 [ext_resource type="PackedScene" uid="uid://hfry0p6xwyov" path="res://model/snowman.gltf" id="1_cpd10"]
+[ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="2_0st4p"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_loctk"]
 [ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="2_x7ywo"]
 [ext_resource type="PackedScene" uid="uid://b8areypbptv4c" path="res://model/stone.gltf" id="4_wjpjh"]
@@ -17,15 +18,8 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.82,
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.555, 1.7)
 fov = 60.0
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.994522, 0.0649276, -0.0819183, 0, 0, 0)
-light_color = Color(0.78, 0.73944, 0.4758, 1)
-light_energy = 10.0
-light_bake_mode = 1
-light_cull_mask = 4294967293
-shadow_enabled = true
-shadow_opacity = 0.78
-shadow_blur = 2.0
+[node name="sunLight" parent="." instance=ExtResource("2_0st4p")]
+transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.994522, 0.064928, -0.0819187, 0, 0, 0)
 
 [node name="snowMountain" parent="." instance=ExtResource("2_x7ywo")]
 transform = Transform3D(0.481754, 0, -0.876307, 0, 2.63288, 0, 0.876307, 0, 0.481754, -3.53644, 3.816, -16.59)

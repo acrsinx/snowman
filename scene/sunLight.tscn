@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://dr0rgcmstsa67"]
+
+[node name="sunLight" type="DirectionalLight3D"]
+transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.994522, 0.0649276, -0.0819183, 0, 0, 0)
+light_color = Color(0.78, 0.73944, 0.4758, 1)
+light_energy = 5.0
+light_bake_mode = 1
+light_cull_mask = 4294967293
+shadow_enabled = true
+shadow_opacity = 0.78
+shadow_blur = 2.0

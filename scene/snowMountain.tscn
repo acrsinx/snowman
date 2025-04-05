@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="2_006fs"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_tway3"]
+custom_aabb = AABB(-5, -5, -5, 10, 7, 10)
 size = Vector2(10, 10)
 subdivide_width = 16
 subdivide_depth = 16
