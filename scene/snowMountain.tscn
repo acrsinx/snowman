@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://b66cbvsyjb4u1"]
+
+[ext_resource type="Shader" path="res://shader/snow_mountain.gdshader" id="1_n8e71"]
+[ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="2_006fs"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_tway3"]
+size = Vector2(10, 10)
+subdivide_width = 16
+subdivide_depth = 16
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_svbf2"]
+render_priority = 0
+shader = ExtResource("1_n8e71")
+shader_parameter/noise = ExtResource("2_006fs")
+
+[node name="snowMountain" type="MeshInstance3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 2.63288, 0, 1, 0, -4.37114e-08, 0, 7.541, -14.175)
+mesh = SubResource("PlaneMesh_tway3")
+surface_material_override/0 = SubResource("ShaderMaterial_svbf2")
