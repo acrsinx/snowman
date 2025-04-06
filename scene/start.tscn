@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://cw61wb80nj4lg"]
+[gd_scene load_steps=8 format=3 uid="uid://cw61wb80nj4lg"]
 
 [ext_resource type="PackedScene" uid="uid://hfry0p6xwyov" path="res://model/snowman.gltf" id="1_cpd10"]
 [ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="2_0st4p"]
+[ext_resource type="Script" path="res://script/Start.cs" id="2_4x7km"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_loctk"]
 [ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="2_x7ywo"]
 [ext_resource type="PackedScene" uid="uid://b8areypbptv4c" path="res://model/stone.gltf" id="4_wjpjh"]
@@ -12,10 +13,11 @@ size = Vector2(6.77, 1.965)
 [node name="Node" type="Node"]
 
 [node name="snowman2" parent="." instance=ExtResource("1_cpd10")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.82, 0, 0)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+script = ExtResource("2_4x7km")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.555, 1.7)
+[node name="Camera3D" type="Camera3D" parent="snowman2"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.7, 0.555, -0.82)
 fov = 60.0
 
 [node name="sunLight" parent="." instance=ExtResource("2_0st4p")]
@@ -29,6 +31,9 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 2.63288, 0, 1, 0, -4.37114e-08, 
 
 [node name="snowMountain3" parent="." instance=ExtResource("2_x7ywo")]
 transform = Transform3D(-0.921863, 0, -0.387516, 0, 2.63288, 0, 0.387516, 0, -0.921863, 9.96856, 3.421, -12.735)
+
+[node name="snowMountain4" parent="." instance=ExtResource("2_x7ywo")]
+transform = Transform3D(-0.328867, 0, -0.944376, 0, 2.63288, 0, 0.944376, 0, -0.328867, 14.985, 1.236, -28.472)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_qt0sj")
