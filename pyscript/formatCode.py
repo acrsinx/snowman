@@ -1,3 +1,6 @@
+"""
+格式化代码
+"""
 from enum import Enum
 import os
 import shutil
@@ -10,6 +13,13 @@ this_time: float = max([os.path.getmtime(os.path.join(pyscript_path, file)) for 
 上次修改时间
 - 取pyscript文件夹下所有文件的最晚修改时间
 - 用于判断是否需要重新生成文件
+"""
+operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&",
+                            "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>",
+                            "??", "::", "<<=", ">>=", "??="]
+"""
+符号列表
+从短到长
 """
 
 def check_time(source_path: str, target_path: str) -> bool:
@@ -34,21 +44,16 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
         lines: list[str] = f.read().splitlines()
         suffix: list[str] = []
         for i in range(len(lines)):
-            if len(lines) <= i: # 防止越界
+            if len(lines) <= i:  # 防止越界
                 break
-            if lines[i].startswith("#") or len(lines[i].strip()) == 0: # 忽略注释和空行
+            if lines[i].startswith("#") or len(lines[i].strip()) == 0:  # 忽略注释和空行
                 lines.pop(i)
-            lines[i] = lines[i].strip() # 去除空格
-            if lines[i].startswith("*."): # 如果是忽略的文件
+            lines[i] = lines[i].strip()  # 去除空格
+            if lines[i].startswith("*."):  # 如果是忽略的文件
                 suffix.append(lines[i][2:])
                 lines.pop(i)
         return lines, suffix
 
-operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&", "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>", "??", "::", "<<=", ">>=", "??="]
-"""
-符号列表
-从短到长
-"""
 
 def is_operator(operator: str) -> bool:
     """
@@ -56,13 +61,6 @@ def is_operator(operator: str) -> bool:
     """
     return operator in operator_list
 
-def is_num(num: str) -> bool:
-    """
-    判断是否是数
-
-    只要不是字母打头，就是数
-    """
-    return num.startswith(("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "."))
 
 class NoteType(Enum):
     """
@@ -76,11 +74,11 @@ class NoteType(Enum):
     NOTE = 1
     NOTE_END = 2
 
-def package(tooken: str) -> tuple[str, NoteType]:
+def package(token: str) -> tuple[str, NoteType]:
     """
     将字符串封装成特定的元组
     """
-    return tooken, NoteType.NORMAL
+    return token, NoteType.NORMAL
 
 def split_word(data: str) -> list[tuple[str, NoteType]]:
     """
@@ -140,7 +138,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
             word += data[i]
             continue
         # 注释
-        if (data[i] == "/" and data[i+1] == "/") or (data[i] == "#" and data[i+1] == " "):
+        if (data[i] == "/" and data[i + 1] == "/") or (data[i] == "#" and data[i + 1] == " "):
             if len(word) > 0:
                 words.append(package(word))
                 word = ""
@@ -149,7 +147,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
             j: int = i
             while j >= 0 and data[j] != "\n":
                 j -= 1
-                if not data[j].isspace(): # 如果不是空格，则是行末注释
+                if not data[j].isspace():  # 如果不是空格，则是行末注释
                     is_note = NoteType.NOTE_END
                     break
             word += data[i]
@@ -166,7 +164,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
                 words.append(package(word))
                 word = ""
             # 匹配是哪一个算符
-            for j in range(len(operator_list)-1, -1, -1):
+            for j in range(len(operator_list) - 1, -1, -1):
                 if data[i:].startswith(operator_list[j]):
                     operator = j
                     operator_start = i
@@ -195,10 +193,10 @@ def output(path: str, words: list[tuple[str, NoteType]]):
     level: int = 0
     level_list: list[int] = []
     # 尖括号所在位置的索引
-    indexs: list[int] = []
+    indexes: list[int] = []
     # 三元运算符?:中的:索引
     have_question: bool = False
-    op_indexs: list[int] = []
+    op_indexes: list[int] = []
     for i in range(len(words)):
         level_list.append(level)
         if words[i][0] == "<":
@@ -209,23 +207,23 @@ def output(path: str, words: list[tuple[str, NoteType]]):
             continue
         if words[i][0] == ">":
             level -= 1
-            if level < 0: # 一定不是泛型的尖括号
+            if level < 0:  # 一定不是泛型的尖括号
                 level = 0
                 continue
             j: int = i - 1
-            indexs.append(i)
-            while level_list[j] > level: # 找到头
+            indexes.append(i)
+            while level_list[j] > level:  # 找到头
                 j -= 1
-            indexs.append(j)
+            indexes.append(j)
             continue
-        if words[i][0] in ["{", "}"]+operator_list: # 泛型的两个尖括号中一定没有的符号
+        if words[i][0] in ["{", "}"] + operator_list:  # 泛型的两个尖括号中一定没有的符号
             level = 0
             continue
-        if words[i][0] in ["{", "}", ";"]: # 三元运算符?:中一定没有的符号
+        if words[i][0] in ["{", "}", ";"]:  # 三元运算符?:中一定没有的符号
             have_question = False
-        if words[i][0] == ":" and have_question: # 三元运算符?:中的:索引
+        if words[i][0] == ":" and have_question:  # 三元运算符?:中的:索引
             have_question = False
-            op_indexs.append(i)
+            op_indexes.append(i)
 
     with open(path, "w", encoding="utf-8") as f:
         tab_level: int = 0
@@ -239,23 +237,23 @@ def output(path: str, words: list[tuple[str, NoteType]]):
         tab_level_in_array: int = 0
         for i in range(len(words)):
             f.write(words[i][0])
-            if i in indexs or i+1 in indexs: # 泛型尖括号周围不加空格
+            if i in indexes or i + 1 in indexes:  # 泛型尖括号周围不加空格
                 if words[i][0] != ">":
                     continue
-                if i+1 in indexs and words[i+1][0] == ">":
+                if i + 1 in indexes and words[i + 1][0] == ">":
                     continue
-            if i+1 >= len(words): # 最后一行
+            if i + 1 >= len(words):  # 最后一行
                 f.write("\n")
                 return
-            if words[i][0] == "for": # for循环
+            if words[i][0] == "for":  # for循环
                 in_for = True
-            if words[i][0] == ")": # for循环结束或数组缩进减少
+            if words[i][0] == ")":  # for循环结束或数组缩进减少
                 in_for = False
                 if in_array:
                     tab_level_in_array -= 1
                     if tab_level_in_array == 0:
                         tab_level -= 1
-            if words[i+1][0] == "}": # 如果下一个词是"}"，且不在数组中，且不是{}的情况，则减少缩进
+            if words[i + 1][0] == "}":  # 如果下一个词是"}"，且不在数组中，且不是{}的情况，则减少缩进
                 if words[i][0] == "{":
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
@@ -265,51 +263,53 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                     if tab_level_in_array != 0:
                         continue
                 tab_level -= 1
-                if words[i][0] != ";": # 如果当前词不是";"，则补充换行
+                if words[i][0] != ";":  # 如果当前词不是";"，则补充换行
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
-            if words[i][0] == "}": # "}"后补充换行
+            if words[i][0] == "}":  # "}"后补充换行
                 if in_array:
                     if i >= array_end:
                         in_array = False
                         tab_level_in_array = 0
                     continue
-                if (words[i+1][0] not in ["else", "elif", ")"]) and (not words[i+1][0] == ";"):
+                if (words[i + 1][0] not in ["else", "elif", ")"]) and (not words[i + 1][0] == ";"):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
-            if words[i][0] == "(": # 数组内的"("增大缩进
+            if words[i][0] == "(":  # 数组内的"("增大缩进
                 if in_array:
                     tab_level_in_array += 1
                     if tab_level_in_array == 1:
                         f.write("\n")
                         tab_level += 1
                         f.write(" " * 4 * tab_level)
-            if (words[i][0] == ";" or words[i][1] != NoteType.NORMAL or (words[i][0] == "," and in_array and tab_level_in_array == 1)) and not in_for: # 如果是";"，或注释，或数组中特定级别的"," 且不是for循环的()中，则加换行
+            if (words[i][0] == ";" or words[i][1] != NoteType.NORMAL or (words[i][
+                                                                             0] == "," and in_array and tab_level_in_array == 1)) and not in_for:  # 如果是";"，或注释，或数组中特定级别的"," 且不是for循环的()中，则加换行
                 f.write("\n")
                 f.write(" " * 4 * tab_level)
                 continue
-            if words[i][0] == "\"" and words[i+1][0] == "\"": # 如果是""，则不加空格
+            if words[i][0] == "\"" and words[i + 1][0] == "\"":  # 如果是""，则不加空格
                 continue
-            if words[i][0] == "'" and words[i+1][0] == "'": # 如果是''，则不加空格
+            if words[i][0] == "'" and words[i + 1][0] == "'":  # 如果是''，则不加空格
                 continue
-            if words[i][0] == ":" and words[i+1][0].startswith("\""): # 如果是:"，则不加空格
+            if words[i][0] == ":" and words[i + 1][0].startswith("\""):  # 如果是:"，则不加空格
                 continue
-            if words[i][0] == ":" and i in op_indexs: # 如果是三元运算符，则不加空格
+            if words[i][0] == ":" and i in op_indexes:  # 如果是三元运算符，则不加空格
                 continue
-            if words[i][0] == ">" and words[i+1][0] in ["(", ")"]: # 如果是>)或>(，则不加空格
+            if words[i][0] == ">" and words[i + 1][0] in ["(", ")"]:  # 如果是>)或>(，则不加空格
                 continue
-            if words[i][0] in [")", "]"] and words[i+1][0].startswith("."): # 如果是")."或"]."，则不加空格
+            if words[i][0] in [")", "]"] and words[i + 1][0].startswith("."):  # 如果是")."或"]."，则不加空格
                 continue
-            if words[i][0] == "-" and (is_operator(words[i-1][0]) or words[i-1][0] in ["(", "[", ",", "return"]): # 如果是算符后加"-"，则不加空格
+            if words[i][0] == "-" and (
+                    is_operator(words[i - 1][0]) or words[i - 1][0] in ["(", "[", ",", "return"]):  # 如果是算符后加"-"，则不加空格
                 continue
-            if words[i][0] == ":": # 如果是case后的":"，且后无"{"，加换行
-                if words[i+1][0] == "{":
+            if words[i][0] == ":":  # 如果是case后的":"，且后无"{"，加换行
+                if words[i + 1][0] == "{":
                     f.write(" ")
                     continue
                 flag: bool = False
-                for j in range(i-1, 0, -1):
+                for j in range(i - 1, 0, -1):
                     if words[j][0] == "case":
                         flag = True
                         break
@@ -319,14 +319,17 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
-            if words[i][0] in ["(", "[", "\"", "'", "?", "!", "::", "++", "--"]: # 如果是(或[或"或'或?或!或::或++或--之后，则不加空格
+            if words[i][0] in ["(", "[", "\"", "'", "?", "!", "::", "++", "--"]:  # 如果是(或[或"或'或?或!或::或++或--之后，则不加空格
                 continue
-            if words[i+1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "::", "++", "--"] and not is_operator(words[i][0]): # 如果是[或]或,或:或;或"或'或)或?或::或++或--之前，且不是算符，则不加空格
+            if words[i + 1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "::", "++", "--"] and not is_operator(
+                    words[i][0]):  # 如果是[或]或,或:或;或"或'或)或?或::或++或--之前，且不是算符，则不加空格
                 continue
-            if words[i+1][0] == "(" and words[i][0] not in [",", "{", "for", "foreach", "elif", "switch", "if", "while", "return"] and not is_operator(words[i][0]): # 如果是(之前且不是关键词，则不加空格
+            if words[i + 1][0] == "(" and words[i][0] not in [",", "{", "for", "foreach", "elif", "switch", "if",
+                                                              "while", "return"] and not is_operator(
+                    words[i][0]):  # 如果是(之前且不是关键词，则不加空格
                 continue
-            if words[i][0] == "{": # 如果是{，则增加缩进
-                if words[i+1][1] == NoteType.NOTE_END: # 如果是行末注释，则不立即换行
+            if words[i][0] == "{":  # 如果是{，则增加缩进
+                if words[i + 1][1] == NoteType.NOTE_END:  # 如果是行末注释，则不立即换行
                     tab_level += 1
                     f.write(" ")
                     continue
@@ -339,16 +342,16 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                     continue
                 j: int = i
                 tab_level_in: int = 0
-                while True: # 获取数组信息
+                while True:  # 获取数组信息
                     j += 1
-                    if words[j][0] == "}": # 下一个词是同一级的"}"，而中间没有";"，则说明是数组
+                    if words[j][0] == "}":  # 下一个词是同一级的"}"，而中间没有";"，则说明是数组
                         if tab_level_in != 0:
                             tab_level_in -= 1
                             continue
                         in_array = True
                         array_end = j
                         break
-                    if words[j][0] == "{": # 下一个词是"{"
+                    if words[j][0] == "{":  # 下一个词是"{"
                         tab_level_in += 1
                         continue
                     if words[j][0] == ";":
@@ -356,7 +359,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                     if j >= len(words):
                         print("数组越界，代码格式定有错误", path)
                         break
-                if in_array: # 如果是数组
+                if in_array:  # 如果是数组
                     tab_level_in_array = 1
                 f.write("\n")
                 tab_level += 1
@@ -364,7 +367,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 continue
             f.write(" ")
 
-def arrange(path: str):
+def format_file(path: str):
     """
     整理代码
     """
@@ -384,31 +387,31 @@ def arrange(path: str):
         # 分词
         words: list[tuple[str, NoteType]] = split_word(data)
         # 输出
-        if path.endswith(".cs") or path.endswith(".gdshader"): # {}类编程语言，如C#、gdshader
+        if path.endswith(".cs") or path.endswith(".gdshader"):  # {}类编程语言，如C#、gdshader
             output(path, words)
     # 使副本时间晚于原件
     time.sleep(0.01)
     os.utime(copy_file, (time.time(), time.time()))
 
-def arrange_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str]):
+def format_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str]):
     """
     整理代码
     """
     # 文件后缀白名单
     allow_suffix_list: list[str] = ["md", "cs", "gdshader"]
-    for dir in dir_list:
-        real_dir: str = os.path.join(current_dir, dir)
+    for dir_name in dir_list:
+        real_dir: str = os.path.join(current_dir, dir_name)
         relpath: str = os.path.relpath(real_dir, base_dir) + "\\"
-        if any([i in relpath for i in ignore_list]): # 忽略文件夹
+        if any([i in relpath for i in ignore_list]):  # 忽略文件夹
             continue
-        if os.path.isdir(real_dir): # 如果是文件夹
-            arrange_code(base_dir, real_dir, os.listdir(real_dir), ignore_list)
+        if os.path.isdir(real_dir):  # 如果是文件夹
+            format_code(base_dir, real_dir, os.listdir(real_dir), ignore_list)
             continue
-        if real_dir.split(".")[-1] not in allow_suffix_list: # 如果不是白名单文件
+        if real_dir.split(".")[-1] not in allow_suffix_list:  # 如果不是白名单文件
             continue
-        arrange(real_dir)
+        format_file(real_dir)
 
-def arrange_whole_project() -> None:
+def format_whole_project() -> None:
     """
     整理项目代码
     - 其实就是格式化
@@ -419,4 +422,4 @@ def arrange_whole_project() -> None:
     # 将斜杠替换为反斜杠
     for i in range(len(ignore_list)):
         ignore_list[i] = ignore_list[i].replace("/", "\\")
-    arrange_code(current_directory, current_directory, dir_list, ignore_list+[".git\\", "export\\"])
+    format_code(current_directory, current_directory, dir_list, ignore_list + [".git\\", "export\\"])

@@ -1,8 +1,11 @@
+"""
+生成翻译文件
+"""
 import json
 import os
 import re
 
-import arrangeCode
+import formatCode
 
 def read_translation_file(path: str) -> list[tuple[str, str]]:
     """
@@ -13,18 +16,18 @@ def read_translation_file(path: str) -> list[tuple[str, str]]:
     with open(path, "r", encoding="utf-8") as file:
         lines: list[str] = file.readlines()
         for line in lines:
-            tookens: list[str] = line.split("|")
+            tokens: list[str] = line.split("|")
             # 去除首尾
-            tookens: list[str] = tookens[1:-1]
-            if len(tookens) != 2: # 跳过不合规行
+            tokens: list[str] = tokens[1:-1]
+            if len(tokens) != 2: # 跳过不合规行
                 continue
-            if tookens[0] == "": # 跳过空行
+            if tokens[0] == "": # 跳过空行
                 continue
-            if tookens[0].isspace(): # 跳过空行
+            if tokens[0].isspace(): # 跳过空行
                 continue
-            if True in [tooken == "---" for tooken in tookens]: # 跳过无用行
+            if True in [token == "---" for token in tokens]: # 跳过无用行
                 continue
-            ret.append((tookens[0], tookens[1]))
+            ret.append((tokens[0], tokens[1]))
     return ret
 
 def make_translate(path: str, output: str) -> None:
@@ -36,7 +39,7 @@ def make_translate(path: str, output: str) -> None:
     # 本地化模板路径
     template_path: str = localization_path_to_template_path(path)
     # 未被修改则跳过
-    if arrangeCode.check_time(path, output) and arrangeCode.check_time(template_path, output):
+    if formatCode.check_time(path, output) and formatCode.check_time(template_path, output):
         return
     print("生成翻译文件: ", path)
     translation_json: dict[str, str] = {}
@@ -48,16 +51,16 @@ def make_translate(path: str, output: str) -> None:
         if i >= len(template_file): # 加入了不需要翻译的语段
             print("无需加入", translation_file[i][0])
             break
-        tookens: tuple[str, str] = translation_file[i]
-        if tookens[0] != template_file[i][0]: # 提醒翻译文件与模板文件不一致
-            print("不一致: " + tookens[0] + " != " + template_file[i][0])
-        if tookens[0] == tookens[1]: # 提醒无需翻译
-            print("无需翻译: " + tookens[0])
-        if tookens[1].isspace() or tookens[1] == "": # 提醒未翻译
-            print("未翻译: " + tookens[0])
-        if tookens[1] == "-": # 跳过无需翻译行
+        tokens: tuple[str, str] = translation_file[i]
+        if tokens[0] != template_file[i][0]: # 提醒翻译文件与模板文件不一致
+            print("不一致: " + tokens[0] + " != " + template_file[i][0])
+        if tokens[0] == tokens[1]: # 提醒无需翻译
+            print("无需翻译: " + tokens[0])
+        if tokens[1].isspace() or tokens[1] == "": # 提醒未翻译
+            print("未翻译: " + tokens[0])
+        if tokens[1] == "-": # 跳过无需翻译行
             continue
-        translation_json[tookens[0]] = tookens[1]
+        translation_json[tokens[0]] = tokens[1]
     if len(translation_file) < len(template_file): # 缺少翻译
         print("缺少翻译")
     if not os.path.exists(os.path.dirname(output)):
@@ -106,7 +109,7 @@ def create_localization_template(path: str) -> None:
     """
     output: str = plot_json_path_to_template_path(path)
     # 未被修改则跳过
-    if arrangeCode.check_time(path, output):
+    if formatCode.check_time(path, output):
         return
     print("创建翻译模板: ", output)
     toTranslate: dict[str, str] = {}
