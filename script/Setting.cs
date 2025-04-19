@@ -1,13 +1,10 @@
+using System.Linq;
 using Godot;
 using Godot.Collections;
 public partial class Setting: Control {
     public Ui ui;
-    public OptionButton uiType;
-    /// <summary>
-    /// 开启垂直同步
-    /// </summary>
-    public CheckButton vsync;
-    public OptionButton maxFps;
+    public Container container;
+    public System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>> options;
     /// <summary>
     /// 声音
     /// </summary>
@@ -17,87 +14,124 @@ public partial class Setting: Control {
     /// </summary>
     public int voiceIndex;
     /// <summary>
-    /// 文本转语音的声音选择
-    /// </summary>
-    public OptionButton tts;
-    /// <summary>
     /// 文本转语音的ID
     /// </summary>
     public string ttsId = "";
-    public OptionButton translation;
-    public CheckButton shadow;
-    public CheckButton develop;
-    public CheckButton useScreenShader;
     private Light3D light;
-    public CheckButton showInfo;
-    /// <summary>
-    /// 窗口模式
-    /// </summary>
-    public CheckButton window;
-    public SpinBox LOD;
-    public Button exit;
     public void Init() {
         // 获取组件
-        uiType = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/uiType");
-        vsync = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/vsync");
-        maxFps = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/maxFps");
-        tts = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/tts");
-        translation = GetNode<OptionButton>("PanelContainer/Scroll/VBoxContainer/translation");
-        shadow = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/shadow");
-        develop = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/develop");
-        useScreenShader = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/useScreenShader");
-        showInfo = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/showInfo");
-        window = GetNode<CheckButton>("PanelContainer/Scroll/VBoxContainer/window");
-        exit = GetNode<Button>("PanelContainer/Scroll/VBoxContainer/exit");
-        LOD = GetNode<SpinBox>("PanelContainer/Scroll/VBoxContainer/LOD");
+        container = GetNode<Container>("PanelContainer/Scroll/VBoxContainer");
+        // 添加设置
+        options = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>> {
+            {
+                "uiType", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "uiType" },
+                    { "type", OptionType.OptionButton },
+                    { "items", new Array { "Computer", "Phone" } }
+                }
+            },{
+                "vsync", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "vsync" },
+                    { "type", OptionType.CheckButton }
+                }
+            },{
+                "maxFps", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "maxFps" },
+                    { "type", OptionType.OptionButton },
+                    { "items", new Array {"30", "60", "120", "240", "300", "0" } }
+                }
+            },{
+                "tts", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "tts" },
+                    { "type", OptionType.OptionButton },
+                    { "items", new Array { "禁用" } }
+                }
+            },{
+                "translation", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "translation" },
+                    { "type", OptionType.OptionButton },
+                    { "items", new Array { "简体中文" } }
+                }
+            },{
+                "shadow", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "shadow" },
+                    { "type", OptionType.CheckButton }
+                }
+            },{
+                "develop", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "develop" },
+                    { "type", OptionType.CheckButton }
+                }
+            },{
+                "useScreenShader", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "useScreenShader" },
+                    { "type", OptionType.CheckButton }
+                }
+            },{
+                "showInfo", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "showInfo" },
+                    { "type", OptionType.CheckButton }
+                }
+            },{
+                "window", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "window" },
+                    { "type", OptionType.CheckButton }
+                }
+            },{
+                "exit", new System.Collections.Generic.Dictionary<string, object> {
+                    { "name", "exit" },
+                    { "type", OptionType.Button }
+                }
+            }
+        };
+        SetOptions();
         // 设置文字
         Translation.LangageChanged += () => {
-            uiType.SetItemText(0, Translation.Translate("计算机"));
-            uiType.SetItemText(1, Translation.Translate("手机"));
-            vsync.Text = Translation.Translate("开启垂直同步");
-            tts.SetItemText(0, Translation.Translate("禁用"));
-            shadow.Text = Translation.Translate("开启阴影");
-            develop.Text = Translation.Translate("开发者选项");
-            useScreenShader.Text = Translation.Translate("使用屏幕着色器");
-            showInfo.Text = Translation.Translate("开启调试信息");
-            window.Text = Translation.Translate("窗口模式");
-            exit.Text = Translation.Translate("退出");
+            GetNodeOptionButton("uiType").SetItemText(0, Translation.Translate("计算机"));
+            GetNodeOptionButton("uiType").SetItemText(1, Translation.Translate("手机"));
+            GetNodeCheckButton("vsync").Text = Translation.Translate("开启垂直同步");
+            GetNodeOptionButton("tts").SetItemText(0, Translation.Translate("禁用"));
+            GetNodeCheckButton("shadow").Text = Translation.Translate("开启阴影");
+            GetNodeCheckButton("develop").Text = Translation.Translate("开发者选项");
+            GetNodeCheckButton("useScreenShader").Text = Translation.Translate("使用屏幕着色器");
+            GetNodeCheckButton("showInfo").Text = Translation.Translate("开启调试信息");
+            GetNodeCheckButton("window").Text = Translation.Translate("窗口模式");
+            GetNodeButton("exit").Text = Translation.Translate("退出");
         };
         // 设置初始值
-        uiType.Selected = (int) ui.uiType;
-        Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
-        tts.Selected = 0;
+        GetNodeOptionButton("uiType").Selected = (int) ui.uiType;
+        Engine.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
+        GetNodeOptionButton("tts").Selected = 0;
         voices = DisplayServer.TtsGetVoices();
         for (int i = 0; i < voices.Count; i++) {
-            tts.AddItem(voices[i]["name"].ToString());
+            GetNodeOptionButton("tts").AddItem(voices[i]["name"].ToString());
         }
         string[] languages = Translation.GetLanguages();
         for (int i = 0; i < languages.Length; i++) {
-            translation.AddItem(languages[i]);
+            GetNodeOptionButton("translation").AddItem(languages[i]);
         }
-        useScreenShader.ButtonPressed = ui.player.screenShader.Visible;
+        GetNodeCheckButton("useScreenShader").ButtonPressed = ui.player.screenShader.Visible;
         light = ui.GetTree().Root.GetNode<Light3D>("Node/sunLight");
         if (light is null) {
             Ui.Log("找不到灯光。");
         }
-        shadow.ButtonPressed = light.ShadowEnabled;
-        showInfo.ButtonPressed = ui.infomation.Visible;
-        LOD.Value = ui.GetTree().Root.MeshLodThreshold;
+        GetNodeCheckButton("shadow").ButtonPressed = light.ShadowEnabled;
+        GetNodeCheckButton("showInfo").ButtonPressed = ui.infomation.Visible;
         // 绑定事件
-        uiType.ItemSelected += (index) => {
+        GetNodeOptionButton("uiType").ItemSelected += (index) => {
             SetUiType(index);
         };
-        vsync.Pressed += () => {
+        GetNodeCheckButton("vsync").Pressed += () => {
             SetVsync();
         };
-        maxFps.ItemSelected += (index) => {
+        GetNodeOptionButton("maxFps").ItemSelected += (index) => {
             SetMaxFps();
         };
-        tts.ItemSelected += (index) => {
+        GetNodeOptionButton("tts").ItemSelected += (index) => {
             SetTtsId(index);
         };
-        translation.ItemSelected += (index) => {
-            string language = translation.GetItemText((int) index);
+        GetNodeOptionButton("translation").ItemSelected += (index) => {
+            string language = GetNodeOptionButton("translation").GetItemText((int) index);
             if (language == null) {
                 return;
             }
@@ -110,25 +144,22 @@ public partial class Setting: Control {
             }
             Translation.Locale = language;
         };
-        shadow.Pressed += () => {
+        GetNodeCheckButton("shadow").Pressed += () => {
             SetShadow();
         };
-        develop.Pressed += () => {
+        GetNodeCheckButton("develop").Pressed += () => {
             SetDevelop();
         };
-        useScreenShader.Pressed += () => {
+        GetNodeCheckButton("useScreenShader").Pressed += () => {
             SetUseScreenShader();
         };
-        showInfo.Pressed += () => {
+        GetNodeCheckButton("showInfo").Pressed += () => {
             SetShowInfo();
         };
-        window.Pressed += () => {
+        GetNodeCheckButton("window").Pressed += () => {
             SetWindow();
         };
-        LOD.ValueChanged += (value) => {
-            SetLOD(value);
-        };
-        exit.Pressed += () => {
+        GetNodeButton("exit").Pressed += () => {
             ui.Exit();
         };
     }
@@ -137,16 +168,16 @@ public partial class Setting: Control {
         SetWindowVisible();
     }
     public void SetVsync() {
-        bool enabled = vsync.ButtonPressed;
+        bool enabled = GetNodeCheckButton("vsync").ButtonPressed;
         DisplayServer.VSyncMode mode = enabled?DisplayServer.VSyncMode.Enabled:DisplayServer.VSyncMode.Disabled;
         if (mode == DisplayServer.WindowGetVsyncMode()) {
             return;
         }
         DisplayServer.WindowSetVsyncMode(mode);
-        maxFps.Visible = !enabled;
+        GetNodeOptionButton("maxFps").Visible = !enabled;
     }
     public void SetMaxFps() {
-        Engine.MaxFps = maxFps.GetItemText(maxFps.GetSelectedId()).ToInt();
+        Engine.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
     }
     public void SetTtsId(long index) {
         if (index == 0) { // 不使用TTS
@@ -158,32 +189,110 @@ public partial class Setting: Control {
         ttsId = voices[voiceIndex]["id"].ToString();
     }
     public void SetShadow() {
-        light.ShadowEnabled = shadow.ButtonPressed;
+        light.ShadowEnabled = GetNodeCheckButton("shadow").ButtonPressed;
     }
     public void SetDevelop() {
-        bool dev = develop.ButtonPressed;
-        useScreenShader.Visible = dev;
-        showInfo.Visible = dev;
-        LOD.Visible = dev;
+        bool dev = GetNodeCheckButton("develop").ButtonPressed;
+        GetNodeCheckButton("useScreenShader").Visible = dev;
+        GetNodeCheckButton("showInfo").Visible = dev;
         SetWindowVisible();
     }
     public void SetUseScreenShader() {
-        ui.player.screenShader.Visible = useScreenShader.ButtonPressed;
+        ui.player.screenShader.Visible = GetNodeCheckButton("useScreenShader").ButtonPressed;
     }
     public void SetShowInfo() {
-        ui.infomation.Visible = showInfo.ButtonPressed;
+        ui.infomation.Visible = GetNodeCheckButton("showInfo").ButtonPressed;
     }
     public void SetWindow() {
-        DisplayServer.WindowMode mode = window.ButtonPressed?DisplayServer.WindowMode.Maximized:DisplayServer.WindowMode.ExclusiveFullscreen;
+        DisplayServer.WindowMode mode = GetNodeCheckButton("window").ButtonPressed?DisplayServer.WindowMode.Maximized:DisplayServer.WindowMode.ExclusiveFullscreen;
         if (DisplayServer.WindowGetMode() == mode) {
             return;
         }
         DisplayServer.WindowSetMode(mode);
     }
     public void SetWindowVisible() {
-        window.Visible = ui.uiType == UiType.computer && develop.ButtonPressed;
+        GetNodeCheckButton("window").Visible = ui.uiType == UiType.computer && GetNodeCheckButton("develop").ButtonPressed;
     }
-    public void SetLOD(double value) {
-        ui.GetTree().Root.MeshLodThreshold = (float) value;
+    public void SetOptions() {
+        foreach (string key in options.Keys) {
+            switch ((OptionType) options[key]["type"]) {
+                case OptionType.OptionButton: {
+                    OptionButton button = new() {
+                        Text = key
+                    };
+                    options[key].Add("node", button);
+                    container.AddChild(button);
+                    if (!options[key].ContainsKey("items")) {
+                        break;
+                    }
+                    Array items = (Array) options[key]["items"];
+                    foreach (string item in items.Select(v => (string)v)) {
+                        button.AddItem(item);
+                    }
+                    break;
+                }
+                case OptionType.CheckButton: {
+                    CheckButton button = new() {
+                        Text = key
+                    };
+                    options[key].Add("node", button);
+                    container.AddChild(button);
+                    break;
+                }
+                case OptionType.Button: {
+                    Button button = new() {
+                        Text = key
+                    };
+                    options[key].Add("node", button);
+                    container.AddChild(button);
+                    break;
+                }
+                default: {
+                    Ui.Log(key, "未知类型");
+                    break;
+                }
+            }
+        }
+    }
+    public OptionButton GetNodeOptionButton(string key) {
+        if (!options.ContainsKey(key)) {
+            Ui.Log("找不到", key);
+            return null;
+        }
+        if ((OptionType) options[key]["type"] != OptionType.OptionButton) {
+            Ui.Log(key, "不是 OptionButton");
+            return null;
+        }
+        if (!options[key].ContainsKey("node")) {
+            Ui.Log(key, "没有 node");
+            return null;
+        }
+        return (OptionButton) options[key]["node"];
+    }
+    public CheckButton GetNodeCheckButton(string key) {
+        if (!options.ContainsKey(key)) {
+            Ui.Log("找不到", key);
+            return null;
+        }
+        if ((OptionType) options[key]["type"] != OptionType.CheckButton) {
+            Ui.Log(key, "不是 CheckButton");
+            return null;
+        }
+        if (!options[key].ContainsKey("node")) {
+            Ui.Log(key, "没有 node");
+            return null;
+        }
+        return (CheckButton) options[key]["node"];
+    }
+    public Button GetNodeButton(string key) {
+        if (!options.ContainsKey(key)) {
+            Ui.Log("找不到", key);
+            return null;
+        }
+        if (!options[key].ContainsKey("node")) {
+            Ui.Log(key, "没有 node");
+            return null;
+        }
+        return (Button) options[key]["node"];
     }
 }

@@ -151,7 +151,7 @@ public partial class Ui: Control {
         player.PlayerState = State.load;
     }
     public override void _Process(double delta) {
-        if (settingPanel.showInfo.ButtonPressed) {
+        if (settingPanel.GetNodeCheckButton("showInfo").ButtonPressed) {
             string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             text += "\n" + Logs[0];
             text += "\n" + Logs[1];
@@ -187,7 +187,7 @@ public partial class Ui: Control {
                 return;
             }
             // 打开或关闭调试信息
-            settingPanel.showInfo.ButtonPressed = !settingPanel.showInfo.ButtonPressed;
+            settingPanel.GetNodeCheckButton("showInfo").ButtonPressed = !settingPanel.GetNodeCheckButton("showInfo").ButtonPressed;
             settingPanel.SetShowInfo();
             return;
         }
