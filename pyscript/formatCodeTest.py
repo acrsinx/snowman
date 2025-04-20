@@ -89,6 +89,73 @@ class TestFormatCode(unittest.TestCase):
         formatCode.combine_generic_angle_brackets(input_code)
         self.assertEqual(input_code, output_code)
 
+    def test_combine_parentheses(self):
+        input_code: list[tuple[str, formatCode.NoteType]] = [
+            ("if", formatCode.NoteType.NORMAL),
+            ("(", formatCode.NoteType.NORMAL),
+            ("b", formatCode.NoteType.NORMAL),
+            (")", formatCode.NoteType.NORMAL),
+            ("{", formatCode.NoteType.NORMAL),
+            ("}", formatCode.NoteType.NORMAL),
+            (";", formatCode.NoteType.NORMAL),
+            ("(", formatCode.NoteType.NORMAL),
+            ("a", formatCode.NoteType.NORMAL),
+            (")", formatCode.NoteType.NORMAL),
+            (".", formatCode.NoteType.NORMAL),
+            ("b", formatCode.NoteType.NORMAL),
+            ("(", formatCode.NoteType.NORMAL),
+            ("c", formatCode.NoteType.NORMAL),
+            (")", formatCode.NoteType.NORMAL),
+            (";", formatCode.NoteType.NORMAL)
+        ]
+        output_code: list[tuple[str, formatCode.NoteType]] = [
+            ("if", formatCode.NoteType.NORMAL),
+            ("(b) {", formatCode.NoteType.NORMAL),
+            ("}", formatCode.NoteType.NORMAL),
+            (";", formatCode.NoteType.NORMAL),
+            ("(a).", formatCode.NoteType.NORMAL),
+            ("b(c);", formatCode.NoteType.NORMAL)
+        ]
+        formatCode.combine_parentheses(input_code)
+        self.assertEqual(input_code, output_code)
+
+    def test_combine_square_brackets(self):
+        input_code: list[tuple[str, formatCode.NoteType]] = [
+            ("a", formatCode.NoteType.NORMAL),
+            ("[", formatCode.NoteType.NORMAL),
+            ("b", formatCode.NoteType.NORMAL),
+            ("]", formatCode.NoteType.NORMAL),
+            ("=", formatCode.NoteType.NORMAL),
+            ("(c", formatCode.NoteType.NORMAL),
+            ("[", formatCode.NoteType.NORMAL),
+            ("d", formatCode.NoteType.NORMAL),
+            ("]);", formatCode.NoteType.NORMAL)
+        ]
+        output_code: list[tuple[str, formatCode.NoteType]] = [
+            ("a[b]", formatCode.NoteType.NORMAL),
+            ("=", formatCode.NoteType.NORMAL),
+            ("(c[d]);", formatCode.NoteType.NORMAL)
+        ]
+        formatCode.combine_square_brackets(input_code)
+        self.assertEqual(input_code, output_code)
+
+    def test_combine_semicolon(self):
+        input_code: list[tuple[str, formatCode.NoteType]] = [
+            ("a();", formatCode.NoteType.NORMAL),
+            ("b", formatCode.NoteType.NORMAL),
+            ("=", formatCode.NoteType.NORMAL),
+            ("c", formatCode.NoteType.NORMAL),
+            (";", formatCode.NoteType.NORMAL)
+        ]
+        output_code: list[tuple[str, formatCode.NoteType]] = [
+            ("a();", formatCode.NoteType.NORMAL),
+            ("b", formatCode.NoteType.NORMAL),
+            ("=", formatCode.NoteType.NORMAL),
+            ("c;", formatCode.NoteType.NORMAL)
+        ]
+        formatCode.combine_semicolon(input_code)
+        self.assertEqual(input_code, output_code)
+
     def test_package(self):
         self.assertEqual(formatCode.package("aaa"), ("aaa", formatCode.NoteType.NORMAL))
         self.assertEqual(formatCode.package("abc"), ("abc", formatCode.NoteType.NORMAL))

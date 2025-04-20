@@ -22,6 +22,26 @@ operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|
 从短到长
 """
 
+operator_before_left_parenthesis: tuple = (",", ";", "{", "for", "foreach", "elif", "switch", "if", "while", "return")
+"""
+后面加左括号要空格的
+"""
+
+operator_after_right_parenthesis: tuple = (".", ";", "(", ")")
+"""
+前面加右括号不空格的
+"""
+
+operator_before_left_square_bracket: tuple = (";", "}")
+"""
+后面加左方括号要空开的
+"""
+
+operator_after_right_square_bracket: tuple = (".", ";")
+"""
+前面加右方括号不空格的
+"""
+
 def check_time(source_path: str, target_path: str) -> bool:
     """
     检查时间
@@ -264,6 +284,77 @@ def combine_generic_angle_brackets(words: list[tuple[str, NoteType]]):
         words[to_merge[0] - 1] = (words[to_merge[0] - 1][0] + words[to_merge[0]][0], words[to_merge[0] - 1][1])
         words.pop(to_merge[0])
 
+def combine_parentheses(words: list[tuple[str, NoteType]]):
+    """
+    合并小括号
+    """
+    i: int = 0
+    while i < len(words):
+        if words[i][0].startswith('('):
+            if not (words[i - 1][0].endswith(operator_before_left_parenthesis) or is_operator(words[i - 1][0])):
+                words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
+                words.pop(i)
+                i -= 1
+        if words[i][0].endswith('('):
+            if not is_operator(words[i + 1][0]):
+                words[i] = (words[i][0] + words[i + 1][0], words[i][1])
+                words.pop(i + 1)
+                i -= 1
+        if words[i][0].endswith(')'):
+            if words[i + 1][0].startswith(operator_after_right_parenthesis):
+                words[i] = (words[i][0] + words[i + 1][0], words[i][1])
+                words.pop(i + 1)
+                i -= 1
+            else:
+                words[i] = (words[i][0] + " " + words[i + 1][0], words[i][1])
+                words.pop(i + 1)
+                i -= 1
+        if words[i][0].startswith(')'):
+            if not is_operator(words[i - 1][0]):
+                words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
+                words.pop(i)
+                i -= 1
+        i += 1
+
+def combine_square_brackets(words: list[tuple[str, NoteType]]):
+    """
+    合并方括号
+    """
+    i: int = 0
+    while i < len(words):
+        if words[i][0].startswith('['):
+            if not (is_operator(words[i - 1][0]) or words[i - 1][0].endswith(operator_before_left_square_bracket)):
+                words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
+                words.pop(i)
+                i -= 1
+        if words[i][0].endswith('['):
+            if not is_operator(words[i + 1][0]):
+                words[i] = (words[i][0] + words[i + 1][0], words[i][1])
+                words.pop(i + 1)
+                i -= 1
+        if words[i][0].startswith(']'):
+            if not is_operator(words[i - 1][0]):
+                words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
+                words.pop(i)
+                i -= 1
+        if words[i][0].endswith(']'):
+            if words[i + 1][0].startswith(operator_after_right_square_bracket):
+                words[i] = (words[i][0] + words[i + 1][0], words[i][1])
+                words.pop(i + 1)
+                i -= 1
+        i += 1
+
+def combine_semicolon(words: list[tuple[str, NoteType]]):
+    """
+    把分号与前一个词合并
+    """
+    i: int = 0
+    while i < len(words):
+        if words[i][0].startswith(";"):
+            words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
+            words.pop(i)
+        i += 1
+
 def output(path: str, words: list[tuple[str, NoteType]]):
     """
     输出
@@ -271,6 +362,9 @@ def output(path: str, words: list[tuple[str, NoteType]]):
     combine_generic_angle_brackets(words)
     find_and_combine_ternary_operator(words)
     combine_colon(words)
+    combine_parentheses(words)
+    combine_square_brackets(words)
+    combine_semicolon(words)
     with open(path, "w", encoding="utf-8") as f:
         tab_level: int = 0
         # 是否在for循环的()中
@@ -294,8 +388,8 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                     tab_level_in_array -= 1
                     if tab_level_in_array == 0:
                         tab_level -= 1
-            if words[i + 1][0] == "}":  # 如果下一个词是"}"，且不在数组中，且不是{}的情况，则减少缩进
-                if words[i][0] == "{":
+            if words[i + 1][0].startswith("}"):  # 如果下一个词是"}"，且不在数组中，且不是{}的情况，则减少缩进
+                if words[i][0].endswith("{"):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
@@ -308,13 +402,13 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
-            if words[i][0] == "}":  # "}"后补充换行
+            if words[i][0].endswith("}"):  # "}"后补充换行
                 if in_array:
                     if i >= array_end:
                         in_array = False
                         tab_level_in_array = 0
                     continue
-                if (words[i + 1][0] not in ["else", "elif", ")"]) and (not words[i + 1][0] == ";"):
+                if (words[i + 1][0] not in ["else", "elif", ")"]) and (not words[i + 1][0].endswith(";")):
                     f.write("\n")
                     f.write(" " * 4 * tab_level)
                     continue
@@ -325,7 +419,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                         f.write("\n")
                         tab_level += 1
                         f.write(" " * 4 * tab_level)
-            if (words[i][0] == ";" or words[i][1] != NoteType.NORMAL or (words[i][
+            if (words[i][0].endswith(";") or words[i][1] != NoteType.NORMAL or (words[i][
                                                                              0] == "," and in_array and tab_level_in_array == 1)) and not in_for:  # 如果是";"，或注释，或数组中特定级别的"," 且不是for循环的()中，则加换行
                 f.write("\n")
                 f.write(" " * 4 * tab_level)
@@ -344,7 +438,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                     is_operator(words[i - 1][0]) or words[i - 1][0] in ["(", "[", ",", "return"]):  # 如果是算符后加"-"，则不加空格
                 continue
             if words[i][0].endswith(':'):  # 如果是case后的":"，且后无"{"，加换行
-                if words[i + 1][0] == "{":
+                if words[i + 1][0].startswith("{"):
                     f.write(" ")
                     continue
                 flag: bool = False
@@ -363,13 +457,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
             if words[i + 1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "::", "++", "--"] and not is_operator(
                     words[i][0]):  # 如果是[或]或,或:或;或"或'或)或?或::或++或--之前，且不是算符，则不加空格
                 continue
-            if words[i + 1][0].startswith(")"):
-                continue
-            if words[i + 1][0] == "(" and words[i][0] not in [",", "{", "for", "foreach", "elif", "switch", "if",
-                                                              "while", "return"] and not is_operator(
-                    words[i][0]):  # 如果是(之前且不是关键词，则不加空格
-                continue
-            if words[i][0] == "{":  # 如果是{，则增加缩进
+            if words[i][0].endswith("{"):  # 如果是{，则增加缩进
                 if words[i + 1][1] == NoteType.NOTE_END:  # 如果是行末注释，则不立即换行
                     tab_level += 1
                     f.write(" ")
@@ -385,17 +473,17 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 tab_level_in: int = 0
                 while True:  # 获取数组信息
                     j += 1
-                    if words[j][0] == "}":  # 下一个词是同一级的"}"，而中间没有";"，则说明是数组
+                    if words[j][0].startswith("}"):  # 下一个词是同一级的"}"，而中间没有";"，则说明是数组
                         if tab_level_in != 0:
                             tab_level_in -= 1
                             continue
                         in_array = True
                         array_end = j
                         break
-                    if words[j][0] == "{":  # 下一个词是"{"
+                    if words[j][0].startswith("{"):  # 下一个词是"{"
                         tab_level_in += 1
                         continue
-                    if words[j][0] == ";":
+                    if ";" in words[j][0]:
                         break
                     if j >= len(words):
                         print("数组越界，代码格式定有错误", path)
