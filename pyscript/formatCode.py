@@ -183,48 +183,94 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         words.append(package(word))
     return words
 
-def output(path: str, words: list[tuple[str, NoteType]]):
+def find_and_combine_ternary_operator(words: list[tuple[str, NoteType]]):
     """
-    输出
+    找出三元运算符?:中的:位置，并合并
     """
-    # 找出泛型的尖括号
+    # 三元运算符?:中的:索引
+    have_question: bool = False
+    question_indexes: list[int] = []
+    colon_indexes: list[int] = []
+    i: int = 0
+    while i < len(words):
+        if words[i][0] == "?":
+            have_question = True
+            question_indexes.append(i)
+            i += 1
+            continue
+        if words[i][0] in ["{", "}", ";"]:  # 三元运算符?:中一定没有的符号
+            have_question = False
+            i += 1
+            continue
+        if words[i][0] == ":" and have_question:  # 三元运算符?:中的:索引
+            have_question = False
+            colon_indexes.append(i)
+            # 合并
+            for to_merge in [question_indexes[-1], i - 2]:
+                words[to_merge-1] = (words[to_merge-1][0] + words[to_merge][0] + words[to_merge+1][0], words[i - 1][1])
+                words.pop(to_merge)
+                words.pop(to_merge)
+            i -= 4
+        i += 1
+
+def combine_colon(words: list[tuple[str, NoteType]]):
+    """
+    把冒号与前一个词合并
+    """
+    i: int = 1
+    while i < len(words):
+        if words[i][0] != ":":
+            i += 1
+            continue
+        words[i - 1] = (words[i - 1][0] + ":", words[i - 1][1])
+        words.pop(i)
+        i += 1
+
+def combine_generic_angle_brackets(words: list[tuple[str, NoteType]]):
+    """
+    把泛型的尖括号合并
+    """
     # 尖括号成对出现
-    # 找出三元运算符?:中的:位置
     level: int = 0
     level_list: list[int] = []
     # 尖括号所在位置的索引
-    indexes: list[int] = []
-    # 三元运算符?:中的:索引
-    have_question: bool = False
-    op_indexes: list[int] = []
+    indexes: list[tuple[int, bool]] = []
     for i in range(len(words)):
         level_list.append(level)
         if words[i][0] == "<":
             level += 1
-            continue
-        if words[i][0] == "?":
-            have_question = True
             continue
         if words[i][0] == ">":
             level -= 1
             if level < 0:  # 一定不是泛型的尖括号
                 level = 0
                 continue
+            indexes.append((i, False))
             j: int = i - 1
-            indexes.append(i)
             while level_list[j] > level:  # 找到头
                 j -= 1
-            indexes.append(j)
+            indexes.append((j, True))
             continue
         if words[i][0] in ["{", "}"] + operator_list:  # 泛型的两个尖括号中一定没有的符号
             level = 0
             continue
-        if words[i][0] in ["{", "}", ";"]:  # 三元运算符?:中一定没有的符号
-            have_question = False
-        if words[i][0] == ":" and have_question:  # 三元运算符?:中的:索引
-            have_question = False
-            op_indexes.append(i)
+    indexes.sort(key=lambda x: x[0], reverse=True)
+    for to_merge in indexes:
+        if to_merge[1]:  # 左括号
+            words[to_merge[0] - 1] = (words[to_merge[0] - 1][0] + "<" + words[to_merge[0] + 1][0], words[to_merge[0] - 1][1])
+            words.pop(to_merge[0])
+            words.pop(to_merge[0])
+            continue
+        words[to_merge[0] - 1] = (words[to_merge[0] - 1][0] + words[to_merge[0]][0], words[to_merge[0] - 1][1])
+        words.pop(to_merge[0])
 
+def output(path: str, words: list[tuple[str, NoteType]]):
+    """
+    输出
+    """
+    combine_generic_angle_brackets(words)
+    find_and_combine_ternary_operator(words)
+    combine_colon(words)
     with open(path, "w", encoding="utf-8") as f:
         tab_level: int = 0
         # 是否在for循环的()中
@@ -237,11 +283,6 @@ def output(path: str, words: list[tuple[str, NoteType]]):
         tab_level_in_array: int = 0
         for i in range(len(words)):
             f.write(words[i][0])
-            if i in indexes or i + 1 in indexes:  # 泛型尖括号周围不加空格
-                if words[i][0] != ">":
-                    continue
-                if i + 1 in indexes and words[i + 1][0] == ">":
-                    continue
             if i + 1 >= len(words):  # 最后一行
                 f.write("\n")
                 return
@@ -295,8 +336,6 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 continue
             if words[i][0] == ":" and words[i + 1][0].startswith("\""):  # 如果是:"，则不加空格
                 continue
-            if words[i][0] == ":" and i in op_indexes:  # 如果是三元运算符，则不加空格
-                continue
             if words[i][0] == ">" and words[i + 1][0] in ["(", ")"]:  # 如果是>)或>(，则不加空格
                 continue
             if words[i][0] in [")", "]"] and words[i + 1][0].startswith("."):  # 如果是")."或"]."，则不加空格
@@ -304,7 +343,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
             if words[i][0] == "-" and (
                     is_operator(words[i - 1][0]) or words[i - 1][0] in ["(", "[", ",", "return"]):  # 如果是算符后加"-"，则不加空格
                 continue
-            if words[i][0] == ":":  # 如果是case后的":"，且后无"{"，加换行
+            if words[i][0].endswith(':'):  # 如果是case后的":"，且后无"{"，加换行
                 if words[i + 1][0] == "{":
                     f.write(" ")
                     continue
@@ -323,6 +362,8 @@ def output(path: str, words: list[tuple[str, NoteType]]):
                 continue
             if words[i + 1][0] in ["[", "]", ",", ":", ";", "\"", "'", ")", "?", "::", "++", "--"] and not is_operator(
                     words[i][0]):  # 如果是[或]或,或:或;或"或'或)或?或::或++或--之前，且不是算符，则不加空格
+                continue
+            if words[i + 1][0].startswith(")"):
                 continue
             if words[i + 1][0] == "(" and words[i][0] not in [",", "{", "for", "foreach", "elif", "switch", "if",
                                                               "while", "return"] and not is_operator(
