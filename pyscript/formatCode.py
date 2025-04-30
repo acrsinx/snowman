@@ -256,6 +256,12 @@ def combine_colon(words: list[tuple[str, NoteType]]) -> None:
     """
     i: int = 1
     while i < len(words):
+        if words[i][0] == "::":
+            words[i - 1] = (words[i - 1][0] + "::" + words[i+1][0], words[i - 1][1])
+            words.pop(i)
+            words.pop(i)
+            i += 1
+            continue
         if words[i][0] != ":":
             i += 1
             continue
@@ -406,7 +412,68 @@ def combine_operator(words: list[tuple[str, NoteType]]) -> None:
             words.pop(i+1)
         i += 1
 
-def combine_to_line(words: list[tuple[str, NoteType]]) -> list[tuple[str, int]]:
+def find_array_comma(words: list[tuple[str, NoteType]]) -> list[tuple[str, NoteType, bool]]:
+    """
+    找出数组中的逗号
+    """
+    # 大括号中没有";"的区域为数组
+    output_list: list[tuple[str, NoteType, bool]] = []
+    for token, note_type in words:
+        output_list.append((token, note_type, False))
+    for i in range(len(output_list)):
+        if not output_list[i][0].endswith(","):
+            continue
+        flag: bool = True
+        tab_level: int = 0
+        for j in range(i + 1, len(output_list)):
+            if output_list[j][0].endswith(";"):
+                flag = False
+                break
+            if output_list[j][0].endswith("{"):
+                tab_level += 1
+                continue
+            if output_list[j][0].startswith("}"):
+                tab_level -= 1
+                if tab_level < 0:
+                    break
+                continue
+        tab_level = 0
+        for j in range(i - 1, -1, -1):
+            if output_list[j][0].endswith(";"):
+                flag = False
+                break
+            if output_list[j][0].startswith("}"):
+                tab_level += 1
+                continue
+            if output_list[j][0].endswith("{"):
+                tab_level -= 1
+                if tab_level < 0:
+                    break
+                continue
+        output_list[i] = (output_list[i][0], output_list[i][1], flag)
+    return output_list
+
+def is_end_of_line(words: list[tuple[str, NoteType, bool]], i: int) -> bool:
+    """
+    判断是否是行尾
+    """
+    if words[i][0].endswith((";", "{")) and (words[i + 1][1] is not NoteType.NOTE_END):
+        return True
+    if words[i + 1][0].startswith("}"):
+        return True
+    if words[i][0].endswith("}") and words[i + 1][0] != "else":
+        return True
+    if words[i][1] is not NoteType.NORMAL: # 注释前换行
+        return True
+    if words[i + 1][1] is NoteType.NOTE: # 下一行是注释
+        return True
+    if words[i - 1][0] == "case" and words[i][0].endswith(":") and words[i+1][0] != "{": # case 语句
+        return True
+    if words[i][2] and words[i][0].endswith(","):
+        return True
+    return False
+
+def combine_to_line(words: list[tuple[str, NoteType, bool]]) -> list[tuple[str, int]]:
     """
     合成一行
     """
@@ -424,7 +491,7 @@ def combine_to_line(words: list[tuple[str, NoteType]]) -> list[tuple[str, int]]:
             last_tab_level += 1
         if words[i+1][0].startswith("}") or words[i+1][0].endswith("}"):
             last_tab_level -= 1
-        if (words[i][0].endswith((";", "{")) and (words[i+1][1] is not NoteType.NOTE_END)) or words[i+1][0].startswith("}") or (words[i][0].endswith("}") and words[i+1][0] != "else") or (words[i][1] is not NoteType.NORMAL):
+        if is_end_of_line(words, i):
             output_words.append((line, tab_level))
             tab_level = last_tab_level
             line = ""
@@ -459,6 +526,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
     combine_comma(words)
     combine_operator(words)
     combine_operator(words)
+    words: list[tuple[str, NoteType, bool]] = find_array_comma(words)
     words: list[tuple[str, int]] = combine_to_line(words)
     combine_for_loop(words)
     with open(path, "w", encoding="utf-8") as f:

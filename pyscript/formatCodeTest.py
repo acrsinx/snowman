@@ -217,29 +217,57 @@ class TestFormatCode(unittest.TestCase):
         formatCode.combine_operator(input_code)
         self.assertEqual(input_code, output_code)
 
-    def test_combine_to_line(self):
+    def test_find_array_comma(self):
         input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("int", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
+            ("{", formatCode.NoteType.NORMAL),
+            ("a,", formatCode.NoteType.NORMAL),
+            ("b", formatCode.NoteType.NORMAL),
+            ("}", formatCode.NoteType.NORMAL)
+        ]
+        calculate_output_code: list[tuple[str, formatCode.NoteType, bool]] = formatCode.find_array_comma(input_code)
+        self.assertTrue(calculate_output_code[1][2])
+        self.assertEqual(len(calculate_output_code), len(input_code))
+        input_code: list[tuple[str, formatCode.NoteType]] = [
+            ("{", formatCode.NoteType.NORMAL),
             ("a;", formatCode.NoteType.NORMAL),
-            ("/// abc", formatCode.NoteType.NOTE),
-            ("void", formatCode.NoteType.NORMAL),
-            ("f()", formatCode.NoteType.NORMAL),
+            ("f(b,", formatCode.NoteType.NORMAL),
+            ("c)", formatCode.NoteType.NORMAL),
             ("{", formatCode.NoteType.NORMAL),
-            ("// abcd", formatCode.NoteType.NOTE_END),
-            ("return;", formatCode.NoteType.NORMAL),
+            ("a,", formatCode.NoteType.NORMAL),
+            ("b", formatCode.NoteType.NORMAL),
             ("}", formatCode.NoteType.NORMAL),
-            ("{", formatCode.NoteType.NORMAL),
-            ("\"ui\",", formatCode.NoteType.NORMAL),
-            ("new", formatCode.NoteType.NORMAL),
-            ("Dictionary", formatCode.NoteType.NORMAL),
-            ("{", formatCode.NoteType.NORMAL),
-            ("\"name\",", formatCode.NoteType.NORMAL),
-            ("\"uiType\"", formatCode.NoteType.NORMAL),
-            ("},", formatCode.NoteType.NORMAL),
-            ("}", formatCode.NoteType.NORMAL),
-            ("public", formatCode.NoteType.NORMAL)
+            ("}", formatCode.NoteType.NORMAL)
+        ]
+        calculate_output_code: list[tuple[str, formatCode.NoteType, bool]] = formatCode.find_array_comma(input_code)
+        self.assertFalse(calculate_output_code[1][2])
+        self.assertFalse(calculate_output_code[2][2])
+        self.assertFalse(calculate_output_code[3][2])
+        self.assertTrue(calculate_output_code[5][2])
+        self.assertEqual(len(calculate_output_code), len(input_code))
+
+    def test_combine_to_line(self):
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("int", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("a;", formatCode.NoteType.NORMAL, False),
+            ("/// abc", formatCode.NoteType.NOTE, False),
+            ("void", formatCode.NoteType.NORMAL, False),
+            ("f()", formatCode.NoteType.NORMAL, False),
+            ("{", formatCode.NoteType.NORMAL, False),
+            ("// abcd", formatCode.NoteType.NOTE_END, False),
+            ("return;", formatCode.NoteType.NORMAL, False),
+            ("}", formatCode.NoteType.NORMAL, False),
+            ("{", formatCode.NoteType.NORMAL, False),
+            ("\"ui\",", formatCode.NoteType.NORMAL, False),
+            ("new", formatCode.NoteType.NORMAL, False),
+            ("Dictionary", formatCode.NoteType.NORMAL, False),
+            ("{", formatCode.NoteType.NORMAL, False),
+            ("\"name\",", formatCode.NoteType.NORMAL, False),
+            ("\"uiType\"", formatCode.NoteType.NORMAL, False),
+            ("},", formatCode.NoteType.NORMAL, False),
+            ("}", formatCode.NoteType.NORMAL, False),
+            ("public", formatCode.NoteType.NORMAL, False)
         ]
         output_code: list[tuple[str, int]] = [
             ("int c = a;", 0),
