@@ -25,62 +25,139 @@ public partial class Setting: Control {
         options = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>> {
             {
                 "uiType", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "uiType" },
-                    { "type", OptionType.OptionButton },
-                    { "items", new Array { "Computer", "Phone" } }
+                    {
+                        "name",
+                        "uiType"
+                    }, {
+                        "type",
+                        OptionType.OptionButton
+                    }, {
+                        "items",
+                        new Array {
+                            "Computer",
+                            "Phone"
+                        }
+                    }
                 }
-            },{
+            }, {
                 "vsync", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "vsync" },
-                    { "type", OptionType.CheckButton }
+                    {
+                        "name",
+                        "vsync"
+                    }, {
+                        "type",
+                        OptionType.CheckButton
+                    }
                 }
-            },{
+            }, {
                 "maxFps", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "maxFps" },
-                    { "type", OptionType.OptionButton },
-                    { "items", new Array {"30", "60", "120", "240", "300", "0" } }
+                    {
+                        "name",
+                        "maxFps"
+                    }, {
+                        "type",
+                        OptionType.OptionButton
+                    }, {
+                        "items",
+                        new Array {
+                            "30",
+                            "60",
+                            "120",
+                            "240",
+                            "300",
+                            "0"
+                        }
+                    }
                 }
-            },{
+            }, {
                 "tts", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "tts" },
-                    { "type", OptionType.OptionButton },
-                    { "items", new Array { "禁用" } }
+                    {
+                        "name",
+                        "tts"
+                    }, {
+                        "type",
+                        OptionType.OptionButton
+                    }, {
+                        "items",
+                        new Array {
+                            "禁用"
+                        }
+                    }
                 }
-            },{
+            }, {
                 "translation", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "translation" },
-                    { "type", OptionType.OptionButton },
-                    { "items", new Array { "简体中文" } }
+                    {
+                        "name",
+                        "translation"
+                    }, {
+                        "type",
+                        OptionType.OptionButton
+                    }, {
+                        "items",
+                        new Array {
+                            "简体中文"
+                        }
+                    }
                 }
-            },{
+            }, {
                 "shadow", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "shadow" },
-                    { "type", OptionType.CheckButton }
+                    {
+                        "name",
+                        "shadow"
+                    }, {
+                        "type",
+                        OptionType.CheckButton
+                    }
                 }
-            },{
+            }, {
                 "develop", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "develop" },
-                    { "type", OptionType.CheckButton }
+                    {
+                        "name",
+                        "develop"
+                    }, {
+                        "type",
+                        OptionType.CheckButton
+                    }
                 }
-            },{
+            }, {
                 "useScreenShader", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "useScreenShader" },
-                    { "type", OptionType.CheckButton }
+                    {
+                        "name",
+                        "useScreenShader"
+                    }, {
+                        "type",
+                        OptionType.CheckButton
+                    }
                 }
-            },{
+            }, {
                 "showInfo", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "showInfo" },
-                    { "type", OptionType.CheckButton }
+                    {
+                        "name",
+                        "showInfo"
+                    }, {
+                        "type",
+                        OptionType.CheckButton
+                    }
                 }
-            },{
+            }, {
                 "window", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "window" },
-                    { "type", OptionType.CheckButton }
+                    {
+                        "name",
+                        "window"
+                    }, {
+                        "type",
+                        OptionType.CheckButton
+                    }
                 }
-            },{
+            }, {
                 "exit", new System.Collections.Generic.Dictionary<string, object> {
-                    { "name", "exit" },
-                    { "type", OptionType.Button }
+                    {
+                        "name",
+                        "exit"
+                    }, {
+                        "type",
+                        OptionType.Button
+                    }
                 }
             }
         };
@@ -226,7 +303,7 @@ public partial class Setting: Control {
                         break;
                     }
                     Array items = (Array) options[key]["items"];
-                    foreach (string item in items.Select(v => (string)v)) {
+                    foreach (string item in items.Select(v => (string) v)) {
                         button.AddItem(item);
                     }
                     break;

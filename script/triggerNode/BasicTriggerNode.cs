@@ -5,12 +5,25 @@ using System.Collections.Generic;
 public class BasicTriggerNode {
     public static readonly BasicTriggerNode defaultNode = new();
     public static readonly Dictionary<char, int> CutChar = new() {
-        {'(', 1},
-        {')', 1},
-        {'!', 1},
-        {'&', 2},
-        {'|', 2},
-        {'=', 2}
+        {
+            '(',
+            1
+        }, {
+            ')',
+            1
+        }, {
+            '!',
+            1
+        }, {
+            '&',
+            2
+        }, {
+            '|',
+            2
+        }, {
+            '=',
+            2
+        }
     };
     /// <summary>
     /// 判断条件是否成立

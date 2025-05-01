@@ -461,7 +461,7 @@ def is_end_of_line(words: list[tuple[str, NoteType, bool]], i: int) -> bool:
         return True
     if words[i - 1][0] == "case" and words[i][0].endswith(":") and words[i+1][0] != "{": # case 语句
         return True
-    if words[i][2] and words[i][0].endswith(","):
+    if words[i][2] and words[i][0].endswith(",") and not(words[i][0].endswith("},") and words[i+1][0].startswith("{")):
         return True
     return False
 

@@ -14,16 +14,28 @@ public class GameInformation: object {
     /// <param name="path">文件路径</param>
     public void SaveInformation(string path) {
         Dictionary<string, string> information = new() {
-            {"totalGameTime", Ui.totalGameTime.ToString()},
-            {"vsync", ui.settingPanel.GetNodeCheckButton("vsync").ButtonPressed?"1":"0"},
-            {"maxFps", ui.settingPanel.GetNodeOptionButton("maxFps").Selected.ToString()},
-            {"tts", ui.settingPanel.GetNodeOptionButton("tts").Selected.ToString()},
-            {"shadow", ui.settingPanel.GetNodeCheckButton("shadow").ButtonPressed?"1":"0"},
-            {"develop", ui.settingPanel.GetNodeCheckButton("develop").ButtonPressed?"1":"0"},
-            {"useScreenShader", ui.settingPanel.GetNodeCheckButton("useScreenShader").ButtonPressed?"1":"0"},
-            {"showInfo", ui.settingPanel.GetNodeCheckButton("showInfo").ButtonPressed?"1":"0"},
-            {"window", ui.settingPanel.GetNodeCheckButton("window").ButtonPressed?"1":"0"},
-            {"local", Translation.Locale}
+            {
+                "totalGameTime", Ui.totalGameTime.ToString()
+            }, {
+                "vsync", ui.settingPanel.GetNodeCheckButton("vsync").ButtonPressed?"1":"0"
+            }, {
+                "maxFps", ui.settingPanel.GetNodeOptionButton("maxFps").Selected.ToString()
+            }, {
+                "tts", ui.settingPanel.GetNodeOptionButton("tts").Selected.ToString()
+            }, {
+                "shadow", ui.settingPanel.GetNodeCheckButton("shadow").ButtonPressed?"1":"0"
+            }, {
+                "develop", ui.settingPanel.GetNodeCheckButton("develop").ButtonPressed?"1":"0"
+            }, {
+                "useScreenShader", ui.settingPanel.GetNodeCheckButton("useScreenShader").ButtonPressed?"1":"0"
+            }, {
+                "showInfo", ui.settingPanel.GetNodeCheckButton("showInfo").ButtonPressed?"1":"0"
+            }, {
+                "window", ui.settingPanel.GetNodeCheckButton("window").ButtonPressed?"1":"0"
+            }, {
+                "local",
+                Translation.Locale
+            }
         };
         FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
         file.StoreLine(Json.Stringify(information));
