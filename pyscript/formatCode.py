@@ -326,14 +326,15 @@ def combine_parentheses(words: list[tuple[str, NoteType]]) -> None:
             words.pop(i + 1)
             i -= 1
         if words[i][0].endswith(')'):
-            if words[i + 1][0].startswith(operator_after_right_parenthesis):
-                words[i] = (words[i][0] + words[i + 1][0], words[i][1])
-                words.pop(i + 1)
-                i -= 1
-            else:
-                words[i] = (words[i][0] + " " + words[i + 1][0], words[i][1])
-                words.pop(i + 1)
-                i -= 1
+            if not words[i + 1][0].startswith("}"):
+                if words[i + 1][0].startswith(operator_after_right_parenthesis):
+                    words[i] = (words[i][0] + words[i + 1][0], words[i][1])
+                    words.pop(i + 1)
+                    i -= 1
+                else:
+                    words[i] = (words[i][0] + " " + words[i + 1][0], words[i][1])
+                    words.pop(i + 1)
+                    i -= 1
         if words[i][0].startswith(')'):
             words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
             words.pop(i)
@@ -426,6 +427,12 @@ def find_array_comma(words: list[tuple[str, NoteType]]) -> list[tuple[str, NoteT
         flag: bool = True
         tab_level: int = 0
         for j in range(i + 1, len(output_list)):
+            if output_list[j][0] == "};":
+                tab_level -= 1
+                if tab_level < 0:
+                    break
+                flag = False
+                continue
             if output_list[j][0].endswith(";"):
                 flag = False
                 break
