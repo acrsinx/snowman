@@ -24,7 +24,7 @@ operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|
 
 operator_tuple: tuple = tuple(operator_list)
 
-operator_before_left_parenthesis: tuple = (",", ";", "{", "for", "foreach", "elif", "switch", "if", "while", "return")
+operator_before_left_parenthesis: tuple = (",", ";", "{", "=>", "??", "for", "foreach", "elif", "switch", "if", "while", "return")
 """
 后面加左括号要空格的
 """
@@ -44,12 +44,12 @@ operator_after_right_square_bracket: tuple = (".", ";")
 前面加右方括号不空格的
 """
 
-operator_combine_right: tuple = ("?", "!", ".")
+operator_combine_right: tuple = ("?", "!", ".", "::")
 """
 右结合的符号
 """
 
-operator_combine_left: tuple = ("++", "--", ".", "?.")
+operator_combine_left: tuple = ("++", "--", ".", "?.", "::")
 """
 左结合的符号
 """
@@ -220,7 +220,15 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
         words.append(package(word))
     return words
 
-def find_and_combine_ternary_operator(words: list[tuple[str, NoteType]]) -> None:
+def merge_words(words: list[tuple[str, NoteType, bool]], i: int, delta: int, have_space: bool = False) -> None:
+    """
+    合并 words[i:i+delta+1]
+    """
+    words[i] = ("".join([word[0] + (" " if have_space else "") for word in words[i:i+delta]]) + words[i+delta][0], words[i][1], any([word[2] for word in words[i:i+delta+1]]))
+    for j in range(delta):
+        words.pop(i + 1)
+
+def find_and_combine_ternary_operator(words: list[tuple[str, NoteType, bool]]) -> None:
     """
     找出三元运算符?:中的:位置，并合并
     """
@@ -244,32 +252,27 @@ def find_and_combine_ternary_operator(words: list[tuple[str, NoteType]]) -> None
             colon_indexes.append(i)
             # 合并
             for to_merge in [question_indexes[-1], i - 2]:
-                words[to_merge-1] = (words[to_merge-1][0] + words[to_merge][0] + words[to_merge+1][0], words[i - 1][1])
-                words.pop(to_merge)
-                words.pop(to_merge)
+                merge_words(words, to_merge-1, 2)
             i -= 4
         i += 1
 
-def combine_colon(words: list[tuple[str, NoteType]]) -> None:
+def combine_colon(words: list[tuple[str, NoteType, bool]]) -> None:
     """
     把冒号与前一个词合并
     """
     i: int = 1
     while i < len(words):
         if words[i][0] == "::":
-            words[i - 1] = (words[i - 1][0] + "::" + words[i+1][0], words[i - 1][1])
-            words.pop(i)
-            words.pop(i)
+            merge_words(words, i - 1, 1)
             i += 1
             continue
         if words[i][0] != ":":
             i += 1
             continue
-        words[i - 1] = (words[i - 1][0] + ":", words[i - 1][1])
-        words.pop(i)
+        merge_words(words, i - 1, 1)
         i += 1
 
-def combine_generic_angle_brackets(words: list[tuple[str, NoteType]]) -> None:
+def combine_generic_angle_brackets(words: list[tuple[str, NoteType, bool]]) -> None:
     """
     把泛型的尖括号合并
     """
@@ -300,14 +303,11 @@ def combine_generic_angle_brackets(words: list[tuple[str, NoteType]]) -> None:
     indexes.sort(key=lambda x: x[0], reverse=True)
     for to_merge in indexes:
         if to_merge[1]:  # 左括号
-            words[to_merge[0] - 1] = (words[to_merge[0] - 1][0] + "<" + words[to_merge[0] + 1][0], words[to_merge[0] - 1][1])
-            words.pop(to_merge[0])
-            words.pop(to_merge[0])
+            merge_words(words, to_merge[0] - 1, 2)
             continue
-        words[to_merge[0] - 1] = (words[to_merge[0] - 1][0] + words[to_merge[0]][0], words[to_merge[0] - 1][1])
-        words.pop(to_merge[0])
+        merge_words(words, to_merge[0] - 1, 1)
 
-def combine_parentheses(words: list[tuple[str, NoteType]]) -> None:
+def combine_parentheses(words: list[tuple[str, NoteType, bool]]) -> None:
     """
     合并小括号
     """
@@ -318,30 +318,25 @@ def combine_parentheses(words: list[tuple[str, NoteType]]) -> None:
             continue
         if words[i][0].startswith('('):
             if not (words[i - 1][0].endswith(operator_before_left_parenthesis) or (words[i - 1][0].endswith(operator_tuple) and not words[i - 1][0].endswith(">"))):
-                words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
-                words.pop(i)
+                merge_words(words, i - 1, 1)
                 i -= 1
         if words[i][0].endswith('('):
-            words[i] = (words[i][0] + words[i + 1][0], words[i][1])
-            words.pop(i + 1)
+            merge_words(words, i, 1)
             i -= 1
         if words[i][0].endswith(')'):
             if not words[i + 1][0].startswith("}"):
                 if words[i + 1][0].startswith(operator_after_right_parenthesis):
-                    words[i] = (words[i][0] + words[i + 1][0], words[i][1])
-                    words.pop(i + 1)
+                    merge_words(words, i, 1)
                     i -= 1
                 else:
-                    words[i] = (words[i][0] + " " + words[i + 1][0], words[i][1])
-                    words.pop(i + 1)
+                    merge_words(words, i, 1, True)
                     i -= 1
         if words[i][0].startswith(')'):
-            words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
-            words.pop(i)
+            merge_words(words, i - 1, 1)
             i -= 1
         i += 1
 
-def combine_square_brackets(words: list[tuple[str, NoteType]]) -> None:
+def combine_square_brackets(words: list[tuple[str, NoteType, bool]]) -> None:
     """
     合并方括号
     """
@@ -349,68 +344,58 @@ def combine_square_brackets(words: list[tuple[str, NoteType]]) -> None:
     while i < len(words):
         if words[i][0].startswith('['):
             if not (is_operator(words[i - 1][0]) or words[i - 1][0].endswith(operator_before_left_square_bracket)):
-                words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
-                words.pop(i)
+                merge_words(words, i-1, 1)
                 i -= 1
         if words[i][0].endswith('['):
             if not is_operator(words[i + 1][0]):
-                words[i] = (words[i][0] + words[i + 1][0], words[i][1])
-                words.pop(i + 1)
+                merge_words(words, i, 1)
                 i -= 1
         if words[i][0].startswith(']'):
             if not is_operator(words[i - 1][0]):
-                words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
-                words.pop(i)
+                merge_words(words, i-1, 1)
                 i -= 1
         if words[i][0].endswith(']'):
             if words[i + 1][0].startswith(operator_after_right_square_bracket):
-                words[i] = (words[i][0] + words[i + 1][0], words[i][1])
-                words.pop(i + 1)
+                merge_words(words, i, 1)
                 i -= 1
         i += 1
 
-def combine_semicolon(words: list[tuple[str, NoteType]]) -> None:
+def combine_semicolon(words: list[tuple[str, NoteType, bool]]) -> None:
     """
     把分号与前一个词合并
     """
     i: int = 0
     while i < len(words):
         if words[i][0].startswith(";"):
-            words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
-            words.pop(i)
+            merge_words(words, i-1, 1)
         i += 1
 
-def combine_comma(words: list[tuple[str, NoteType]]) -> None:
+def combine_comma(words: list[tuple[str, NoteType, bool]]) -> None:
     """
     把逗号与前一个词合并
     """
     i: int = 0
     while i < len(words):
         if words[i][0].startswith(","):
-            words[i - 1] = (words[i - 1][0] + words[i][0], words[i - 1][1])
-            words.pop(i)
+            merge_words(words, i-1, 1)
         i += 1
 
-def combine_operator(words: list[tuple[str, NoteType]]) -> None:
+def combine_operator(words: list[tuple[str, NoteType, bool]]) -> None:
     """
     合并运算符
     """
     i: int = 0
     while True:
-        if words[i][0].endswith(operator_combine_right):
-            words[i] = (words[i][0] + words[i+1][0], words[i][1])
-            words.pop(i+1)
+        if words[i][0].endswith(operator_combine_right) and not words[i][0].endswith("??"):
+            merge_words(words, i, 1)
         if i >= len(words) - 1:
             break
         if words[i + 1][0].startswith(operator_combine_left):
-            words[i] = (words[i][0] + words[i+1][0], words[i][1])
-            words.pop(i+1)
+            merge_words(words, i, 1)
         if words[i][0] == "-" and words[i-1][0].endswith(operator_before_minus_sign):
-            words[i] = (words[i][0] + words[i+1][0], words[i][1])
-            words.pop(i+1)
+            merge_words(words, i, 1)
         if words[i][0].endswith("-") and words[i][0][:-1].endswith(operator_before_minus_sign):
-            words[i] = (words[i][0] + words[i+1][0], words[i][1])
-            words.pop(i+1)
+            merge_words(words, i, 1)
         i += 1
 
 def find_array_comma(words: list[tuple[str, NoteType]]) -> list[tuple[str, NoteType, bool]]:
@@ -433,7 +418,7 @@ def find_array_comma(words: list[tuple[str, NoteType]]) -> list[tuple[str, NoteT
                     break
                 flag = False
                 continue
-            if output_list[j][0].endswith(";"):
+            if output_list[j][0].endswith(";") or any([k == output_list[j][0] for k in [">", ")", "]"]]):
                 flag = False
                 break
             if output_list[j][0].endswith("{"):
@@ -524,6 +509,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
     """
     输出
     """
+    words: list[tuple[str, NoteType, bool]] = find_array_comma(words)
     combine_generic_angle_brackets(words)
     find_and_combine_ternary_operator(words)
     combine_colon(words)
@@ -533,7 +519,6 @@ def output(path: str, words: list[tuple[str, NoteType]]):
     combine_comma(words)
     combine_operator(words)
     combine_operator(words)
-    words: list[tuple[str, NoteType, bool]] = find_array_comma(words)
     words: list[tuple[str, int]] = combine_to_line(words)
     combine_for_loop(words)
     with open(path, "w", encoding="utf-8") as f:

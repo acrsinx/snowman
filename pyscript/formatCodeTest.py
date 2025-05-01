@@ -12,207 +12,220 @@ class TestFormatCode(unittest.TestCase):
         self.assertFalse(formatCode.is_operator(" "))
         self.assertFalse(formatCode.is_operator("()"))
 
-    def test_find_and_combine_ternary_operator(self):
-        input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("a", formatCode.NoteType.NORMAL),
-            ("?", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            (":", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL),
-            ("d", formatCode.NoteType.NORMAL),
-            (":", formatCode.NoteType.NORMAL)
+    def test_merge_words(self):
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False)
         ]
-        output_code: list[tuple[str, formatCode.NoteType]] = [
-            ("a?b:c", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL),
-            ("d", formatCode.NoteType.NORMAL),
-            (":", formatCode.NoteType.NORMAL)
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("abc", formatCode.NoteType.NORMAL, False)
+        ]
+        formatCode.merge_words(input_code, 0, 2)
+        self.assertEqual(input_code, output_code)
+        self.assertEqual(len(input_code), 1)
+
+    def test_find_and_combine_ternary_operator(self):
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("?", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            (":", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False),
+            ("d", formatCode.NoteType.NORMAL, False),
+            (":", formatCode.NoteType.NORMAL, False)
+        ]
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a?b:c", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False),
+            ("d", formatCode.NoteType.NORMAL, False),
+            (":", formatCode.NoteType.NORMAL, False)
         ]
         formatCode.find_and_combine_ternary_operator(input_code)
         self.assertEqual(input_code, output_code)
 
     def test_combine_colon(self):
-        input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("class", formatCode.NoteType.NORMAL),
-            ("a", formatCode.NoteType.NORMAL),
-            (":", formatCode.NoteType.NORMAL),
-            ("{", formatCode.NoteType.NORMAL),
-            ("}", formatCode.NoteType.NORMAL)
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("class", formatCode.NoteType.NORMAL, False),
+            ("a", formatCode.NoteType.NORMAL, False),
+            (":", formatCode.NoteType.NORMAL, False),
+            ("{", formatCode.NoteType.NORMAL, False),
+            ("}", formatCode.NoteType.NORMAL, False)
         ]
-        output_code: list[tuple[str, formatCode.NoteType]] = [
-            ("class", formatCode.NoteType.NORMAL),
-            ("a:", formatCode.NoteType.NORMAL),
-            ("{", formatCode.NoteType.NORMAL),
-            ("}", formatCode.NoteType.NORMAL)
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("class", formatCode.NoteType.NORMAL, False),
+            ("a:", formatCode.NoteType.NORMAL, False),
+            ("{", formatCode.NoteType.NORMAL, False),
+            ("}", formatCode.NoteType.NORMAL, False)
         ]
         formatCode.combine_colon(input_code)
         self.assertEqual(input_code, output_code)
 
     def test_combine_generic_angle_brackets(self):
-        input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("dict", formatCode.NoteType.NORMAL),
-            ("<", formatCode.NoteType.NORMAL),
-            ("int", formatCode.NoteType.NORMAL),
-            (",", formatCode.NoteType.NORMAL),
-            ("dict", formatCode.NoteType.NORMAL),
-            ("<", formatCode.NoteType.NORMAL),
-            ("str", formatCode.NoteType.NORMAL),
-            (",", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            (">", formatCode.NoteType.NORMAL),
-            (">", formatCode.NoteType.NORMAL),
-            ("a", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL),
-            ("<", formatCode.NoteType.NORMAL),
-            ("d", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL)
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("dict", formatCode.NoteType.NORMAL, False),
+            ("<", formatCode.NoteType.NORMAL, False),
+            ("int", formatCode.NoteType.NORMAL, False),
+            (",", formatCode.NoteType.NORMAL, False),
+            ("dict", formatCode.NoteType.NORMAL, False),
+            ("<", formatCode.NoteType.NORMAL, False),
+            ("str", formatCode.NoteType.NORMAL, False),
+            (",", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            (">", formatCode.NoteType.NORMAL, False),
+            (">", formatCode.NoteType.NORMAL, False),
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False),
+            ("<", formatCode.NoteType.NORMAL, False),
+            ("d", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False)
         ]
-        output_code: list[tuple[str, formatCode.NoteType]] = [
-            ("dict<int", formatCode.NoteType.NORMAL),
-            (",", formatCode.NoteType.NORMAL),
-            ("dict<str", formatCode.NoteType.NORMAL),
-            (",", formatCode.NoteType.NORMAL),
-            ("b>>", formatCode.NoteType.NORMAL),
-            ("a", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL),
-            ("<", formatCode.NoteType.NORMAL),
-            ("d", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL)
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("dict<int", formatCode.NoteType.NORMAL, False),
+            (",", formatCode.NoteType.NORMAL, False),
+            ("dict<str", formatCode.NoteType.NORMAL, False),
+            (",", formatCode.NoteType.NORMAL, False),
+            ("b>>", formatCode.NoteType.NORMAL, False),
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False),
+            ("<", formatCode.NoteType.NORMAL, False),
+            ("d", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False)
         ]
         formatCode.combine_generic_angle_brackets(input_code)
         self.assertEqual(input_code, output_code)
 
     def test_combine_parentheses(self):
-        input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("if", formatCode.NoteType.NORMAL),
-            ("(", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            (")", formatCode.NoteType.NORMAL),
-            ("{", formatCode.NoteType.NORMAL),
-            ("}", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL),
-            ("a", formatCode.NoteType.NORMAL),
-            ("(", formatCode.NoteType.NORMAL),
-            (")", formatCode.NoteType.NORMAL),
-            (".", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            ("(", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL),
-            (")", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL),
-            ("a", formatCode.NoteType.NORMAL),
-            ("(", formatCode.NoteType.NORMAL),
-            (")", formatCode.NoteType.NORMAL),
-            ("*", formatCode.NoteType.NORMAL),
-            ("(", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            (")", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL)
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("if", formatCode.NoteType.NORMAL, False),
+            ("(", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            (")", formatCode.NoteType.NORMAL, False),
+            ("{", formatCode.NoteType.NORMAL, False),
+            ("}", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False),
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("(", formatCode.NoteType.NORMAL, False),
+            (")", formatCode.NoteType.NORMAL, False),
+            (".", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            ("(", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False),
+            (")", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False),
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("(", formatCode.NoteType.NORMAL, False),
+            (")", formatCode.NoteType.NORMAL, False),
+            ("*", formatCode.NoteType.NORMAL, False),
+            ("(", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            (")", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False)
         ]
-        output_code: list[tuple[str, formatCode.NoteType]] = [
-            ("if", formatCode.NoteType.NORMAL),
-            ("(b) {", formatCode.NoteType.NORMAL),
-            ("}", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL),
-            ("a().", formatCode.NoteType.NORMAL),
-            ("b(c);", formatCode.NoteType.NORMAL),
-            ("a() *", formatCode.NoteType.NORMAL),
-            ("(b);", formatCode.NoteType.NORMAL)
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("if", formatCode.NoteType.NORMAL, False),
+            ("(b) {", formatCode.NoteType.NORMAL, False),
+            ("}", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False),
+            ("a().", formatCode.NoteType.NORMAL, False),
+            ("b(c);", formatCode.NoteType.NORMAL, False),
+            ("a() *", formatCode.NoteType.NORMAL, False),
+            ("(b);", formatCode.NoteType.NORMAL, False)
         ]
         formatCode.combine_parentheses(input_code)
         self.assertEqual(input_code, output_code)
 
     def test_combine_square_brackets(self):
-        input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("a", formatCode.NoteType.NORMAL),
-            ("[", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            ("]", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("(c", formatCode.NoteType.NORMAL),
-            ("[", formatCode.NoteType.NORMAL),
-            ("d", formatCode.NoteType.NORMAL),
-            ("]);", formatCode.NoteType.NORMAL)
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("[", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            ("]", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("(c", formatCode.NoteType.NORMAL, False),
+            ("[", formatCode.NoteType.NORMAL, False),
+            ("d", formatCode.NoteType.NORMAL, False),
+            ("]);", formatCode.NoteType.NORMAL, False)
         ]
-        output_code: list[tuple[str, formatCode.NoteType]] = [
-            ("a[b]", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("(c[d]);", formatCode.NoteType.NORMAL)
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a[b]", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("(c[d]);", formatCode.NoteType.NORMAL, False)
         ]
         formatCode.combine_square_brackets(input_code)
         self.assertEqual(input_code, output_code)
 
     def test_combine_semicolon(self):
-        input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("a();", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL),
-            (";", formatCode.NoteType.NORMAL)
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a();", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False),
+            (";", formatCode.NoteType.NORMAL, False)
         ]
-        output_code: list[tuple[str, formatCode.NoteType]] = [
-            ("a();", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("c;", formatCode.NoteType.NORMAL)
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a();", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("c;", formatCode.NoteType.NORMAL, False)
         ]
         formatCode.combine_semicolon(input_code)
         self.assertEqual(input_code, output_code)
 
     def test_combine_comma(self):
-        input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("(", formatCode.NoteType.NORMAL),
-            ("a", formatCode.NoteType.NORMAL),
-            (")", formatCode.NoteType.NORMAL),
-            (",", formatCode.NoteType.NORMAL),
-            ("b", formatCode.NoteType.NORMAL),
-            (",", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL)
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("(", formatCode.NoteType.NORMAL, False),
+            ("a", formatCode.NoteType.NORMAL, False),
+            (")", formatCode.NoteType.NORMAL, False),
+            (",", formatCode.NoteType.NORMAL, False),
+            ("b", formatCode.NoteType.NORMAL, False),
+            (",", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False)
         ]
-        output_code: list[tuple[str, formatCode.NoteType]] = [
-            ("(", formatCode.NoteType.NORMAL),
-            ("a", formatCode.NoteType.NORMAL),
-            ("),", formatCode.NoteType.NORMAL),
-            ("b,", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL)
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("(", formatCode.NoteType.NORMAL, False),
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("),", formatCode.NoteType.NORMAL, False),
+            ("b,", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False)
         ]
         formatCode.combine_comma(input_code)
         self.assertEqual(input_code, output_code)
 
     def test_combine_operator(self):
-        input_code: list[tuple[str, formatCode.NoteType]] = [
-            ("a", formatCode.NoteType.NORMAL),
-            ("++;", formatCode.NoteType.NORMAL),
-            ("c", formatCode.NoteType.NORMAL),
-            ("--;", formatCode.NoteType.NORMAL),
-            ("d", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("-", formatCode.NoteType.NORMAL),
-            ("e;", formatCode.NoteType.NORMAL),
-            ("f", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("f", formatCode.NoteType.NORMAL),
-            ("-", formatCode.NoteType.NORMAL),
-            ("g;", formatCode.NoteType.NORMAL)
+        input_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a", formatCode.NoteType.NORMAL, False),
+            ("++;", formatCode.NoteType.NORMAL, False),
+            ("c", formatCode.NoteType.NORMAL, False),
+            ("--;", formatCode.NoteType.NORMAL, False),
+            ("d", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("-", formatCode.NoteType.NORMAL, False),
+            ("e;", formatCode.NoteType.NORMAL, False),
+            ("f", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("f", formatCode.NoteType.NORMAL, False),
+            ("-", formatCode.NoteType.NORMAL, False),
+            ("g;", formatCode.NoteType.NORMAL, False)
         ]
-        output_code: list[tuple[str, formatCode.NoteType]] = [
-            ("a++;", formatCode.NoteType.NORMAL),
-            ("c--;", formatCode.NoteType.NORMAL),
-            ("d", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("-e;", formatCode.NoteType.NORMAL),
-            ("f", formatCode.NoteType.NORMAL),
-            ("=", formatCode.NoteType.NORMAL),
-            ("f", formatCode.NoteType.NORMAL),
-            ("-", formatCode.NoteType.NORMAL),
-            ("g;", formatCode.NoteType.NORMAL)
+        output_code: list[tuple[str, formatCode.NoteType, bool]] = [
+            ("a++;", formatCode.NoteType.NORMAL, False),
+            ("c--;", formatCode.NoteType.NORMAL, False),
+            ("d", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("-e;", formatCode.NoteType.NORMAL, False),
+            ("f", formatCode.NoteType.NORMAL, False),
+            ("=", formatCode.NoteType.NORMAL, False),
+            ("f", formatCode.NoteType.NORMAL, False),
+            ("-", formatCode.NoteType.NORMAL, False),
+            ("g;", formatCode.NoteType.NORMAL, False)
         ]
         formatCode.combine_operator(input_code)
         self.assertEqual(input_code, output_code)
@@ -244,6 +257,17 @@ class TestFormatCode(unittest.TestCase):
         self.assertFalse(calculate_output_code[3][2])
         self.assertTrue(calculate_output_code[5][2])
         self.assertEqual(len(calculate_output_code), len(input_code))
+        input_code: list[tuple[str, formatCode.NoteType]] = [
+            ("{", formatCode.NoteType.NORMAL),
+            ("a", formatCode.NoteType.NORMAL),
+            ("(", formatCode.NoteType.NORMAL),
+            ("0", formatCode.NoteType.NORMAL),
+            (",", formatCode.NoteType.NORMAL),
+            ("0)", formatCode.NoteType.NORMAL),
+            ("};", formatCode.NoteType.NORMAL)
+        ]
+        calculate_output_code: list[tuple[str, formatCode.NoteType, bool]] = formatCode.find_array_comma(input_code)
+        self.assertFalse(calculate_output_code[1][2])
 
     def test_combine_to_line(self):
         input_code: list[tuple[str, formatCode.NoteType, bool]] = [
