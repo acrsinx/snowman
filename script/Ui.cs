@@ -4,7 +4,14 @@ public partial class Ui: Control {
     public const string savePath = "user://save.json";
     public Player player;
     public GameInformation gameInformation;
-    public UiType uiType;
+    private UiType uiType;
+    public UiType UiType {
+        get => uiType;
+        set {
+            uiType = value;
+            settingPanel.SetWindowVisible();
+        }
+    }
     public Label infomation;
     public PanelContainer captionContainer;
     public Label speakerLabel;
@@ -62,15 +69,6 @@ public partial class Ui: Control {
         Log(s);
     }
     public override void _Ready() {
-        gameInformation = new(this);
-        // 设备类型
-        if (OS.GetName() == "Android" || OS.GetName() == "iOS") {
-            uiType = UiType.phone;
-        } else if (OS.GetName() == "Windows" || OS.GetName() == "macOS" || OS.GetName() == "Linux") {
-            uiType = UiType.computer;
-        } else {
-            uiType = UiType.computer;
-        }
         // 获取组件
         infomation = GetNode<Label>("infomation");
         captionContainer = GetNode<PanelContainer>("CaptionContainer");
@@ -97,6 +95,21 @@ public partial class Ui: Control {
         map = GetNode<Sprite2D>("LeftUp/Panel/Map");
         healthBar = GetNode<ProgressBar>("RightUp/health");
         healthBar.Visible = false;
+        settingPanel.ui = this;
+        packagePanel.ui = this;
+        loadPanel.ui = this;
+        settingPanel.Init();
+        packagePanel.Init();
+        loadPanel.Init();
+        gameInformation = new(this);
+        // 设备类型
+        if (OS.GetName() == "Android" || OS.GetName() == "iOS") {
+            UiType = UiType.phone;
+        } else if (OS.GetName() == "Windows" || OS.GetName() == "macOS" || OS.GetName() == "Linux") {
+            UiType = UiType.computer;
+        } else {
+            UiType = UiType.computer;
+        }
         // 添加事件
         chooseButtons[0].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
@@ -133,12 +146,6 @@ public partial class Ui: Control {
                 }
             }
         };
-        settingPanel.ui = this;
-        packagePanel.ui = this;
-        loadPanel.ui = this;
-        settingPanel.Init();
-        packagePanel.Init();
-        loadPanel.Init();
         Translation.LangageChanged += () => {
             phoneJump.GetChild<Label>(0).Text = Translation.Translate("跳");
             phoneAttack.GetChild<Label>(0).Text = Translation.Translate("攻");
@@ -151,8 +158,8 @@ public partial class Ui: Control {
         player.PlayerState = State.load;
     }
     public override void _Process(double delta) {
-        if (settingPanel.GetNodeCheckButton("showInfo").ButtonPressed) {
-            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + uiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+        if (gameInformation.ShowInfo) {
+            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             text += "\n" + Logs[0];
             text += "\n" + Logs[1];
             text += "\n" + Logs[2];
@@ -187,8 +194,7 @@ public partial class Ui: Control {
                 return;
             }
             // 打开或关闭调试信息
-            settingPanel.GetNodeCheckButton("showInfo").ButtonPressed = !settingPanel.GetNodeCheckButton("showInfo").ButtonPressed;
-            settingPanel.SetShowInfo();
+            gameInformation.ShowInfo = !gameInformation.ShowInfo;
             return;
         }
         if (@event.IsAction("next_caption")) {

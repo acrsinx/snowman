@@ -4,9 +4,123 @@ using Godot.Collections;
 /// 游戏信息类
 /// </summary>
 public class GameInformation: object {
-    public Ui ui;
+    public Setting setting;
+    public Label gameInformation;
+    public MeshInstance3D screenShader;
+    private bool vsync;
+    public bool Vsync {
+        get {
+            return vsync;
+        }
+        set {
+            vsync = value;
+            setting.GetNodeCheckButton("vsync").ButtonPressed = value;
+            DisplayServer.VSyncMode mode = value?DisplayServer.VSyncMode.Enabled:DisplayServer.VSyncMode.Disabled;
+            if (mode == DisplayServer.WindowGetVsyncMode()) {
+                return;
+            }
+            DisplayServer.WindowSetVsyncMode(mode);
+            setting.GetNodeOptionButton("maxFps").Visible = !value;
+        }
+    }
+    private int maxFps;
+    public int MaxFps {
+        get {
+            return maxFps;
+        }
+        set {
+            maxFps = value;
+            setting.GetNodeOptionButton("maxFps").Selected = value;
+            Engine.MaxFps = value;
+        }
+    }
+    private int tts;
+    public int Tts {
+        get {
+            return tts;
+        }
+        set {
+            tts = value;
+            setting.GetNodeOptionButton("tts").Selected = value;
+            if (value == 0) { // 不使用TTS
+                setting.voiceIndex = -1;
+                setting.ttsId = "";
+                return;
+            }
+            setting.voiceIndex = value - 1;
+            setting.ttsId = setting.voices[setting.voiceIndex]["id"].ToString();
+        }
+    }
+    private bool shadow;
+    public bool Shadow {
+        get {
+            return shadow;
+        }
+        set {
+            shadow = value;
+            setting.GetNodeCheckButton("shadow").ButtonPressed = value;
+            setting.light.ShadowEnabled = setting.GetNodeCheckButton("shadow").ButtonPressed;
+        }
+    }
+    private bool develop;
+    public bool Develop {
+        get {
+            return develop;
+        }
+        set {
+            develop = value;
+            setting.GetNodeCheckButton("develop").ButtonPressed = value;
+            setting.GetNodeCheckButton("useScreenShader").Visible = value;
+            setting.GetNodeCheckButton("showInfo").Visible = value;
+            setting.SetWindowVisible();
+        }
+    }
+    private bool useScreenShader;
+    public bool UseScreenShader {
+        get {
+            return useScreenShader;
+        }
+        set {
+            useScreenShader = value;
+            setting.GetNodeCheckButton("useScreenShader").ButtonPressed = value;
+            screenShader.Visible = value;
+        }
+    }
+    private bool showInfo;
+    public bool ShowInfo {
+        get {
+            return showInfo;
+        }
+        set {
+            showInfo = value;
+            setting.GetNodeCheckButton("showInfo").ButtonPressed = value;
+            gameInformation.Visible = value;
+        }
+    }
+    private bool window;
+    public bool Window {
+        get {
+            return window;
+        }
+        set {
+            window = value;
+            setting.GetNodeCheckButton("window").ButtonPressed = value;
+            DisplayServer.WindowMode mode = value?DisplayServer.WindowMode.Maximized:DisplayServer.WindowMode.ExclusiveFullscreen;
+            if (DisplayServer.WindowGetMode() == mode) {
+                return;
+            }
+            DisplayServer.WindowSetMode(mode);
+        }
+    }
     public GameInformation(Ui ui) {
-        this.ui = ui;
+        setting = ui.settingPanel;
+        gameInformation = ui.infomation;
+        screenShader = ui.player.screenShader;
+    }
+    public GameInformation(Setting setting, MeshInstance3D screenShader, Label gameInformation) {
+        this.setting = setting;
+        this.screenShader = screenShader;
+        this.gameInformation = gameInformation;
     }
     /// <summary>
     /// 保存游戏信息到指定文件
@@ -17,21 +131,21 @@ public class GameInformation: object {
             {
                 "totalGameTime", Ui.totalGameTime.ToString()
             }, {
-                "vsync", ui.settingPanel.GetNodeCheckButton("vsync").ButtonPressed?"1":"0"
+                "vsync", Vsync?"1":"0"
             }, {
-                "maxFps", ui.settingPanel.GetNodeOptionButton("maxFps").Selected.ToString()
+                "maxFps", MaxFps.ToString()
             }, {
-                "tts", ui.settingPanel.GetNodeOptionButton("tts").Selected.ToString()
+                "tts", Tts.ToString()
             }, {
-                "shadow", ui.settingPanel.GetNodeCheckButton("shadow").ButtonPressed?"1":"0"
+                "shadow", Shadow?"1":"0"
             }, {
-                "develop", ui.settingPanel.GetNodeCheckButton("develop").ButtonPressed?"1":"0"
+                "develop", Develop?"1":"0"
             }, {
-                "useScreenShader", ui.settingPanel.GetNodeCheckButton("useScreenShader").ButtonPressed?"1":"0"
+                "useScreenShader", UseScreenShader?"1":"0"
             }, {
-                "showInfo", ui.settingPanel.GetNodeCheckButton("showInfo").ButtonPressed?"1":"0"
+                "showInfo", ShowInfo?"1":"0"
             }, {
-                "window", ui.settingPanel.GetNodeCheckButton("window").ButtonPressed?"1":"0"
+                "window", Window?"1":"0"
             }, {
                 "local",
                 Translation.Locale
@@ -52,34 +166,19 @@ public class GameInformation: object {
             information = (Dictionary<string, string>) Json.ParseString(file.GetAsText());
         }
         Ui.totalGameTime = long.Parse(SafeRead(information, "totalGameTime") ?? "0");
-        bool vsync = (SafeRead(information, "vsync") ?? "1") == "1";
-        ui.settingPanel.GetNodeCheckButton("vsync").ButtonPressed = vsync;
-        ui.settingPanel.SetVsync();
-        ui.settingPanel.GetNodeOptionButton("maxFps").Selected = int.Parse(SafeRead(information, "maxFps") ?? "60");
-        ui.settingPanel.SetMaxFps();
-        int tts = int.Parse(SafeRead(information, "tts") ?? "0");
-        ui.settingPanel.GetNodeOptionButton("tts").Selected = tts;
-        ui.settingPanel.SetTtsId(tts);
-        bool shadow = (SafeRead(information, "shadow") ?? "1") == "1";
-        ui.settingPanel.GetNodeCheckButton("shadow").ButtonPressed = shadow;
-        ui.settingPanel.SetShadow();
-        bool develop = (SafeRead(information, "develop") ?? "0") == "1";
-        ui.settingPanel.GetNodeCheckButton("develop").ButtonPressed = develop;
-        ui.settingPanel.SetDevelop();
-        bool useScreenShader = (SafeRead(information, "useScreenShader") ?? "1") == "1";
-        ui.settingPanel.GetNodeCheckButton("useScreenShader").ButtonPressed = useScreenShader;
-        ui.settingPanel.SetUseScreenShader();
-        bool showInfo = (SafeRead(information, "showInfo") ?? "0") == "1";
-        ui.settingPanel.GetNodeCheckButton("showInfo").ButtonPressed = showInfo;
-        ui.settingPanel.SetShowInfo();
-        bool window = (SafeRead(information, "window") ?? "0") == "1";
-        ui.settingPanel.GetNodeCheckButton("window").ButtonPressed = window;
-        ui.settingPanel.SetWindow();
+        Vsync = (SafeRead(information, "vsync") ?? "1") == "1";
+        MaxFps = int.Parse(SafeRead(information, "maxFps") ?? "60");
+        Tts = int.Parse(SafeRead(information, "tts") ?? "0");
+        Shadow = (SafeRead(information, "shadow") ?? "1") == "1";
+        Develop = (SafeRead(information, "develop") ?? "0") == "1";
+        UseScreenShader = (SafeRead(information, "useScreenShader") ?? "1") == "1";
+        ShowInfo = (SafeRead(information, "showInfo") ?? "0") == "1";
+        Window = (SafeRead(information, "window") ?? "0") == "1";
         string locale = SafeRead(information, "local") ?? TranslationServer.GetLocale();
         Translation.Locale = locale;
-        for (int i = 0; i < ui.settingPanel.GetNodeOptionButton("translation").ItemCount; i++) {
-            if (ui.settingPanel.GetNodeOptionButton("translation").GetItemText(i) == locale) {
-                ui.settingPanel.GetNodeOptionButton("translation").Selected = i;
+        for (int i = 0; i < setting.GetNodeOptionButton("translation").ItemCount; i++) {
+            if (setting.GetNodeOptionButton("translation").GetItemText(i) == locale) {
+                setting.GetNodeOptionButton("translation").Selected = i;
                 break;
             }
         }
