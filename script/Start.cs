@@ -8,8 +8,8 @@ public partial class Start: Node3D {
     public GameInformation gameInformation;
     public override void _Ready() {
         setting = GetParent<Node>().GetNode<Setting>("Setting");
-        setting.Init();
-        // gameInformation = new(setting, null, null);
+        gameInformation = new(setting, null, null);
+        setting.Init(gameInformation);
     }
     public override void _Process(double delta) {
         float t = Time.GetTicksMsec() / 5000.0f;

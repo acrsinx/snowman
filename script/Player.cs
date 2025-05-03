@@ -70,7 +70,7 @@ public partial class Player: Node3D {
     /// </summary>
     public bool CanTurn {
         set {
-            if (ui.UiType == UiType.computer) {
+            if (ui.gameInformation.UiType == UiType.computer) {
                 if (value) { // 设置成可控制视角时，隐藏鼠标
                     Input.MouseMode = Input.MouseModeEnum.Captured;
                 } else { // 设置成不可控制视角时，显示鼠标
@@ -96,7 +96,7 @@ public partial class Player: Node3D {
                     ui.captionContainer.Visible = false;
                     ui.speakerLabel.Text = "";
                     ui.captionLabel.Text = "";
-                    ui.phoneControl.Visible = ui.UiType != UiType.computer;
+                    ui.phoneControl.Visible = ui.gameInformation.UiType != UiType.computer;
                     ui.settingPanel.Visible = false;
                     ui.packagePanel.Visible = false;
                     ui.leftUp.Visible = true;
@@ -177,7 +177,7 @@ public partial class Player: Node3D {
             cameraManager.UpdateCameraWhenTurning(mouseMove);
         }
         if (character.IsOnFloor()) {
-            if (ui.UiType == UiType.computer) {
+            if (ui.gameInformation.UiType == UiType.computer) {
                 front = Input.GetAxis("up", "down");
                 right = Input.GetAxis("right", "left");
             }
@@ -237,7 +237,7 @@ public partial class Player: Node3D {
     }
     public override void _Input(InputEvent @event) {
         if (@event is InputEventScreenDrag drag) {
-            if (ui.UiType == UiType.phone) {
+            if (ui.gameInformation.UiType == UiType.phone) {
                 if (drag.Index == moveIndex) { // 移动
                     // 此处不用规格化，在移动时会规格化
                     Vector2 moveVector = drag.Position - ui.ControlPanel.GetGlobalRect().Position - ui.ControlPanel.GetGlobalRect().Size * 0.5f;
@@ -269,7 +269,7 @@ public partial class Player: Node3D {
             }
         }
         if (@event is InputEventScreenTouch touch) { // 滑动事件结束时，重置滑动索引
-            if (ui.UiType == UiType.phone) {
+            if (ui.gameInformation.UiType == UiType.phone) {
                 if (touch.Pressed) {
                     return;
                 }
@@ -283,13 +283,13 @@ public partial class Player: Node3D {
             }
         }
         if (@event is InputEventMouseMotion motion) {
-            if (ui.UiType == UiType.computer) {
+            if (ui.gameInformation.UiType == UiType.computer) {
                 mouseMove = -motion.Relative * mouseSpeed;
                 return;
             }
         }
         if (@event is InputEventMouseButton button) {
-            if (ui.UiType == UiType.computer) {
+            if (ui.gameInformation.UiType == UiType.computer) {
                 if (button.IsPressed()) {
                     if (PlayerState is State.move) {
                         switch (button.ButtonIndex) {

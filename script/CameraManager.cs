@@ -126,7 +126,7 @@ public class CameraManager: object {
         } else if (CameraMarkerRotationMaxX < cameraMarker.Rotation.X) {
             cameraMarker.Rotation = new Vector3(CameraMarkerRotationMaxX, cameraMarker.Rotation.Y, cameraMarker.Rotation.Z);
         }
-        if (player.ui.UiType == UiType.computer) {
+        if (player.ui.gameInformation.UiType == UiType.computer) {
             // 鼠标归中
             Input.WarpMouse(0.5f * player.GetViewport().GetVisibleRect().Size);
         }

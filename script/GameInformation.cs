@@ -7,6 +7,14 @@ public class GameInformation: object {
     public Setting setting;
     public Label gameInformation;
     public MeshInstance3D screenShader;
+    private UiType uiType;
+    public UiType UiType {
+        get => uiType;
+        set {
+            uiType = value;
+            setting.SetWindowVisible();
+        }
+    }
     private bool vsync;
     public bool Vsync {
         get {
@@ -59,7 +67,6 @@ public class GameInformation: object {
         set {
             shadow = value;
             setting.GetNodeCheckButton("shadow").ButtonPressed = value;
-            setting.light.ShadowEnabled = setting.GetNodeCheckButton("shadow").ButtonPressed;
         }
     }
     private bool develop;
@@ -83,6 +90,9 @@ public class GameInformation: object {
         set {
             useScreenShader = value;
             setting.GetNodeCheckButton("useScreenShader").ButtonPressed = value;
+            if (screenShader == null) {
+                return;
+            }
             screenShader.Visible = value;
         }
     }
@@ -94,6 +104,9 @@ public class GameInformation: object {
         set {
             showInfo = value;
             setting.GetNodeCheckButton("showInfo").ButtonPressed = value;
+            if (gameInformation == null) {
+                return;
+            }
             gameInformation.Visible = value;
         }
     }

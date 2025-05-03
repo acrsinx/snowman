@@ -4,14 +4,7 @@ public partial class Ui: Control {
     public const string savePath = "user://save.json";
     public Player player;
     public GameInformation gameInformation;
-    private UiType uiType;
-    public UiType UiType {
-        get => uiType;
-        set {
-            uiType = value;
-            settingPanel.SetWindowVisible();
-        }
-    }
+    public Light3D light;
     public Label infomation;
     public PanelContainer captionContainer;
     public Label speakerLabel;
@@ -94,22 +87,17 @@ public partial class Ui: Control {
         panel = GetNode<Panel>("LeftUp/Panel");
         map = GetNode<Sprite2D>("LeftUp/Panel/Map");
         healthBar = GetNode<ProgressBar>("RightUp/health");
+        light = GetTree().Root.GetNode<Light3D>("Node/sunLight");
+        if (light is null) {
+            Log("找不到灯光。");
+        }
         healthBar.Visible = false;
-        settingPanel.ui = this;
+        gameInformation = new(this);
         packagePanel.ui = this;
         loadPanel.ui = this;
-        settingPanel.Init();
+        settingPanel.Init(gameInformation);
         packagePanel.Init();
         loadPanel.Init();
-        gameInformation = new(this);
-        // 设备类型
-        if (OS.GetName() == "Android" || OS.GetName() == "iOS") {
-            UiType = UiType.phone;
-        } else if (OS.GetName() == "Windows" || OS.GetName() == "macOS" || OS.GetName() == "Linux") {
-            UiType = UiType.computer;
-        } else {
-            UiType = UiType.computer;
-        }
         // 添加事件
         chooseButtons[0].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
@@ -159,7 +147,7 @@ public partial class Ui: Control {
     }
     public override void _Process(double delta) {
         if (gameInformation.ShowInfo) {
-            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + gameInformation.UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             text += "\n" + Logs[0];
             text += "\n" + Logs[1];
             text += "\n" + Logs[2];
@@ -217,14 +205,6 @@ public partial class Ui: Control {
             }
             player.character.Attack();
             return;
-        }
-    }
-    public override void _Notification(int what) {
-        if (what == NotificationWMCloseRequest) { // 关闭窗口
-            Log("exit");
-            // 保存数据
-            gameInformation.SaveInformation(savePath);
-            GetTree().Quit();
         }
     }
     /// <summary>
@@ -317,6 +297,7 @@ public partial class Ui: Control {
         } else if (player.PlayerState == State.setting) {
             player.PlayerState = State.move;
         }
+        light.ShadowEnabled = gameInformation.Shadow;
     }
     public void Package() {
         if (player.PlayerState != State.package) {
@@ -324,9 +305,6 @@ public partial class Ui: Control {
         } else if (player.PlayerState == State.package) {
             player.PlayerState = State.move;
         }
-    }
-    public void Exit() {
-        GetTree().Root.PropagateNotification((int) NotificationWMCloseRequest);
     }
     public bool CanUse(GameStuff gameStuff) {
         return gameStuff.CanUse();

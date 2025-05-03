@@ -1,8 +1,7 @@
-using System.Linq;
 using Godot;
 using Godot.Collections;
 public partial class Setting: Control {
-    public Ui ui;
+    public GameInformation gameInformation;
     public Container container;
     public System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>> options;
     /// <summary>
@@ -17,8 +16,8 @@ public partial class Setting: Control {
     /// 文本转语音的ID
     /// </summary>
     public string ttsId = "";
-    public Light3D light;
-    public void Init() {
+    public void Init(GameInformation gameInformation) {
+        this.gameInformation = gameInformation;
         // 获取组件
         container = GetNode<Container>("PanelContainer/Scroll/VBoxContainer");
         // 添加设置
@@ -221,8 +220,16 @@ public partial class Setting: Control {
                 }
             }
         };
+        // 设备类型
+        if (OS.GetName() == "Android" || OS.GetName() == "iOS") {
+            gameInformation.UiType = UiType.phone;
+        } else if (OS.GetName() == "Windows" || OS.GetName() == "macOS" || OS.GetName() == "Linux") {
+            gameInformation.UiType = UiType.computer;
+        } else {
+            gameInformation.UiType = UiType.computer;
+        }
         // 设置初始值
-        GetNodeOptionButton("uiType").Selected = (int) ui.UiType;
+        GetNodeOptionButton("uiType").Selected = (int) gameInformation.UiType;
         Engine.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
         GetNodeOptionButton("tts").Selected = 0;
         voices = DisplayServer.TtsGetVoices();
@@ -235,25 +242,18 @@ public partial class Setting: Control {
             ((Array<string>) options["translation"]["items"]).Add(languages[i]);
         }
         SetOptions();
-        GetNodeCheckButton("useScreenShader").ButtonPressed = ui.player.screenShader.Visible;
-        light = ui.GetTree().Root.GetNode<Light3D>("Node/sunLight");
-        if (light is null) {
-            Ui.Log("找不到灯光。");
-        }
-        GetNodeCheckButton("shadow").ButtonPressed = light.ShadowEnabled;
-        GetNodeCheckButton("showInfo").ButtonPressed = ui.infomation.Visible;
         // 绑定事件
         GetNodeOptionButton("uiType").ItemSelected += (index) => {
-            ui.UiType = (UiType) index;
+            gameInformation.UiType = (UiType) index;
         };
         GetNodeCheckButton("vsync").Pressed += () => {
-            ui.gameInformation.Vsync = GetNodeCheckButton("vsync").ButtonPressed;
+            gameInformation.Vsync = GetNodeCheckButton("vsync").ButtonPressed;
         };
         GetNodeOptionButton("maxFps").ItemSelected += (index) => {
-            ui.gameInformation.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
+            gameInformation.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
         };
         GetNodeOptionButton("tts").ItemSelected += (index) => {
-            ui.gameInformation.Tts = (int) index;
+            gameInformation.Tts = (int) index;
         };
         GetNodeOptionButton("translation").ItemSelected += (index) => {
             string language = GetNodeOptionButton("translation").GetItemText((int) index);
@@ -270,26 +270,26 @@ public partial class Setting: Control {
             Translation.Locale = language;
         };
         GetNodeCheckButton("shadow").Pressed += () => {
-            ui.gameInformation.Shadow = GetNodeCheckButton("shadow").ButtonPressed;
+            gameInformation.Shadow = GetNodeCheckButton("shadow").ButtonPressed;
         };
         GetNodeCheckButton("develop").Pressed += () => {
-            ui.gameInformation.Develop = GetNodeCheckButton("develop").ButtonPressed;
+            gameInformation.Develop = GetNodeCheckButton("develop").ButtonPressed;
         };
         GetNodeCheckButton("useScreenShader").Pressed += () => {
-            ui.gameInformation.UseScreenShader = GetNodeCheckButton("useScreenShader").ButtonPressed;
+            gameInformation.UseScreenShader = GetNodeCheckButton("useScreenShader").ButtonPressed;
         };
         GetNodeCheckButton("showInfo").Pressed += () => {
-            ui.gameInformation.ShowInfo = GetNodeCheckButton("showInfo").ButtonPressed;
+            gameInformation.ShowInfo = GetNodeCheckButton("showInfo").ButtonPressed;
         };
         GetNodeCheckButton("window").Pressed += () => {
-            ui.gameInformation.Window = GetNodeCheckButton("window").ButtonPressed;
+            gameInformation.Window = GetNodeCheckButton("window").ButtonPressed;
         };
         GetNodeButton("exit").Pressed += () => {
-            ui.Exit();
+            GetTree().Root.PropagateNotification((int) NotificationWMCloseRequest);
         };
     }
     public void SetWindowVisible() {
-        GetNodeCheckButton("window").Visible = ui.UiType == UiType.computer && ui.gameInformation.Develop;
+        GetNodeCheckButton("window").Visible = gameInformation.UiType == UiType.computer && gameInformation.Develop;
     }
     public void SetOptions() {
         // 移除旧有的选项
@@ -342,6 +342,8 @@ public partial class Setting: Control {
                 }
             }
         }
+        // 刷新翻译
+        Translation.LangageChanged.Invoke();
     }
     public OptionButton GetNodeOptionButton(string key) {
         if (!options.ContainsKey(key)) {
@@ -383,5 +385,13 @@ public partial class Setting: Control {
             return null;
         }
         return (Button) options[key]["node"];
+    }
+    public override void _Notification(int what) {
+        if (what == NotificationWMCloseRequest) { // 关闭窗口
+            Ui.Log("exit");
+            // 保存数据
+            gameInformation.SaveInformation(Ui.savePath);
+            GetTree().Quit();
+        }
     }
 }
