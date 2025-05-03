@@ -24,7 +24,8 @@ public partial class Setting: Control {
         // 添加设置
         options = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>> {
             {
-                "uiType", new System.Collections.Generic.Dictionary<string, object> {
+                "uiType",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "uiType"
@@ -40,7 +41,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "vsync", new System.Collections.Generic.Dictionary<string, object> {
+                "vsync",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "vsync"
@@ -53,7 +55,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "maxFps", new System.Collections.Generic.Dictionary<string, object> {
+                "maxFps",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "maxFps"
@@ -73,7 +76,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "tts", new System.Collections.Generic.Dictionary<string, object> {
+                "tts",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "tts"
@@ -88,7 +92,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "translation", new System.Collections.Generic.Dictionary<string, object> {
+                "translation",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "translation"
@@ -103,7 +108,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "shadow", new System.Collections.Generic.Dictionary<string, object> {
+                "shadow",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "shadow"
@@ -116,7 +122,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "develop", new System.Collections.Generic.Dictionary<string, object> {
+                "develop",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "develop"
@@ -129,7 +136,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "useScreenShader", new System.Collections.Generic.Dictionary<string, object> {
+                "useScreenShader",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "useScreenShader"
@@ -142,7 +150,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "showInfo", new System.Collections.Generic.Dictionary<string, object> {
+                "showInfo",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "showInfo"
@@ -155,7 +164,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "window", new System.Collections.Generic.Dictionary<string, object> {
+                "window",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "window"
@@ -168,7 +178,8 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "exit", new System.Collections.Generic.Dictionary<string, object> {
+                "exit",
+                new System.Collections.Generic.Dictionary<string, object> {
                     {
                         "name",
                         "exit"

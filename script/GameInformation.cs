@@ -129,23 +129,32 @@ public class GameInformation: object {
     public void SaveInformation(string path) {
         Dictionary<string, string> information = new() {
             {
-                "totalGameTime", Ui.totalGameTime.ToString()
+                "totalGameTime",
+                Ui.totalGameTime.ToString()
             }, {
-                "vsync", Vsync?"1":"0"
+                "vsync",
+                Vsync?"1":"0"
             }, {
-                "maxFps", MaxFps.ToString()
+                "maxFps",
+                MaxFps.ToString()
             }, {
-                "tts", Tts.ToString()
+                "tts",
+                Tts.ToString()
             }, {
-                "shadow", Shadow?"1":"0"
+                "shadow",
+                Shadow?"1":"0"
             }, {
-                "develop", Develop?"1":"0"
+                "develop",
+                Develop?"1":"0"
             }, {
-                "useScreenShader", UseScreenShader?"1":"0"
+                "useScreenShader",
+                UseScreenShader?"1":"0"
             }, {
-                "showInfo", ShowInfo?"1":"0"
+                "showInfo",
+                ShowInfo?"1":"0"
             }, {
-                "window", Window?"1":"0"
+                "window",
+                Window?"1":"0"
             }, {
                 "local",
                 Translation.Locale

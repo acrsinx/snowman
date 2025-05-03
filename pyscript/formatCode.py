@@ -410,36 +410,90 @@ def find_array_comma(words: list[tuple[str, NoteType]]) -> list[tuple[str, NoteT
         if not output_list[i][0].endswith(","):
             continue
         flag: bool = True
-        tab_level: int = 0
+        tab_level_braces: int = 0
+        tab_level_square_brackets: int = 0
+        tab_level_parentheses: int = 0
+        tab_level_angle_brackets: int = 0
         for j in range(i + 1, len(output_list)):
-            if output_list[j][0] == "};":
-                tab_level -= 1
-                if tab_level < 0:
-                    break
-                flag = False
-                continue
-            if output_list[j][0].endswith(";") or any([k == output_list[j][0] for k in [">", ")", "]"]]):
+            if output_list[j][0].endswith(";"):
                 flag = False
                 break
             if output_list[j][0].endswith("{"):
-                tab_level += 1
+                tab_level_braces += 1
                 continue
             if output_list[j][0].startswith("}"):
-                tab_level -= 1
-                if tab_level < 0:
+                tab_level_braces -= 1
+                if tab_level_braces < 0:
                     break
                 continue
-        tab_level = 0
+            if output_list[j][0].endswith("["):
+                tab_level_square_brackets += 1
+                continue
+            if output_list[j][0].startswith("]"):
+                tab_level_square_brackets -= 1
+                if tab_level_square_brackets < 0:
+                    flag = False
+                    break
+                continue
+            if output_list[j][0].endswith("("):
+                tab_level_parentheses += 1
+                continue
+            if output_list[j][0].startswith(")"):
+                tab_level_parentheses -= 1
+                if tab_level_parentheses < 0:
+                    flag = False
+                    break
+                continue
+            if output_list[j][0] == "<":
+                tab_level_angle_brackets += 1
+                continue
+            if output_list[j][0] == ">":
+                tab_level_angle_brackets -= 1
+                if tab_level_angle_brackets < 0:
+                    flag = False
+                    break
+                continue
+        tab_level_braces = 0
+        tab_level_square_brackets = 0
+        tab_level_parentheses = 0
+        tab_level_angle_brackets = 0
         for j in range(i - 1, -1, -1):
             if output_list[j][0].endswith(";"):
                 flag = False
                 break
             if output_list[j][0].startswith("}"):
-                tab_level += 1
+                tab_level_braces += 1
                 continue
             if output_list[j][0].endswith("{"):
-                tab_level -= 1
-                if tab_level < 0:
+                tab_level_braces -= 1
+                if tab_level_braces < 0:
+                    break
+                continue
+            if output_list[j][0].endswith("]"):
+                tab_level_square_brackets += 1
+                continue
+            if output_list[j][0].startswith("["):
+                tab_level_square_brackets -= 1
+                if tab_level_square_brackets < 0:
+                    flag = False
+                    break
+                continue
+            if output_list[j][0].endswith(")"):
+                tab_level_parentheses += 1
+                continue
+            if output_list[j][0].startswith("("):
+                tab_level_parentheses -= 1
+                if tab_level_parentheses < 0:
+                    flag = False
+                    break
+                continue
+            if output_list[j][0] == ">":
+                tab_level_angle_brackets += 1
+                continue
+            if output_list[j][0] == "<":
+                tab_level_angle_brackets -= 1
+                if tab_level_angle_brackets < 0:
+                    flag = False
                     break
                 continue
         output_list[i] = (output_list[i][0], output_list[i][1], flag)
