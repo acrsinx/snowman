@@ -44,3 +44,15 @@ surface_material_override/0 = ExtResource("2_loctk")
 transform = Transform3D(-0.579621, 0.19057, 0.79229, 0.312335, 0.949972, 0, -0.752653, 0.24746, -0.610145, 0.225, -0.265, -1.225)
 
 [node name="Setting" parent="." instance=ExtResource("7_8xoj3")]
+
+[node name="SettingButton" type="Button" parent="."]
+custom_minimum_size = Vector2(50, 50)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -50.0
+offset_bottom = 50.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_type_variation = &"CircleButton"

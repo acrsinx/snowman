@@ -11,6 +11,7 @@ public class Translation: object {
         }
         set {
             if (locale == value) {
+                LangageChanged.Invoke();
                 return;
             }
             string newLanguage = Rollback(value);
