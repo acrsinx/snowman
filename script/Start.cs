@@ -36,7 +36,16 @@ public partial class Start: Node3D {
             if (Tool.IsInArea(settingButton, mouseButtonEvent.Position)) {
                 return;
             }
-            Ui.Log("进入游戏。");
+            StartGame();
         }
+    }
+    /// <summary>
+    /// 开始游戏
+    /// </summary>
+    public void StartGame() {
+        GetTree().Root.AddChild(ResourceLoader.Load<PackedScene>("res://scene/Game.tscn").Instantiate());
+        Player player = GetTree().Root.GetChild(1).GetNode<Player>("player");
+        player.Init(setting);
+        GetTree().Root.RemoveChild(GetParent());
     }
 }

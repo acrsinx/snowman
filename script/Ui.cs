@@ -3,7 +3,6 @@ using Godot.Collections;
 public partial class Ui: Control {
     public const string savePath = "user://save.json";
     public Player player;
-    public GameInformation gameInformation;
     public Light3D light;
     public Label infomation;
     public PanelContainer captionContainer;
@@ -61,9 +60,13 @@ public partial class Ui: Control {
         }
         Log(s);
     }
-    public override void _Ready() {
+    public void Init(Setting settingPanel, Player player) {
+        settingPanel.Reparent(this);
+        this.settingPanel = settingPanel;
+        this.player = player;
         // 获取组件
         infomation = GetNode<Label>("infomation");
+        settingPanel.gameInformation.gameInformation = infomation;
         captionContainer = GetNode<PanelContainer>("CaptionContainer");
         speakerLabel = GetNode<Label>("CaptionContainer/VBoxContainer/SpeakerLabel");
         captionLabel = GetNode<Label>("CaptionContainer/VBoxContainer/CaptionLabel");
@@ -79,7 +82,6 @@ public partial class Ui: Control {
         phoneSlow = GetNode<TouchScreenButton>("Control/RightDown/slow");
         rightUp = GetNode<HBoxContainer>("RightUp");
         setting = GetNode<Button>("RightUp/setting");
-        settingPanel = GetNode<Setting>("Setting");
         package = GetNode<Button>("RightUp/package");
         packagePanel = GetNode<Package>("Package");
         loadPanel = GetNode<Load>("Load");
@@ -92,12 +94,8 @@ public partial class Ui: Control {
             Log("找不到灯光。");
         }
         healthBar.Visible = false;
-        gameInformation = new(this);
-        packagePanel.ui = this;
-        loadPanel.ui = this;
-        settingPanel.Init(gameInformation);
-        packagePanel.Init();
-        loadPanel.Init();
+        packagePanel.Init(this);
+        loadPanel.Init(this);
         // 添加事件
         chooseButtons[0].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
@@ -146,8 +144,8 @@ public partial class Ui: Control {
         player.PlayerState = State.load;
     }
     public override void _Process(double delta) {
-        if (gameInformation.ShowInfo) {
-            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + gameInformation.UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+        if (settingPanel.gameInformation.ShowInfo) {
+            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + settingPanel.gameInformation.UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             text += "\n" + Logs[0];
             text += "\n" + Logs[1];
             text += "\n" + Logs[2];
@@ -182,7 +180,7 @@ public partial class Ui: Control {
                 return;
             }
             // 打开或关闭调试信息
-            gameInformation.ShowInfo = !gameInformation.ShowInfo;
+            settingPanel.gameInformation.ShowInfo = !settingPanel.gameInformation.ShowInfo;
             return;
         }
         if (@event.IsAction("next_caption")) {
@@ -297,7 +295,7 @@ public partial class Ui: Control {
         } else if (player.PlayerState == State.setting) {
             player.PlayerState = State.move;
         }
-        light.ShadowEnabled = gameInformation.Shadow;
+        light.ShadowEnabled = settingPanel.gameInformation.Shadow;
     }
     public void Package() {
         if (player.PlayerState != State.package) {

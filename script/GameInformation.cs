@@ -6,6 +6,9 @@ using Godot.Collections;
 public class GameInformation: object {
     public Setting setting;
     public Label gameInformation;
+    /// <summary>
+    /// 屏幕着色器
+    /// </summary>
     public MeshInstance3D screenShader;
     private UiType uiType;
     public UiType UiType {
@@ -128,7 +131,6 @@ public class GameInformation: object {
     public GameInformation(Ui ui) {
         setting = ui.settingPanel;
         gameInformation = ui.infomation;
-        screenShader = ui.player.screenShader;
     }
     public GameInformation(Setting setting, MeshInstance3D screenShader, Label gameInformation) {
         this.setting = setting;
@@ -205,6 +207,17 @@ public class GameInformation: object {
             }
         }
         file?.Close();
+    }
+    public void Refresh() {
+        UiType = UiType;
+        Vsync = Vsync;
+        MaxFps = MaxFps;
+        Tts = Tts;
+        Shadow = Shadow;
+        Develop = Develop;
+        UseScreenShader = UseScreenShader;
+        ShowInfo = ShowInfo;
+        Window = Window;
     }
     public static string SafeRead(Dictionary<string, string> dict, string key) {
         if (dict == null) {

@@ -1,19 +1,19 @@
 [gd_scene load_steps=12 format=3 uid="uid://cfuse5s8ctik2"]
 
-[ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="1_dsso2"]
-[ext_resource type="Script" path="res://script/Player.cs" id="2_5vpts"]
-[ext_resource type="Shader" path="res://shader/toon.gdshader" id="3_sh47m"]
-[ext_resource type="PackedScene" uid="uid://d1ag14jieptrf" path="res://scene/ui.tscn" id="4_8tfp8"]
-[ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://maps/battlefield.tscn" id="4_su3vt"]
-[ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="5_vtop7"]
-[ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="8_hj53j"]
+[ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="1_vrbr4"]
+[ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="2_s0cah"]
+[ext_resource type="Script" path="res://script/Player.cs" id="3_tepjv"]
+[ext_resource type="Shader" path="res://shader/toon.gdshader" id="4_cot8f"]
+[ext_resource type="PackedScene" uid="uid://d1ag14jieptrf" path="res://scene/ui.tscn" id="5_0yomq"]
+[ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="6_tvi10"]
+[ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://maps/battlefield.tscn" id="7_0cipo"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_u6jo2"]
 size = Vector2(20, 20)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4t0to"]
 render_priority = 0
-shader = ExtResource("3_sh47m")
+shader = ExtResource("4_cot8f")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iwtqv"]
 radius = 0.1
@@ -22,14 +22,14 @@ radius = 0.1
 
 [node name="Node" type="Node"]
 
-[node name="sunLight" parent="." instance=ExtResource("1_dsso2")]
+[node name="sunLight" parent="." instance=ExtResource("1_vrbr4")]
 transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.994522, 0.064928, -0.0819187, 0, 0, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("5_vtop7")
+environment = ExtResource("2_s0cah")
 
 [node name="player" type="Node3D" parent="."]
-script = ExtResource("2_5vpts")
+script = ExtResource("3_tepjv")
 
 [node name="CameraMarker" type="Marker3D" parent="player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.56, 0)
@@ -51,16 +51,16 @@ target_position = Vector3(0, 0, 0)
 margin = 0.3
 max_results = 1
 
-[node name="ui" parent="." instance=ExtResource("4_8tfp8")]
+[node name="ui" parent="." instance=ExtResource("5_0yomq")]
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("8_hj53j")
+stream = ExtResource("6_tvi10")
 autoplay = true
 mix_target = 1
 
 [node name="scene" type="AnimatableBody3D" parent="."]
 
-[node name="battlefield" parent="scene" instance=ExtResource("4_su3vt")]
+[node name="battlefield" parent="scene" instance=ExtResource("7_0cipo")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="scene"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.8272, 0)
