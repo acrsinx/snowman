@@ -3,7 +3,6 @@ using Godot.Collections;
 public partial class Ui: Control {
     public const string savePath = "user://save.json";
     public Player player;
-    public Light3D light;
     public Label infomation;
     public PanelContainer captionContainer;
     public Label speakerLabel;
@@ -89,10 +88,11 @@ public partial class Ui: Control {
         panel = GetNode<Panel>("LeftUp/Panel");
         map = GetNode<Sprite2D>("LeftUp/Panel/Map");
         healthBar = GetNode<ProgressBar>("RightUp/health");
-        light = GetTree().Root.GetNode<Light3D>("Node/sunLight");
+        Light3D light = player.root.GetNode<Light3D>("sunLight");
         if (light is null) {
             Log("找不到灯光。");
         }
+        settingPanel.gameInformation.light = light;
         healthBar.Visible = false;
         packagePanel.Init(this);
         loadPanel.Init(this);
@@ -295,7 +295,6 @@ public partial class Ui: Control {
         } else if (player.PlayerState == State.setting) {
             player.PlayerState = State.move;
         }
-        light.ShadowEnabled = settingPanel.gameInformation.Shadow;
     }
     public void Package() {
         if (player.PlayerState != State.package) {

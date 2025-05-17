@@ -10,6 +10,7 @@ public class GameInformation: object {
     /// 屏幕着色器
     /// </summary>
     public MeshInstance3D screenShader;
+    public Light3D light;
     private UiType uiType;
     public UiType UiType {
         get => uiType;
@@ -70,6 +71,10 @@ public class GameInformation: object {
         set {
             shadow = value;
             setting.GetNodeCheckButton("shadow").ButtonPressed = value;
+            if (light == null) {
+                return;
+            }
+            light.ShadowEnabled = value;
         }
     }
     private bool develop;
