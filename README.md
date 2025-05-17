@@ -30,8 +30,9 @@ switch (a) {
 1. 在[Gitee](https://gitee.com/acrsinx/snowman/pulls)或[GitHub](https://github.com/acrsinx/snowman/pulls)提交PR。  
 ### 参与开发
 1. 配置环境。  
-    [在这里](https://godotengine.org/download/archive/)下载安装对应版本的Godot。  
+    [在这里](https://godotengine.org/download/archive/)下载安装对应版本的Godot，注意：是支持`.NET`的版本。  
     配置Python环境，建议是`Python 3.9`。  
+    [在这里](https://dotnet.microsoft.com/download)下载安装指定`.NET`环境。  
     下载安装`git`。  
 1. fork仓库。  
 1. 克隆仓库。  
