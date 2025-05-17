@@ -1,9 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://d1ag14jieptrf"]
+[gd_scene load_steps=9 format=3 uid="uid://d1ag14jieptrf"]
 
 [ext_resource type="Theme" uid="uid://brwqadtig5tg1" path="res://config/mainTheme.tres" id="1_qh1ee"]
 [ext_resource type="Script" path="res://script/Ui.cs" id="2_mqx4e"]
 [ext_resource type="Texture2D" uid="uid://biok4eh4irxqj" path="res://image/button.svg" id="3_bpsmd"]
-[ext_resource type="PackedScene" uid="uid://d1vaitru08e1g" path="res://scene/setting.tscn" id="3_dduwx"]
 [ext_resource type="Texture2D" uid="uid://d0qx6s65ddip0" path="res://image/buttonPressed.svg" id="4_ejgsy"]
 [ext_resource type="PackedScene" uid="uid://c0q0p13xevtrf" path="res://scene/package.tscn" id="4_ldd5v"]
 [ext_resource type="PackedScene" uid="uid://ds5oq7mbxxueh" path="res://scene/load.tscn" id="5_ny8rt"]
@@ -230,10 +229,6 @@ theme_type_variation = &"CircleButton"
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 theme_type_variation = &"CircleButton"
-
-[node name="Setting" parent="." instance=ExtResource("3_dduwx")]
-visible = false
-layout_mode = 1
 
 [node name="Package" parent="." instance=ExtResource("4_ldd5v")]
 visible = false

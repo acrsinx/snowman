@@ -1,8 +1,13 @@
+"""
+运行代码格式化，生成翻译文件，生成剧情文件
+"""
 import os
 
-import arrangeCode
+import formatCode
 import makeTranslate
 import makePlotJson
+
+need_dirs: list[str] = ["export\\export\\", "localization\\template\\plot\\"]
 
 def check_current_directory() -> str:
     """
@@ -11,13 +16,14 @@ def check_current_directory() -> str:
     os.chdir(os.path.dirname(os.path.dirname(__file__)))
     return os.getcwd()
 
-need_dirs: list[str] = ["export\\export\\", "localization\\template\\plot\\"]
-
 def make_dir() -> None:
-    for dir in need_dirs:
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-            print("创建目录: ", dir)
+    """
+    生成必要的目录
+    """
+    for dir_name in need_dirs:
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+            print("创建目录: ", dir_name)
 
 if __name__ == '__main__':
     # 检查目录是否正确
@@ -25,7 +31,7 @@ if __name__ == '__main__':
     # 生成必要的目录
     make_dir()
     # 整理代码
-    arrangeCode.arrange_whole_project()
+    formatCode.format_whole_project()
     # 生成剧本json文件
     makePlotJson.make_json()
     # 创建翻译模板

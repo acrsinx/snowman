@@ -17,7 +17,8 @@ public partial class Package: Control {
             back.Text = Translation.Translate("退");
         };
     }
-    public void Init() {
+    public void Init(Ui ui) {
+        this.ui = ui;
         back.Pressed += () => {
             ui.Package();
         };

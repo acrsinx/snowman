@@ -16,7 +16,7 @@ config/name_localized={
 "zh_HK": "化雪",
 "zh_TW": "化雪"
 }
-run/main_scene="res://scene/Spatial.tscn"
+run/main_scene="res://scene/start.tscn"
 config/features=PackedStringArray("4.2", "C#")
 boot_splash/image="res://image/icon.png"
 config/icon="res://image/icon.svg"

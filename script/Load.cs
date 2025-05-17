@@ -20,7 +20,8 @@ public partial class Load: Control {
         }
         Do();
     }
-    public void Init() {
+    public void Init(Ui ui) {
+        this.ui = ui;
         Visible = true;
         RefreshProgress();
     }
@@ -31,11 +32,11 @@ public partial class Load: Control {
         switch (progress) {
             case 0: {
                 Plot.player = ui.player;
-                map = GetTree().Root.GetNode<SubViewport>("Node/map");
+                map = ui.player.root.GetNode<SubViewport>("map");
                 map.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
                 map.GetChild<Camera3D>(0).Size = Map.mapSizes[0];
                 // 加载用户数据
-                ui.gameInformation.LoadInformation(Ui.savePath);
+                ui.settingPanel.gameInformation.LoadInformation(Ui.savePath);
                 label.Text = Translation.Translate("加载中");
                 break;
             }
@@ -49,6 +50,7 @@ public partial class Load: Control {
                 break;
             }
             case 3: {
+                ui.settingPanel.gameInformation.Refresh();
                 break;
             }
             case 4: {

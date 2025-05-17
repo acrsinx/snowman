@@ -13,9 +13,9 @@ public partial class Player: Node3D {
     /// </summary>
     public CameraManager cameraManager;
     /// <summary>
-    /// 屏幕着色器
+    /// 根节点
     /// </summary>
-    public MeshInstance3D screenShader;
+    public Node root;
     /// <summary>
     /// 玩家角色
     /// </summary>
@@ -70,7 +70,7 @@ public partial class Player: Node3D {
     /// </summary>
     public bool CanTurn {
         set {
-            if (ui.uiType == UiType.computer) {
+            if (ui.settingPanel.gameInformation.UiType == UiType.computer) {
                 if (value) { // 设置成可控制视角时，隐藏鼠标
                     Input.MouseMode = Input.MouseModeEnum.Captured;
                 } else { // 设置成不可控制视角时，显示鼠标
@@ -96,7 +96,7 @@ public partial class Player: Node3D {
                     ui.captionContainer.Visible = false;
                     ui.speakerLabel.Text = "";
                     ui.captionLabel.Text = "";
-                    ui.phoneControl.Visible = ui.uiType != UiType.computer;
+                    ui.phoneControl.Visible = ui.settingPanel.gameInformation.UiType != UiType.computer;
                     ui.settingPanel.Visible = false;
                     ui.packagePanel.Visible = false;
                     ui.leftUp.Visible = true;
@@ -149,17 +149,18 @@ public partial class Player: Node3D {
     /// 跳跃速度
     /// </summary>
     public static readonly float jumpSpeed = 10.0f;
-    public override void _Ready() {
+    public void Init(Setting setting) {
+        Ui.Log("Init");
+        root = GetParent();
         // 设置用户界面管理器
-        ui = GetTree().Root.GetNode<Ui>("Node/ui");
-        ui.player = this;
-        Ui.Log("_Ready");
+        ui = root.GetNode<Ui>("ui");
+        ui.Init(setting, this);
         // 设置相机管理器
         Marker3D m = GetChild<Marker3D>(0);
         Camera3D c = m.GetChild<Camera3D>(0);
         MeshInstance3D m3d = c.GetChild<MeshInstance3D>(0);
         cameraManager = new(c, c.GetChild<ShapeCast3D>(1), this, m);
-        screenShader = m3d;
+        ui.settingPanel.gameInformation.screenShader = m3d;
     }
     public override void _PhysicsProcess(double delta) {
         if (PlayerState != State.move) {
@@ -177,7 +178,7 @@ public partial class Player: Node3D {
             cameraManager.UpdateCameraWhenTurning(mouseMove);
         }
         if (character.IsOnFloor()) {
-            if (ui.uiType == UiType.computer) {
+            if (ui.settingPanel.gameInformation.UiType == UiType.computer) {
                 front = Input.GetAxis("up", "down");
                 right = Input.GetAxis("right", "left");
             }
@@ -237,7 +238,7 @@ public partial class Player: Node3D {
     }
     public override void _Input(InputEvent @event) {
         if (@event is InputEventScreenDrag drag) {
-            if (ui.uiType == UiType.phone) {
+            if (ui.settingPanel.gameInformation.UiType == UiType.phone) {
                 if (drag.Index == moveIndex) { // 移动
                     // 此处不用规格化，在移动时会规格化
                     Vector2 moveVector = drag.Position - ui.ControlPanel.GetGlobalRect().Position - ui.ControlPanel.GetGlobalRect().Size * 0.5f;
@@ -269,7 +270,7 @@ public partial class Player: Node3D {
             }
         }
         if (@event is InputEventScreenTouch touch) { // 滑动事件结束时，重置滑动索引
-            if (ui.uiType == UiType.phone) {
+            if (ui.settingPanel.gameInformation.UiType == UiType.phone) {
                 if (touch.Pressed) {
                     return;
                 }
@@ -283,13 +284,13 @@ public partial class Player: Node3D {
             }
         }
         if (@event is InputEventMouseMotion motion) {
-            if (ui.uiType == UiType.computer) {
+            if (ui.settingPanel.gameInformation.UiType == UiType.computer) {
                 mouseMove = -motion.Relative * mouseSpeed;
                 return;
             }
         }
         if (@event is InputEventMouseButton button) {
-            if (ui.uiType == UiType.computer) {
+            if (ui.settingPanel.gameInformation.UiType == UiType.computer) {
                 if (button.IsPressed()) {
                     if (PlayerState is State.move) {
                         switch (button.ButtonIndex) {

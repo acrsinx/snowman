@@ -1,0 +1,58 @@
+[gd_scene load_steps=9 format=3 uid="uid://cw61wb80nj4lg"]
+
+[ext_resource type="PackedScene" uid="uid://hfry0p6xwyov" path="res://model/snowman.gltf" id="1_cpd10"]
+[ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="2_0st4p"]
+[ext_resource type="Script" path="res://script/Start.cs" id="2_4x7km"]
+[ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_loctk"]
+[ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="2_x7ywo"]
+[ext_resource type="PackedScene" uid="uid://b8areypbptv4c" path="res://model/stone.gltf" id="4_wjpjh"]
+[ext_resource type="PackedScene" uid="uid://d1vaitru08e1g" path="res://scene/setting.tscn" id="7_8xoj3"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_qt0sj"]
+size = Vector2(6.77, 1.965)
+
+[node name="Node" type="Node"]
+
+[node name="snowman2" parent="." instance=ExtResource("1_cpd10")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+script = ExtResource("2_4x7km")
+
+[node name="Camera3D" type="Camera3D" parent="snowman2"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.7, 0.555, -0.82)
+fov = 60.0
+
+[node name="sunLight" parent="." instance=ExtResource("2_0st4p")]
+transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.994522, 0.064928, -0.0819187, 0, 0, 0)
+
+[node name="snowMountain" parent="." instance=ExtResource("2_x7ywo")]
+transform = Transform3D(0.481754, 0, -0.876307, 0, 2.63288, 0, 0.876307, 0, 0.481754, -3.53644, 3.816, -16.59)
+
+[node name="snowMountain2" parent="." instance=ExtResource("2_x7ywo")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 2.63288, 0, 1, 0, -4.37114e-08, -9.01344, 2.746, -8.695)
+
+[node name="snowMountain3" parent="." instance=ExtResource("2_x7ywo")]
+transform = Transform3D(-0.921863, 0, -0.387516, 0, 2.63288, 0, 0.387516, 0, -0.921863, 9.96856, 3.421, -12.735)
+
+[node name="snowMountain4" parent="." instance=ExtResource("2_x7ywo")]
+transform = Transform3D(-0.328867, 0, -0.944376, 0, 2.63288, 0, 0.944376, 0, -0.328867, 14.985, 1.236, -28.472)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_qt0sj")
+surface_material_override/0 = ExtResource("2_loctk")
+
+[node name="stone" parent="." instance=ExtResource("4_wjpjh")]
+transform = Transform3D(-0.579621, 0.19057, 0.79229, 0.312335, 0.949972, 0, -0.752653, 0.24746, -0.610145, 0.225, -0.265, -1.225)
+
+[node name="Setting" parent="." instance=ExtResource("7_8xoj3")]
+
+[node name="SettingButton" type="Button" parent="."]
+custom_minimum_size = Vector2(50, 50)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -50.0
+offset_bottom = 50.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_type_variation = &"CircleButton"

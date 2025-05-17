@@ -61,4 +61,50 @@ public class Tool: object {
     public static Vector3 Mix(Vector3 a, Vector3 b, float factor) {
         return a * (1 - factor) + b * factor;
     }
+    /// <summary>
+    /// 将文件大小转换为字符串
+    /// </summary>
+    /// <param name="size">文件大小</param>
+    /// <returns>字符串</returns>
+    public static string Size(int size) {
+        if (size < 1024) {
+            return size + " B";
+        }
+        if (size < 1024 * 1024) {
+            return (size / 1024.0f).ToString("F2") + " KB";
+        }
+        if (size < 1024 * 1024 * 1024) {
+            return (size / 1024.0f / 1024.0f).ToString("F2") + " MB";
+        }
+        return (size / 1024.0f / 1024.0f / 1024.0f).ToString("F2") + " GB";
+    }
+    /// <summary>
+    /// 打印资产文件
+    /// </summary>
+    /// <param name="path">路径</param>
+    public static void PrintAssets(string path = "res://") {
+        DirAccess dir = DirAccess.Open(path);
+        if (dir == null) {
+            return;
+        }
+        dir.ListDirBegin();
+        // 获取子文件或文件夹
+        for (string file = " "; file != ""; file = dir.GetNext()) {
+            if (file == " ") {
+                continue;
+            }
+            if (file.Contains('.')) {
+                if (!FileAccess.FileExists(path + file)) {
+                    GD.Print(path + file + "（不存在）");
+                    continue;
+                }
+                // 获取文件大小
+                int size = FileAccess.GetFileAsBytes(path + file).Length;
+                GD.Print(path + file + " " + Size(size));
+                continue;
+            }
+            PrintAssets(path + file + "/");
+        }
+        dir.ListDirEnd();
+    }
 }

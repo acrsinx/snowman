@@ -3,7 +3,10 @@ using Godot;
 using Godot.Collections;
 public class Plot {
     public static readonly Dictionary CharacterPath = new() {
-        {"snowdog", "res://model/snowdog.gltf"}
+        {
+            "snowdog",
+            "res://model/snowdog.gltf"
+        }
     };
     public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
     };
