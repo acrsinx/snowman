@@ -13,7 +13,7 @@ public class Plot {
     /// <summary>
     /// 剧情文件路径
     /// </summary>
-    public static string path;
+    public static string path = "";
     public static Player player;
     public static void Check(Ui ui) {
         path = "res://plotJson/plot0/plot0_0.json";
@@ -181,6 +181,10 @@ public class Plot {
             }
             case "SetCameraPosition": {
                 SetCameraPosition();
+                break;
+            }
+            case "SetTaskName": {
+                player.ui.TaskString = wordsList[1];
                 break;
             }
             case "Goto": {

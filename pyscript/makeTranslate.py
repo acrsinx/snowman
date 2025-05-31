@@ -114,9 +114,13 @@ def create_localization_template(path: str) -> None:
     print("创建翻译模板: ", output)
     toTranslate: dict[str, str] = {}
     with open(path, "r", encoding="utf-8") as file:
-        plotJson: dict[str, dict] = json.load(file)
+        plotJson: dict[str, dict[str, str]] = json.load(file)
         for i in range(len(plotJson)):
             toTranslate[plotJson[str(i)]["caption"]] = ""
+            if plotJson[str(i)].__contains__("startCode"):
+                toTranslate.update(find(plotJson[str(i)]["startCode"]))
+            if plotJson[str(i)].__contains__("endCode"):
+                toTranslate.update(find(plotJson[str(i)]["endCode"]))
             for n in range(3):
                 if str(n) in plotJson[str(i)].keys():
                     toTranslate[next(iter(plotJson[str(i)][str(n)]))] = ""
@@ -124,6 +128,18 @@ def create_localization_template(path: str) -> None:
         file.write("|||\n|---|---|\n")
         for key in toTranslate:
             file.write("|" + key + "||\n")
+
+def find(code: str) -> dict[str, str]:
+    """
+    查找需要翻译的代码
+    """
+    ret: dict[str, str] = {}
+    tokens: list[str] = code.split(";")
+    for token in tokens:
+        word = token.split(" ")
+        if word[0] in ["SetTaskName"]:
+            ret[word[1]] = ""
+    return ret
 
 def create_localization_template_all() -> None:
     """

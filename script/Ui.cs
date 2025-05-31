@@ -32,6 +32,18 @@ public partial class Ui: Control {
     /// 小地图
     /// </summary>
     public Sprite2D map;
+    /// <summary>
+    /// 任务指引
+    /// </summary>
+    public Label task;
+    private string taskString = "";
+    public string TaskString {
+        get => taskString;
+        set {
+            taskString = value;
+            task.Text = Translation.Translate(taskString, Plot.PlotPathToLocalizationContent(Plot.path));
+        }
+    }
     public ProgressBar healthBar;
     /// <summary>
     /// 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
@@ -90,6 +102,7 @@ public partial class Ui: Control {
         leftUp = GetNode<Control>("LeftUp");
         panel = GetNode<Panel>("LeftUp/Panel");
         map = GetNode<Sprite2D>("LeftUp/Panel/Map");
+        task = GetNode<Label>("LeftUp/Task");
         healthBar = GetNode<ProgressBar>("RightUp/health");
         Light3D light = player.root.GetNode<Light3D>("sunLight");
         if (light is null) {
@@ -141,6 +154,7 @@ public partial class Ui: Control {
             phoneSlow.GetChild<Label>(0).Text = Translation.Translate("慢");
             package.Text = Translation.Translate("包");
             setting.Text = Translation.Translate("设");
+            task.Text = Translation.Translate(TaskString, Plot.PlotPathToLocalizationContent(Plot.path));
         };
         ClearChoose();
         // 设置为加载态，前面的ClearCaption();会把player.PlayerState设为State.move
