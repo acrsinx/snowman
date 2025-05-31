@@ -41,6 +41,9 @@ public partial class Ui: Control {
     private long captionStartTime = 0;
     public CaptionResource[] captions;
     private int captionIndex = 0;
+    public int CaptionIndex {
+        get => captionIndex;
+    }
     private static readonly string[] Logs = new string[3];
     public static void Log(string s) {
         string toLog = "[" + totalGameTime + "] " + s;

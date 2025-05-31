@@ -32,7 +32,7 @@ public partial class Start: Node3D {
         if (setting.Visible) {
             return;
         }
-        if (@event is InputEventMouseButton mouseButtonEvent && mouseButtonEvent.Pressed){
+        if (@event is InputEventMouseButton mouseButtonEvent && mouseButtonEvent.Pressed) {
             if (Tool.IsInArea(settingButton, mouseButtonEvent.Position)) {
                 return;
             }

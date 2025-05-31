@@ -184,7 +184,7 @@ public class Plot {
                 break;
             }
             case "Goto": {
-                player.ui.ShowCaption(int.Parse(wordsList[1]));
+                player.ui.ShowCaption(player.ui.CaptionIndex + int.Parse(wordsList[1]));
                 break;
             }
             case "AddTrigger": {

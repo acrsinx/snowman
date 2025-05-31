@@ -50,7 +50,7 @@ Goto(1)
 LookAtCharacter(dog, 0.3, 2)
 ```
 ```
-Goto(2)
+Goto(1)
 ```
 ### `2`
 `愤怒的雪人`: `可是……`
@@ -59,7 +59,7 @@ Goto(2)
 LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
-Goto(3)
+Goto(1)
 ```
 ### `3`
 `雪狗`: `“可是”什么“可是”，我说话你们听着就行了。`  
@@ -68,7 +68,7 @@ Goto(3)
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```
-Goto(4)
+Goto(1)
 ```
 ### `4`
 `愤怒的雪人`: `每次胜利，都是雪狗请功去了。`  
@@ -77,7 +77,7 @@ Goto(4)
 LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
-Goto(5)
+Goto(1)
 ```
 ### `5`
 `冷静的雪人`: `是啊，它们总不把我们当成生物。`  
@@ -86,7 +86,7 @@ Goto(5)
 LookAtCharacter(snowman2, 0.7, 1.2)
 ```
 ```
-Goto(6)
+Goto(1)
 ```
 ### `6`
 `不屑的雪人`: `雪狗们自以为是，自矜攻伐。`  
@@ -95,7 +95,7 @@ Goto(6)
 LookAtCharacter(snowman3, 0.7, 1.2)
 ```
 ```
-Goto(7)
+Goto(1)
 ```
 ### `7`
 `众雪人`: `就是！就是！`  
@@ -105,7 +105,7 @@ LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
 LookAtCharacter(snowman3, 0.7, 1.2);
-Goto(8)
+Goto(1)
 ```
 ### `8`
 引导玩家输入自己的名字  
@@ -153,7 +153,7 @@ Exit(0)
 ```
 ```
 ```
-Goto(3)
+Goto(1)
 ```
 ### `3`
 `%name%`: `我们走！`  
