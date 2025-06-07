@@ -37,12 +37,16 @@ def simplify_script(code: str) -> str:
     将无用符号换为空格
     以减小生成的json文件大小
     """
-    # 将换行符、逗号、括号、空格换为空格
-    simpleCode: str = re.sub(r'[\n,() ]+', " ", code)
+    # 将换行符、逗号、括号、空格、制表符换为空格
+    simpleCode: str = re.sub(r'[\n,() \t]+', " ", code)
     # 去除首尾空格
     simpleCode = re.sub(r'^ | +$|', "", simpleCode)
     # 去除与";"相连的空格
     simpleCode = re.sub(r';+ | +;+ | +;', ";", simpleCode)
+    # 去除与"{"相连的空格
+    simpleCode = re.sub(r'{+ | +{+ | +{', "{", simpleCode)
+    # 去除与"}"相连的空格
+    simpleCode = re.sub(r'}+ | +}+ | +}', "}", simpleCode)
     return simpleCode
 
 def make_json() -> None:
@@ -67,7 +71,6 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
     """
     从一个 markdown 文件中生成 json 文件
     """
-
     with open(markdown_file, "r", encoding='utf-8') as f:
         data: str = f.read()
         tokens: list[str] = decode_md_plot(data)

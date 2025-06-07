@@ -115,9 +115,7 @@ public class Plot {
     /// <returns>是否是</returns>
     public static bool IsCameraScriptLine(string word) {
         switch (word) {
-            case "LookAtCharacter": {
-                return true;
-            }
+            case "LookAtCharacter":
             case "SetCameraPosition": {
                 return true;
             }
@@ -132,6 +130,9 @@ public class Plot {
     /// <param name="scriptLine">剧情脚本</param>
     /// <returns>词</returns>
     public static List<string> SplitWord(string scriptLine) {
+        // 处理大括号
+        scriptLine = scriptLine.Replace("{", " {");
+        scriptLine = scriptLine.Replace("}", "} ");
         // 去除多余的空格
         scriptLine = scriptLine.Trim();
         // 将","，"("，")"替换为空格
@@ -139,14 +140,25 @@ public class Plot {
         scriptLine = scriptLine.Replace("(", " ");
         scriptLine = scriptLine.Replace(")", " ");
         // 分词
-        string[] words = scriptLine.Split(' ');
-        // 去除空字符串
         List<string> wordsList = new();
-        foreach (string word in words) {
-            if (word != "") {
-                wordsList.Add(word);
+        int lastIndex = 0;
+        int tabLevel = 0;
+        for (int i = 0; i < scriptLine.Length; i++) {
+            if (scriptLine[i] == ' ' && tabLevel == 0) {
+                wordsList.Add(scriptLine[lastIndex..i]);
+                lastIndex = i + 1;
+                continue;
+            }
+            if (scriptLine[i] == '{') {
+                tabLevel++;
+                continue;
+            }
+            if (scriptLine[i] == '}') {
+                tabLevel--;
+                continue;
             }
         }
+        wordsList.Add(scriptLine[lastIndex..]);
         return wordsList;
     }
     /// <summary>
@@ -193,9 +205,13 @@ public class Plot {
             }
             case "AddTrigger": {
                 TriggerSystem.AddTrigger(wordsList[1], () => {
-                    path = PlotPathToAbsolutePath(wordsList[2]);
-                    Open(player.ui);
+                    ParseScript(wordsList[2]);
                 });
+                break;
+            }
+            case "Jump": {
+                path = PlotPathToAbsolutePath(wordsList[1]);
+                Open(player.ui);
                 break;
             }
             case "Exit": {
@@ -212,7 +228,35 @@ public class Plot {
         if (script == "" || script == null) {
             return;
         }
-        string[] lines = script.Split(';');
+        if (script[0] == '{' && script[^1] == '}') {
+            ParseScript(script[1..^1]);
+            return;
+        }
+        List<string> lines = new();
+        int lastIndex = 0;
+        int tabLevel = 0;
+        for (int i = 0; i < script.Length; i++) {
+            if (script[i] == ';' && tabLevel == 0) {
+                lines.Add(script[lastIndex..i]);
+                lastIndex = i + 1;
+                continue;
+            }
+            if (script[i] == '{') {
+                tabLevel++;
+                continue;
+            }
+            if (script[i] == '}') {
+                tabLevel--;
+                if (tabLevel < 0) {
+                    Ui.Log(path + "语法错误: " + script);
+                    return;
+                }
+                continue;
+            }
+        }
+        if (lastIndex < script.Length) {
+            lines.Add(script[lastIndex..]);
+        }
         foreach (string line in lines) {
             ParseScriptLine(SplitWord(line));
         }

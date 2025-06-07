@@ -44,12 +44,12 @@ operator_after_right_square_bracket: tuple = (".", ";")
 前面加右方括号不空格的
 """
 
-operator_combine_right: tuple = ("?", "!", ".", "::")
+operator_combine_right: tuple = ("?", "!", ".", "::", "^")
 """
 右结合的符号
 """
 
-operator_combine_left: tuple = ("++", "--", ".", "?.", "::")
+operator_combine_left: tuple = ("++", "--", ".", "?.", "::", "^")
 """
 左结合的符号
 """

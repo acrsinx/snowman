@@ -15,7 +15,7 @@ PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```
-LookAtCharacter(dog, 1.1, 1)
+LookAtCharacter(dog, 1.1, 1);
 PauseAnimation(dog);
 Goto(1)
 ```
@@ -29,7 +29,9 @@ SetCameraPosition();
 LoadCharacter(snowbear, bear1, (5, 1, 6));
 LoadCharacter(snowbear, bear2, (3, 1, 4));
 SetTaskName(击败雪熊。);
-AddTrigger(bear1_die&&bear2_die, plot0/plot0_1.json);
+AddTrigger(bear1_die&&bear2_die, {
+    Jump(plot0/plot0_1.json)
+});
 Exit(0)
 ```
 ## 战斗结束

@@ -134,7 +134,7 @@ def find(code: str) -> dict[str, str]:
     查找需要翻译的代码
     """
     ret: dict[str, str] = {}
-    tokens: list[str] = code.split(";")
+    tokens: list[str] = re.split(r'[;{}]', code)
     for token in tokens:
         word = token.split(" ")
         if word[0] in ["SetTaskName"]:
