@@ -221,15 +221,25 @@ public partial class Setting: Control {
             }
         };
         // 设备类型
-        if (OS.GetName() == "Android" || OS.GetName() == "iOS") {
-            gameInformation.UiType = UiType.phone;
-        } else if (OS.GetName() == "Windows" || OS.GetName() == "macOS" || OS.GetName() == "Linux") {
-            gameInformation.UiType = UiType.computer;
-        } else {
-            gameInformation.UiType = UiType.computer;
+        switch (OS.GetName()) {
+            case "Windows":
+            case "macOS":
+            case "Linux": {
+                gameInformation.UiType = UiType.computer;
+                break;
+            }
+            case "Android":
+            case "iOS": {
+                gameInformation.UiType = UiType.phone;
+                break;
+            }
+            default: {
+                gameInformation.UiType = UiType.computer;
+                Ui.Log("未知的设备类型！");
+                break;
+            }
         }
         // 设置初始值
-        GetNodeOptionButton("uiType").Selected = (int) gameInformation.UiType;
         Engine.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
         GetNodeOptionButton("tts").Selected = 0;
         voices = DisplayServer.TtsGetVoices();
@@ -344,6 +354,8 @@ public partial class Setting: Control {
         }
         // 刷新翻译
         Translation.LangageChanged.Invoke();
+        // 刷新数据
+        gameInformation.Refresh();
     }
     public OptionButton GetNodeOptionButton(string key) {
         if (!options.ContainsKey(key)) {

@@ -17,6 +17,7 @@ public class GameInformation: object {
         set {
             uiType = value;
             setting.SetWindowVisible();
+            setting.GetNodeOptionButton("uiType").Selected = (int) uiType;
         }
     }
     private bool vsync;
