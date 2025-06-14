@@ -49,20 +49,19 @@ def make_translate(path: str, output: str) -> None:
     template_file: list[tuple[str, str]] = read_translation_file(template_path)
     for i in range(len(translation_file)):
         if i >= len(template_file): # 加入了不需要翻译的语段
-            print("无需加入", translation_file[i][0])
-            break
+            raise Exception("无需加入"+translation_file[i][0])
         tokens: tuple[str, str] = translation_file[i]
         if tokens[0] != template_file[i][0]: # 提醒翻译文件与模板文件不一致
-            print("不一致: " + tokens[0] + " != " + template_file[i][0])
+            raise Exception("翻译文件与模板文件不一致"+tokens[0] + " != " + template_file[i][0])
         if tokens[0] == tokens[1]: # 提醒无需翻译
-            print("无需翻译: " + tokens[0])
+            raise Exception("无需翻译: " + tokens[0])
         if tokens[1].isspace() or tokens[1] == "": # 提醒未翻译
-            print("未翻译: " + tokens[0])
+            raise Exception("未翻译: " + tokens[0])
         if tokens[1] == "-": # 跳过无需翻译行
             continue
         translation_json[tokens[0]] = tokens[1]
     if len(translation_file) < len(template_file): # 缺少翻译
-        print("缺少翻译")
+        raise Exception("缺少翻译")
     if not os.path.exists(os.path.dirname(output)):
         os.mkdir(os.path.dirname(output))
     with open(output, "w", encoding="utf-8") as file:

@@ -118,7 +118,9 @@ Goto(1)
 SetCameraPosition()
 ```
 ```
-AddTrigger(playerNamed, plot0/plot0_2.json);
+AddTrigger(playerNamed, {
+    Jump(plot0/plot0_2.json)
+});
 Exit(0)
 ```
 ## 取完名字

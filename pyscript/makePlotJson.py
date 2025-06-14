@@ -8,6 +8,23 @@ import json
 import main
 import formatCode
 
+valueNum: dict = {
+    "LoadCharacter": 5,
+    "PlayAnimation": 2,
+    "PauseAnimation": 1,
+    "LookAtCharacter": 3,
+    "PlayerTo": 3,
+    "SetCameraPosition": 0,
+    "SetTaskName": 1,
+    "Goto": 1,
+    "AddTrigger": 1,
+    "Jump": 1,
+    "Exit": 1
+}
+"""
+剧情脚本中每个指令的参数数量（出现块的不计入）
+"""
+
 def decode_md_plot(data: str) -> list[str]:
     """
     提取剧情脚本的内容
@@ -31,6 +48,20 @@ def decode_md_plot(data: str) -> list[str]:
         i += 1
     return tokens
 
+def check_script(code: str) -> None:
+    """
+    检查剧情脚本
+    """
+    for line in code.replace("{", ";").replace("}", ";").split(";"):
+        line: str = line.strip()
+        if line == "":
+            continue
+        tokens: list[str] = line.split(" ")
+        if tokens[0] not in valueNum:
+            raise Exception("未知指令："+tokens[0])
+        if len(tokens) != valueNum[tokens[0]]+1:
+            raise Exception("指令参数数量不正确："+tokens[0]+"，"+str(tokens))
+
 def simplify_script(code: str) -> str:
     """
     简化剧情脚本
@@ -47,6 +78,7 @@ def simplify_script(code: str) -> str:
     simpleCode = re.sub(r'{+ | +{+ | +{', "{", simpleCode)
     # 去除与"}"相连的空格
     simpleCode = re.sub(r'}+ | +}+ | +}', "}", simpleCode)
+    check_script(simpleCode)
     return simpleCode
 
 def make_json() -> None:
@@ -140,7 +172,6 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
                             caption_index: a_json
                         }
                     else:
-                        print("未知对话类型: ", captionType)
-                        break
+                        raise Exception("未知对话类型: ", captionType)
                     json_file_data.update(json_line)
                 json.dump(json_file_data, file_output, ensure_ascii=False)
