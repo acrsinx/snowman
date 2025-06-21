@@ -37,6 +37,9 @@ public partial class Ui: Control {
     /// </summary>
     public Label task;
     private string taskString = "";
+    /// <summary>
+    /// 任务指引，请赋值本地化前的，取值时为本地化后的
+    /// </summary>
     public string TaskString {
         get => taskString;
         set {
@@ -154,7 +157,7 @@ public partial class Ui: Control {
             phoneSlow.GetChild<Label>(0).Text = Translation.Translate("慢");
             package.Text = Translation.Translate("包");
             setting.Text = Translation.Translate("设");
-            task.Text = Translation.Translate(TaskString, Plot.PlotPathToLocalizationContent(Plot.path));
+            task.Text = TaskString;
         };
         ClearChoose();
         // 设置为加载态，前面的ClearCaption();会把player.PlayerState设为State.move

@@ -159,6 +159,10 @@ public class Plot {
             }
         }
         wordsList.Add(scriptLine[lastIndex..]);
+        // 去除空字符串
+        wordsList.RemoveAll(word => {
+            return word == "";
+        });
         return wordsList;
     }
     /// <summary>
@@ -207,6 +211,10 @@ public class Plot {
                 TriggerSystem.AddTrigger(wordsList[1], () => {
                     ParseScript(wordsList[2]);
                 });
+                break;
+            }
+            case "AddTarget": {
+                AddTarget(wordsList[1], float.Parse(wordsList[2]), wordsList[3]);
                 break;
             }
             case "Jump": {
@@ -269,6 +277,29 @@ public class Plot {
                 ParseScriptLine(wordsList);
             }
         }
+    }
+    public static void AddTarget(string characterName, float radius, string script) {
+        GameCharacter character = (GameCharacter) GetPlotCharacter(characterName);
+        character.headLabel.Text = "*";
+        Area3D trigger = new();
+        CollisionShape3D shape3D = new() {
+            Shape = new SphereShape3D() {
+                Radius = radius
+            }
+        };
+        trigger.AddChild(shape3D);
+        trigger.BodyEntered += (body) => {
+            HaveCharacter haveCharacter = HaveCharacter.GetHaveCharacter(body);
+            if (haveCharacter == null) {
+                return;
+            }
+            if (haveCharacter.GetCharacter().isPlayer) {
+                ParseScript(script);
+                character.headLabel.Text = "";
+                trigger.QueueFree();
+            }
+        };
+        character.AddChild(trigger);
     }
     public static void Open(Ui ui) {
         if (path == null) {

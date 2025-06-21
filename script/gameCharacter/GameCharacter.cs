@@ -12,6 +12,10 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     /// 寻路节点
     /// </summary>
     public NavigationAgent3D agent;
+    /// <summary>
+    /// 头顶的字
+    /// </summary>
+    public Label3D headLabel;
     public AnimationPlayer AnimationPlayer {
         get => animationPlayer;
         set => animationPlayer = value;
@@ -47,6 +51,11 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
             Position = offsetPosition
         };
         AddChild(collisionShape3D);
+        headLabel = new Label3D {
+            Billboard = BaseMaterial3D.BillboardModeEnum.FixedY,
+            NoDepthTest = true
+        };
+        AddChild(headLabel);
         // 添加小地图标记
         mapFlag = new Sprite2D {
             Scale = new Vector2(0.1f, 0.1f)

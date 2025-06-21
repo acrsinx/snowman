@@ -18,6 +18,7 @@ valueNum: dict = {
     "SetTaskName": 1,
     "Goto": 1,
     "AddTrigger": 1,
+    "AddTarget": 2,
     "Jump": 1,
     "Exit": 1
 }
