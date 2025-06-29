@@ -10,6 +10,7 @@ import formatCode
 
 valueNum: dict = {
     "LoadCharacter": 5,
+    "SetCharacterTarget": 4,
     "PlayAnimation": 2,
     "PauseAnimation": 1,
     "LookAtCharacter": 3,

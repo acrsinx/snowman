@@ -3,7 +3,6 @@ public partial class Snowman: GameCharacter {
     public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
     public static readonly PackedScene SnowballScene = ResourceLoader.Load<PackedScene>("res://model/snowball.gltf");
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
-    public AutoCharacterManager auto;
     public ObjectPool snowballPool = new(10);
     public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CylinderShape3D() {
         Radius = 0.25f,
@@ -51,6 +50,7 @@ public partial class Snowman: GameCharacter {
         Velocity -= impuse * 0.1f;
     }
     public override void _PhysicsProcess(double delta) {
+        base._PhysicsProcess(delta);
         for (int i = 0; i < snowballPool.Count; i++) {
             if (!snowballPool.haveUsed[i]) {
                 continue;
@@ -71,6 +71,5 @@ public partial class Snowman: GameCharacter {
         if (auto == null) {
             return;
         }
-        auto.PhysicsProcess((float) delta);
     }
 }

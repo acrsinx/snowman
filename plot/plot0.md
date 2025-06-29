@@ -31,6 +31,9 @@ LoadCharacter(snowbear, bear2, (3, 1, 4));
 SetTaskName(击败雪熊。);
 AddTrigger(bear1_die&&bear2_die, {
     SetTaskName(到雪狗处集合。);
+    SetCharacterTarget(snowman1, (-3, 0, -4));
+    SetCharacterTarget(snowman2, (-4, 0, -4));
+    SetCharacterTarget(snowman3, (-5, 0, -4));
     AddTarget(dog, 3, {
         Jump(plot0/plot0_1.json)
     })

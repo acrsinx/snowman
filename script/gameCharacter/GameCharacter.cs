@@ -12,6 +12,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     /// 寻路节点
     /// </summary>
     public NavigationAgent3D agent;
+    public AutoCharacterManager auto;
     /// <summary>
     /// 头顶的字
     /// </summary>
@@ -83,6 +84,9 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
             mapFlag.Position = Map.GlobalPositionToMapPosition(player, character.GlobalPosition);
             mapFlag.GlobalRotation = -MathF.PI * 0.5f - character.GlobalRotation.Y;
         }
+    }
+    public override void _PhysicsProcess(double delta) {
+        auto?.PhysicsProcess((float) delta);
     }
     public bool Attackable() {
         return Ui.totalGameTime - attackStartTime > GetAttackWaitTime() && player.PlayerState == State.move;

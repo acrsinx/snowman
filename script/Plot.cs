@@ -70,6 +70,16 @@ public class Plot {
         AddCharacterInstance(instanceName, gameCharacter);
     }
     /// <summary>
+    /// 设置角色寻路目标
+    /// </summary>
+    /// <param name="instanceName">角色名</param>
+    /// <param name="target">目标位置</param>
+    public static void SetCharacterTarget(string instanceName, Vector3 target) {
+        AutoCharacterManager auto = ((GameCharacter) GetPlotCharacter(instanceName)).auto;
+        auto.targetPosition = target;
+        auto.ForceToGo = true;
+    }
+    /// <summary>
     /// 添加角色到实例列表中
     /// </summary>
     /// <param name="instanceName">角色名</param>
@@ -176,6 +186,10 @@ public class Plot {
         switch (wordsList[0]) {
             case "LoadCharacter": {
                 LoadCharacter(wordsList[1], wordsList[2], new Vector3(float.Parse(wordsList[3]), float.Parse(wordsList[4]), float.Parse(wordsList[5])));
+                break;
+            }
+            case "SetCharacterTarget": {
+                SetCharacterTarget(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
                 break;
             }
             case "PlayAnimation": {
