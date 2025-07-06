@@ -1,11 +1,10 @@
-[gd_resource type="Environment" load_steps=4 format=3 uid="uid://ufrg2ux2wxys"]
-
-[ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="1_67rqa"]
+[gd_resource type="Environment" load_steps=3 format=3 uid="uid://ufrg2ux2wxys"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vko5d"]
 
 [sub_resource type="Sky" id="Sky_h3a1m"]
 sky_material = SubResource("ProceduralSkyMaterial_vko5d")
+radiance_size = 0
 
 [resource]
 background_mode = 2
@@ -13,11 +12,6 @@ sky = SubResource("Sky_h3a1m")
 ambient_light_source = 2
 ambient_light_color = Color(0.298642, 0.355504, 0.498379, 1)
 reflected_light_source = 2
-glow_enabled = true
-glow_intensity = 0.72
-glow_strength = 0.75
-glow_bloom = 0.55
-glow_map = ExtResource("1_67rqa")
 fog_enabled = true
 fog_light_color = Color(1, 1, 1, 1)
 fog_light_energy = 0.01
