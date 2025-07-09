@@ -42,6 +42,19 @@ public partial class Load: Control {
             }
             case 1: {
                 ui.player.character = new Snowman(ui.player);
+                System.Random random = new(42);
+                MultiMeshInstance3D stones = ui.player.root.GetNode<MultiMeshInstance3D>("scene/battlefield/stones");
+                MultiMesh mesh = new(){
+                    Mesh = GD.Load<Mesh>("res://model/stone.tres"),
+                    TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
+                    InstanceCount = 10
+                };
+                stones.Multimesh = mesh;
+                Basis basis = Basis.FromScale(Vector3.One * 0.3f);
+                for (int i = 0; i < mesh.InstanceCount; i++) {
+                    Vector3 position = new(random.NextSingle() * 15 - 7, random.NextSingle() * 0.1f - 0.16f, random.NextSingle() * 15 - 7);
+                    mesh.SetInstanceTransform(i, new Transform3D(basis, position));
+                }
                 break;
             }
             case 2: {

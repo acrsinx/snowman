@@ -1,6 +1,5 @@
-[gd_scene load_steps=6 format=3 uid="uid://bdvrhrrde3p0i"]
+[gd_scene load_steps=5 format=3 uid="uid://bdvrhrrde3p0i"]
 
-[ext_resource type="PackedScene" uid="uid://b8areypbptv4c" path="res://model/stone.gltf" id="1_8alg1"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
 [ext_resource type="Material" uid="uid://bq1g05akax757" path="res://material/stone.tres" id="2_qdvvq"]
 [ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="4_6e8kc"]
@@ -14,15 +13,6 @@ region_min_size = 32.0
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_pde2o")
-
-[node name="stone" parent="NavigationRegion3D" instance=ExtResource("1_8alg1")]
-transform = Transform3D(0.328877, 0, 0, 0, 0.328877, 0, 0, 0, 0.328877, 0.278438, 0, 0.907806)
-
-[node name="stone2" parent="NavigationRegion3D" instance=ExtResource("1_8alg1")]
-transform = Transform3D(0.213923, -0.11396, 0, 0.11396, 0.213923, 0, 0, 0, 0.242384, 1.79714, 0, -0.892445)
-
-[node name="stone3" parent="NavigationRegion3D" instance=ExtResource("1_8alg1")]
-transform = Transform3D(0.225224, 0.0895774, 1.06164e-08, 0.0295092, -0.0741949, 0.228854, 0.0845773, -0.212652, -0.0798478, 4.71563, 0, -1.99496)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
@@ -68,3 +58,5 @@ size = Vector3(0.1, 4.412, 16.341)
 
 [node name="snowMountain" parent="." instance=ExtResource("4_6e8kc")]
 transform = Transform3D(-0.234177, 0, 4.07127, 0, 10.738, 0, -4.07127, 0, -0.234177, 1.45576, 36.7403, 60.7329)
+
+[node name="stones" type="MultiMeshInstance3D" parent="."]
