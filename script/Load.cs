@@ -44,7 +44,7 @@ public partial class Load: Control {
                 ui.player.character = new Snowman(ui.player);
                 System.Random random = new(42);
                 MultiMeshInstance3D stones = ui.player.root.GetNode<MultiMeshInstance3D>("scene/battlefield/stones");
-                MultiMesh mesh = new(){
+                MultiMesh mesh = new() {
                     Mesh = GD.Load<Mesh>("res://model/stone.tres"),
                     TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
                     InstanceCount = 10

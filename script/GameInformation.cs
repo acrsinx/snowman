@@ -15,6 +15,18 @@ public class GameInformation: object {
     public UiType UiType {
         get => uiType;
         set {
+            if (uiType == value) {
+                return;
+            }
+            if (value == UiType.computer) {
+                setting.GetTree().Root.Scaling3DScale = 1.0f;
+                Engine.PhysicsTicksPerSecond = 60;
+                Engine.MaxPhysicsStepsPerFrame = 8;
+            } else {
+                setting.GetTree().Root.Scaling3DScale = 0.7f;
+                Engine.PhysicsTicksPerSecond = 30;
+                Engine.MaxPhysicsStepsPerFrame = 4;
+            }
             uiType = value;
             setting.SetWindowVisible();
             setting.GetNodeOptionButton("uiType").Selected = (int) uiType;

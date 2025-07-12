@@ -165,7 +165,7 @@ public partial class Ui: Control {
     }
     public override void _Process(double delta) {
         if (settingPanel.gameInformation.ShowInfo) {
-            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + settingPanel.gameInformation.UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            string text = "fps: " + Engine.GetFramesPerSecond() + ", DrawCalls: " + Performance.GetMonitor(Performance.Monitor.RenderTotalDrawCallsInFrame) + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + settingPanel.gameInformation.UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             text += "\n" + Logs[0];
             text += "\n" + Logs[1];
             text += "\n" + Logs[2];

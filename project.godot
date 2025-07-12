@@ -30,7 +30,6 @@ general/text_to_speech=true
 window/size/mode=4
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-window/vsync/vsync_mode=0
 
 [dotnet]
 
@@ -155,7 +154,8 @@ common/enable_pause_aware_picking=true
 
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
-scaling_3d/scale=0.9
+textures/webp_compression/compression_method=6
+textures/webp_compression/lossless_compression_factor=100.0
 occlusion_culling/occlusion_rays_per_thread=256
 environment/glow/upscale_mode=0
 occlusion_culling/use_occlusion_culling=true
