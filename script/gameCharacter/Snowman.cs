@@ -1,13 +1,26 @@
 using Godot;
 public partial class Snowman: GameCharacter {
     public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
-    public static readonly PackedScene SnowballScene = ResourceLoader.Load<PackedScene>("res://model/snowball.gltf");
+    public static readonly Mesh SnowballMesh = ResourceLoader.Load<Mesh>("res://model/snowball.tres");
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
-    public ObjectPool snowballPool = new(10);
+    public static readonly Vector3 gravity = new(0, -9.8f, 0);
+    public static ShapeCast3D checkCast;
+    public ObjectPool snowballPool = new(10, SnowballMesh);
     public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CylinderShape3D() {
         Radius = 0.25f,
         Height = 0.9f
     }, new Vector3(0, 0.5f, 0), false, isPlayer) {
+        if (checkCast == null) {
+            Shape3D sphere = new SphereShape3D() {
+                Radius = 0.03f
+            };
+            checkCast = new ShapeCast3D() {
+                Shape = sphere,
+                TargetPosition = Vector3.Zero
+            };
+            player.root.AddChild(checkCast);
+        }
+        player.root.AddChild(snowballPool.instances);
         Position = new Vector3(0, 0.1f, 0);
         if (isPlayer) {
             player.cameraManager.cameraMarker.Reparent(this, false);
@@ -25,43 +38,51 @@ public partial class Snowman: GameCharacter {
     }
     public override void CharacterAttack() {
         base.CharacterAttack();
-        Node3D snowball;
-        RigidBody3D rigidBody;
-        snowball = snowballPool.Add(SnowballScene);
-        if (snowball == null) {
+        int id = snowballPool.Add();
+        if (id == -1) {
             return;
         }
-        player.GetTree().Root.AddChild(snowball);
-        rigidBody = snowball.GetChild<RigidBody3D>(0);
-        CollisionShape3D shape = rigidBody.GetChild<CollisionShape3D>(1);
-        shape.Scale = new Vector3(0.1f, 0.1f, 0.1f);
-        rigidBody.ContactMonitor = true;
-        rigidBody.MaxContactsReported = 1;
         // 设置雪球位置
-        snowball.GlobalPosition = GlobalPosition + snowballOffset;
-        snowball.GlobalRotation = new(isPlayer?player.cameraManager.cameraMarker.Rotation.X:Tool.RandomFloat(0.5f, 0.5001f), character.GlobalRotation.Y, 0);
-        snowball.Translate(new Vector3(0, 0, -0.6f));
+        Transform3D snowballTransform = Transform3D.Identity;
+        snowballTransform = snowballTransform.Scaled(new Vector3(0.5f, 0.5f, 0.5f));
+        Vector3 SnowballGlobalPosition = GlobalPosition + snowballOffset;
+        snowballTransform = snowballTransform.Translated(SnowballGlobalPosition);
+        snowballTransform = snowballTransform.TranslatedLocal(new Vector3(0, 0, -0.6f));
+        snowballPool.instances.Multimesh.SetInstanceTransform(id, snowballTransform);
         // 设置速度
-        Vector3 direction = new Vector3(0, 0, -1).Rotated(new(0, 1, 0), snowball.GlobalRotation.Y).Rotated(new(1, 0, 0), snowball.GlobalRotation.X) + new Vector3(0, 0.5f, 0);
-        rigidBody.SetAxisVelocity(Velocity);
+        float rx = isPlayer?player.cameraManager.cameraMarker.Rotation.X:Tool.RandomFloat(0.5f, 0.5001f);
+        float ry = character.GlobalRotation.Y;
+        Vector3 direction = new Vector3(0, 0, -1).Rotated(new(0, 1, 0), ry).Rotated(new(1, 0, 0), rx) + new Vector3(0, 0.5f, 0);
+        snowballPool.Velocities[id] = Velocity + direction * 10;
         Vector3 impuse = direction.Normalized() * 10;
-        rigidBody.ApplyImpulse(impuse, new Vector3(0, 0, 0));
         // I = mv => v = I/m
         Velocity -= impuse * 0.1f;
     }
     public override void _PhysicsProcess(double delta) {
         base._PhysicsProcess(delta);
+        float fDelta = (float) delta;
         for (int i = 0; i < snowballPool.Count; i++) {
             if (!snowballPool.haveUsed[i]) {
                 continue;
             }
-            Node3D snowball = snowballPool.Get(i);
-            RigidBody3D body = snowball.GetChild<RigidBody3D>(0);
-            if (body.GetContactCount() > 0) {
-                HaveCharacter target = HaveCharacter.GetHaveCharacter(body.GetCollidingBodies()[0]);
+            // 设置雪球位置
+            Transform3D snowballTransform = snowballPool.instances.Multimesh.GetInstanceTransform(i);
+            // v += g * t
+            snowballPool.Velocities[i] += gravity * fDelta;
+            // x += v * t
+            snowballTransform = snowballTransform.Translated(snowballPool.Velocities[i] * fDelta);
+            snowballPool.instances.Multimesh.SetInstanceTransform(i, snowballTransform);
+            // 检测碰撞
+            checkCast.GlobalPosition = snowballTransform.Origin;
+            checkCast.ForceShapecastUpdate();
+            if (checkCast.IsColliding()) {
+                HaveCharacter target = HaveCharacter.GetHaveCharacter((Node) checkCast.GetCollider(0));
+                if (target?.GetCharacter() == this) {
+                    continue;
+                }
                 target?.GetCharacter().BeAttack(10, DamageType.snow, false);
+                snowballPool.instances.Multimesh.SetInstanceTransform(i, Tool.ZeroTransform3D);
                 snowballPool.Remove(i);
-                snowball.QueueFree();
                 continue;
             }
         }
