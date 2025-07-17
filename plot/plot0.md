@@ -10,7 +10,7 @@ LoadCharacter(snowdog, dog, (-4, 0, -6));
 LoadCharacter(snowman, snowman1, (-3, 0, -4));
 LoadCharacter(snowman, snowman2, (-4, 0, -4));
 LoadCharacter(snowman, snowman3, (-5, 0, -4));
-PlayerTo(-4, 0, -2);
+SetCharacterPosition(Player, (-4, 0, -2));
 PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
@@ -35,6 +35,10 @@ AddTrigger(bear1_die&&bear2_die, {
     SetCharacterTarget(snowman2, (-4, 0, -4));
     SetCharacterTarget(snowman3, (-5, 0, -4));
     AddTarget(dog, 3, {
+        SetCharacterPosition(snowman1, (-3, 0, -4));
+        SetCharacterPosition(snowman2, (-4, 0, -4));
+        SetCharacterPosition(snowman3, (-5, 0, -4));
+        SetCharacterPosition(Player, (-4, 0, -2));
         Jump(plot0/plot0_1.json)
     })
 });
@@ -56,9 +60,10 @@ Goto(1)
 `雪狗`: `就像之前一样，这次的功劳就由我上报。`  
 `caption`  
 ```
-LookAtCharacter(dog, 0.3, 2)
+LookAtCharacter(dog, 0.3, 1.5)
 ```
 ```
+LookAtCharacter(dog, 0.3, 0.9);
 Goto(1)
 ```
 ### `2`

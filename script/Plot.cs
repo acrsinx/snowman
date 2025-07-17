@@ -25,6 +25,9 @@ public class Plot {
     /// <param name="instanceName">角色名字</param>
     /// <returns>返回角色名字</returns>
     public static PlotCharacter GetPlotCharacter(string instanceName) {
+        if (instanceName == "Player") {
+            return player.character;
+        }
         if (!InstanceName.ContainsKey(instanceName)) {
             Ui.Log("未找到剧情角色：" + instanceName);
         }
@@ -78,6 +81,11 @@ public class Plot {
         AutoCharacterManager auto = ((GameCharacter) GetPlotCharacter(instanceName)).auto;
         auto.targetPosition = target;
         auto.ForceToGo = true;
+    }
+    public static void SetCharacterPosition(string instanceName, Vector3 position) {
+        GameCharacter character = (GameCharacter) GetPlotCharacter(instanceName);
+        character.Position = position;
+        character.Rotation = Vector3.Zero;
     }
     /// <summary>
     /// 添加角色到实例列表中
@@ -192,6 +200,10 @@ public class Plot {
                 SetCharacterTarget(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
                 break;
             }
+            case "SetCharacterPosition": {
+                SetCharacterPosition(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
+                break;
+            }
             case "PlayAnimation": {
                 PlayAnimation(wordsList[1], wordsList[2]);
                 break;
@@ -202,11 +214,6 @@ public class Plot {
             }
             case "LookAtCharacter": {
                 LookAtCharacter(wordsList[1], float.Parse(wordsList[2]), float.Parse(wordsList[3]));
-                break;
-            }
-            case "PlayerTo": {
-                player.character.GlobalPosition = new Vector3(float.Parse(wordsList[1]), float.Parse(wordsList[2]), float.Parse(wordsList[3]));
-                SetCameraPosition();
                 break;
             }
             case "SetCameraPosition": {
