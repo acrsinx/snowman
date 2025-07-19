@@ -5,12 +5,12 @@ public partial class Snowman: GameCharacter {
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
     public static readonly Vector3 gravity = new(0, -9.8f, 0);
     public static ShapeCast3D checkCast;
-    public ObjectPool snowballPool = new(10, SnowballMesh);
+    public static ObjectPool snowballPool = new(25, SnowballMesh);
     public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CylinderShape3D() {
         Radius = 0.25f,
         Height = 0.9f
     }, new Vector3(0, 0.5f, 0), false, isPlayer) {
-        if (checkCast == null) {
+        if (checkCast == null) { // 第一次初始化雪人
             Shape3D sphere = new SphereShape3D() {
                 Radius = 0.03f
             };
@@ -19,8 +19,8 @@ public partial class Snowman: GameCharacter {
                 TargetPosition = Vector3.Zero
             };
             player.root.AddChild(checkCast);
+            player.root.AddChild(snowballPool.instances);
         }
-        player.root.AddChild(snowballPool.instances);
         Position = new Vector3(0, 0.1f, 0);
         if (isPlayer) {
             player.cameraManager.cameraMarker.Reparent(this, false);
@@ -38,7 +38,7 @@ public partial class Snowman: GameCharacter {
     }
     public override void CharacterAttack() {
         base.CharacterAttack();
-        int id = snowballPool.Add();
+        int id = snowballPool.Add(this);
         if (id == -1) {
             return;
         }
@@ -60,7 +60,17 @@ public partial class Snowman: GameCharacter {
     }
     public override void _PhysicsProcess(double delta) {
         base._PhysicsProcess(delta);
-        float fDelta = (float) delta;
+        if (isPlayer) {
+            PhysicsProcess((float) delta);
+        }
+        if (player.PlayerState != State.move) {
+            return;
+        }
+        if (auto == null) {
+            return;
+        }
+    }
+    public static void PhysicsProcess(float fDelta) {
         for (int i = 0; i < snowballPool.Count; i++) {
             if (!snowballPool.haveUsed[i]) {
                 continue;
@@ -77,7 +87,7 @@ public partial class Snowman: GameCharacter {
             checkCast.ForceShapecastUpdate();
             if (checkCast.IsColliding()) {
                 HaveCharacter target = HaveCharacter.GetHaveCharacter((Node) checkCast.GetCollider(0));
-                if (target?.GetCharacter() == this) {
+                if (target?.GetCharacter() == snowballPool.owners[i]) {
                     continue;
                 }
                 target?.GetCharacter().BeAttack(10, DamageType.snow, false);
@@ -85,12 +95,6 @@ public partial class Snowman: GameCharacter {
                 snowballPool.Remove(i);
                 continue;
             }
-        }
-        if (player.PlayerState != State.move) {
-            return;
-        }
-        if (auto == null) {
-            return;
         }
     }
 }
