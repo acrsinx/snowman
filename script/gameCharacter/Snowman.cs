@@ -47,7 +47,7 @@ public partial class Snowman: GameCharacter {
         snowballTransform = snowballTransform.Scaled(new Vector3(0.5f, 0.5f, 0.5f));
         Vector3 SnowballGlobalPosition = GlobalPosition + snowballOffset;
         snowballTransform = snowballTransform.Translated(SnowballGlobalPosition);
-        snowballTransform = snowballTransform.TranslatedLocal(new Vector3(0, 0, -0.6f));
+        snowballTransform = snowballTransform.TranslatedLocal(new Vector3(0, -0.6f, 0));
         snowballPool.instances.Multimesh.SetInstanceTransform(id, snowballTransform);
         // 设置速度
         float rx = isPlayer?player.cameraManager.cameraMarker.Rotation.X:Tool.RandomFloat(0.5f, 0.5001f);
