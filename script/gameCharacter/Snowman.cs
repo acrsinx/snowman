@@ -4,20 +4,14 @@ public partial class Snowman: GameCharacter {
     public static readonly Mesh SnowballMesh = ResourceLoader.Load<Mesh>("res://model/snowball.tres");
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
     public static readonly Vector3 gravity = new(0, -9.8f, 0);
-    public static ShapeCast3D checkCast;
+    public static RayCast3D checkCast;
     public static ObjectPool snowballPool = new(25, SnowballMesh);
     public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CylinderShape3D() {
         Radius = 0.25f,
         Height = 0.9f
     }, new Vector3(0, 0.5f, 0), false, isPlayer) {
         if (checkCast == null) { // 第一次初始化雪人
-            Shape3D sphere = new SphereShape3D() {
-                Radius = 0.03f
-            };
-            checkCast = new ShapeCast3D() {
-                Shape = sphere,
-                TargetPosition = Vector3.Zero
-            };
+            checkCast = new();
             player.root.AddChild(checkCast);
             player.root.AddChild(snowballPool.instances);
         }
@@ -77,16 +71,18 @@ public partial class Snowman: GameCharacter {
             }
             // 设置雪球位置
             Transform3D snowballTransform = snowballPool.instances.Multimesh.GetInstanceTransform(i);
+            Vector3 origin = snowballTransform.Origin;
             // v += g * t
             snowballPool.Velocities[i] += gravity * fDelta;
             // x += v * t
-            snowballTransform = snowballTransform.Translated(snowballPool.Velocities[i] * fDelta);
-            snowballPool.instances.Multimesh.SetInstanceTransform(i, snowballTransform);
+            Vector3 deltaPosition = snowballPool.Velocities[i] * fDelta;
+            snowballTransform = snowballTransform.Translated(deltaPosition);
             // 检测碰撞
-            checkCast.GlobalPosition = snowballTransform.Origin;
-            checkCast.ForceShapecastUpdate();
+            checkCast.GlobalPosition = origin;
+            checkCast.TargetPosition = deltaPosition;
+            checkCast.ForceRaycastUpdate();
             if (checkCast.IsColliding()) {
-                HaveCharacter target = HaveCharacter.GetHaveCharacter((Node) checkCast.GetCollider(0));
+                HaveCharacter target = HaveCharacter.GetHaveCharacter((Node) checkCast.GetCollider());
                 if (target?.GetCharacter() == snowballPool.owners[i]) {
                     continue;
                 }
@@ -95,6 +91,8 @@ public partial class Snowman: GameCharacter {
                 snowballPool.Remove(i);
                 continue;
             }
+            // 设置雪球位置
+            snowballPool.instances.Multimesh.SetInstanceTransform(i, snowballTransform);
         }
     }
 }
