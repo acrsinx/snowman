@@ -5,7 +5,7 @@ public partial class Snowman: GameCharacter {
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
     public static readonly Vector3 gravity = new(0, -9.8f, 0);
     public static RayCast3D checkCast;
-    public static ObjectPool snowballPool = new(25, SnowballMesh);
+    public static ObjectPool snowballPool = new(32, SnowballMesh);
     public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CylinderShape3D() {
         Radius = 0.25f,
         Height = 0.9f
