@@ -3,6 +3,7 @@
 |跳|Jump|
 |攻|Attack|
 |慢|Slow|
+|返回|Back|
 |计算机|Computer|
 |手机|Mobile phone|
 |很小|Very small|

@@ -30,7 +30,7 @@ public partial class Setting: Control {
                         "back"
                     }, {
                         "text",
-                        "退出"
+                        "返回"
                     }, {
                         "type",
                         OptionType.Button
