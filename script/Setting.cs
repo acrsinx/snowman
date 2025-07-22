@@ -40,6 +40,26 @@ public partial class Setting: Control {
                     }
                 }
             }, {
+                "size",
+                new System.Collections.Generic.Dictionary<string, object> {
+                    {
+                        "name",
+                        "size"
+                    }, {
+                        "type",
+                        OptionType.OptionButton
+                    }, {
+                        "items",
+                        new Array<string> {
+                            "很小",
+                            "小",
+                            "正常",
+                            "大",
+                            "很大"
+                        }
+                    }
+                }
+            }, {
                 "vsync",
                 new System.Collections.Generic.Dictionary<string, object> {
                     {
@@ -241,6 +261,11 @@ public partial class Setting: Control {
         }
         // 设置初始值
         Engine.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
+        if (gameInformation.UiType == UiType.phone) {
+            gameInformation.Size = 1.2f;
+        } else {
+            gameInformation.Size = 1.0f;
+        }
         GetNodeOptionButton("tts").Selected = 0;
         voices = DisplayServer.TtsGetVoices();
         for (int i = 0; i < voices.Count; i++) {
@@ -255,6 +280,30 @@ public partial class Setting: Control {
         // 绑定事件
         GetNodeOptionButton("uiType").ItemSelected += (index) => {
             gameInformation.UiType = (UiType) index;
+        };
+        GetNodeOptionButton("size").ItemSelected += (index) => {
+            switch (index) {
+                case 0: {
+                    gameInformation.Size = 0.5f;
+                    break;
+                }
+                case 1: {
+                    gameInformation.Size = 0.75f;
+                    break;
+                }
+                case 2: {
+                    gameInformation.Size = 1.0f;
+                    break;
+                }
+                case 3: {
+                    gameInformation.Size = 1.2f;
+                    break;
+                }
+                case 4: {
+                    gameInformation.Size = 1.3f;
+                    break;
+                }
+            }
         };
         GetNodeCheckButton("vsync").Pressed += () => {
             gameInformation.Vsync = GetNodeCheckButton("vsync").ButtonPressed;
