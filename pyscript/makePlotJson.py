@@ -4,6 +4,7 @@
 import os
 import re
 import json
+import time
 
 import main
 import formatCode
@@ -50,7 +51,7 @@ def decode_md_plot(data: str) -> list[str]:
         i += 1
     return tokens
 
-def check_script(code: str) -> None:
+def check_script(code: str, markdown_file: str) -> None:
     """
     检查剧情脚本
     """
@@ -60,11 +61,13 @@ def check_script(code: str) -> None:
             continue
         tokens: list[str] = line.split(" ")
         if tokens[0] not in valueNum:
+            os.utime(markdown_file, (time.time(), time.time()))
             raise Exception("未知指令："+tokens[0])
         if len(tokens) != valueNum[tokens[0]]+1:
+            os.utime(markdown_file, (time.time(), time.time()))
             raise Exception("指令参数数量不正确："+tokens[0]+"，"+str(tokens))
 
-def simplify_script(code: str) -> str:
+def simplify_script(code: str, markdown_file: str) -> str:
     """
     简化剧情脚本
     将无用符号换为空格
@@ -80,7 +83,7 @@ def simplify_script(code: str) -> str:
     simpleCode = re.sub(r'{+ | +{+ | +{', "{", simpleCode)
     # 去除与"}"相连的空格
     simpleCode = re.sub(r'}+ | +}+ | +}', "}", simpleCode)
-    check_script(simpleCode)
+    check_script(simpleCode, markdown_file)
     return simpleCode
 
 def make_json() -> None:
@@ -131,7 +134,7 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
                     actorName: str = tokens[i + 1]
                     caption: str = tokens[i + 2]
                     captionType: str = tokens[i + 3]
-                    startCode: str = simplify_script(tokens[i + 4])
+                    startCode: str = simplify_script(tokens[i + 4], markdown_file)
                     if captionType == "caption":  # 对话
                         json_line = {
                             caption_index: {
@@ -139,7 +142,7 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
                                 "caption": caption,
                                 "type": captionType,
                                 "startCode": startCode,
-                                "endCode": simplify_script(tokens[i + 5])
+                                "endCode": simplify_script(tokens[i + 5], markdown_file)
                             }
                         }
                         i += 6
@@ -151,7 +154,7 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
                             # 选项文本
                             texts.append(tokens[i])
                             # 选项结果脚本
-                            texts.append(simplify_script(tokens[i + 1]))
+                            texts.append(simplify_script(tokens[i + 1], markdown_file))
                             i += 2
                             if tokens[i] == "endChoose":
                                 i += 1
@@ -174,6 +177,7 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
                             caption_index: a_json
                         }
                     else:
+                        os.utime(markdown_file, (time.time(), time.time()))
                         raise Exception("未知对话类型: ", captionType)
                     json_file_data.update(json_line)
                 json.dump(json_file_data, file_output, ensure_ascii=False)
