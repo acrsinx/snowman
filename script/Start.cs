@@ -16,7 +16,14 @@ public partial class Start: Node3D {
             settingButton.Text = Translation.Translate("设");
         };
         settingButton.Pressed += () => {
-            setting.Visible = !setting.Visible;
+            setting.Visible = true;
+            settingButton.Visible = false;
+        };
+        setting.GetNodeButton("back").Pressed += () => {
+            setting.Visible = false;
+            if (settingButton != null) {
+                settingButton.Visible = true;
+            }
         };
         setting.Visible = false;
         gameInformation.LoadInformation(Ui.savePath);
@@ -32,7 +39,7 @@ public partial class Start: Node3D {
         if (setting.Visible) {
             return;
         }
-        if (@event is InputEventMouseButton mouseButtonEvent && mouseButtonEvent.Pressed) {
+        if (@event is InputEventMouseButton mouseButtonEvent && (!mouseButtonEvent.Pressed)) {
             if (Tool.IsInArea(settingButton, mouseButtonEvent.Position)) {
                 return;
             }

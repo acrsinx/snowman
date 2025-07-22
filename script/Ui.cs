@@ -118,35 +118,38 @@ public partial class Ui: Control {
         // 添加事件
         chooseButtons[0].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
+                if (!touch.Pressed) {
                     Choose(0);
                 }
             }
         };
         chooseButtons[1].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
+                if (!touch.Pressed) {
                     Choose(1);
                 }
             }
         };
         chooseButtons[2].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
+                if (!touch.Pressed) {
                     Choose(2);
                 }
             }
         };
         setting.GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
-                    Setting();
+                if (!touch.Pressed) {
+                    player.PlayerState = State.setting;
                 }
             }
         };
+        settingPanel.GetNodeButton("back").Pressed += () => {
+            player.PlayerState = State.move;
+        };
         package.GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
+                if (!touch.Pressed) {
                     Package();
                 }
             }
@@ -308,13 +311,6 @@ public partial class Ui: Control {
             chooseButtons[i].Visible = false;
         }
         player.PlayerState = State.move;
-    }
-    public void Setting() {
-        if (player.PlayerState != State.setting) {
-            player.PlayerState = State.setting;
-        } else if (player.PlayerState == State.setting) {
-            player.PlayerState = State.move;
-        }
     }
     public void Package() {
         if (player.PlayerState != State.package) {

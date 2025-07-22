@@ -23,6 +23,20 @@ public partial class Setting: Control {
         // 添加设置
         options = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>> {
             {
+                "back",
+                new System.Collections.Generic.Dictionary<string, object> {
+                    {
+                        "name",
+                        "back"
+                    }, {
+                        "text",
+                        "退出"
+                    }, {
+                        "type",
+                        OptionType.Button
+                    }
+                }
+            }, {
                 "uiType",
                 new System.Collections.Generic.Dictionary<string, object> {
                     {
