@@ -3,7 +3,9 @@
 """
 import json
 import os
+import platform
 import re
+import shutil
 
 import formatCode
 
@@ -88,6 +90,25 @@ def make_translate_all() -> None:
             if not file.endswith(".md"):
                 continue
             make_translate(filePath, "localization\\localization\\"+language+"\\"+file.replace(".md", ".json"))
+
+def copy_translate_to_user_data() -> None:
+    """
+    将翻译文件复制到用户数据目录
+    """
+    user_data_path: str = get_godot_user_dir()
+    if user_data_path == "":
+        return
+    # localization\\localization\\ -> user_data_path\\localization\\
+    target_path: str = user_data_path+"\\localization\\"
+    shutil.copytree("localization\\localization\\", target_path, dirs_exist_ok=True)
+    print("复制翻译文件到用户数据目录: ", target_path)
+
+def get_godot_user_dir() -> str:
+    system = platform.system()
+    if system == "Windows":
+        return os.path.join(os.getenv("APPDATA"), "Godot\\app_userdata\\Thawing")
+    else:
+        return ""
 
 def plot_json_path_to_template_path(path: str) -> str:
     """

@@ -38,3 +38,5 @@ if __name__ == '__main__':
     makeTranslate.create_localization_template_all()
     # 生成翻译json文件
     makeTranslate.make_translate_all()
+    # 将翻译文件复制到用户数据目录
+    makeTranslate.copy_translate_to_user_data()
