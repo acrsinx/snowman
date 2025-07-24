@@ -15,8 +15,56 @@ public class GameInformation: object {
     public UiType UiType {
         get => uiType;
         set {
+            if (uiType == value) {
+                return;
+            }
+            if (value == UiType.computer) {
+                setting.GetTree().Root.Scaling3DScale = 1.0f;
+                Engine.PhysicsTicksPerSecond = 60;
+                Engine.MaxPhysicsStepsPerFrame = 8;
+            } else {
+                setting.GetTree().Root.Scaling3DScale = 0.7f;
+                Engine.PhysicsTicksPerSecond = 30;
+                Engine.MaxPhysicsStepsPerFrame = 4;
+            }
             uiType = value;
             setting.SetWindowVisible();
+            setting.GetNodeOptionButton("uiType").Selected = (int) uiType;
+        }
+    }
+    private float size;
+    public float Size {
+        get {
+            return size;
+        }
+        set {
+            size = value;
+            switch (size) {
+                case 0.5f: {
+                    setting.GetNodeOptionButton("size").Selected = 0;
+                    break;
+                }
+                case 0.75f: {
+                    setting.GetNodeOptionButton("size").Selected = 1;
+                    break;
+                }
+                case 1.0f: {
+                    setting.GetNodeOptionButton("size").Selected = 2;
+                    break;
+                }
+                case 1.2f: {
+                    setting.GetNodeOptionButton("size").Selected = 3;
+                    break;
+                }
+                case 1.3f: {
+                    setting.GetNodeOptionButton("size").Selected = 4;
+                    break;
+                }
+                default: {
+                    return;
+                }
+            }
+            setting.GetTree().Root.ContentScaleFactor = size;
         }
     }
     private bool vsync;
@@ -42,7 +90,32 @@ public class GameInformation: object {
         }
         set {
             maxFps = value;
-            setting.GetNodeOptionButton("maxFps").Selected = value;
+            switch (maxFps) {
+                case 30: {
+                    setting.GetNodeOptionButton("maxFps").Selected = 0;
+                    break;
+                }
+                case 60: {
+                    setting.GetNodeOptionButton("maxFps").Selected = 1;
+                    break;
+                }
+                case 120: {
+                    setting.GetNodeOptionButton("maxFps").Selected = 2;
+                    break;
+                }
+                case 240: {
+                    setting.GetNodeOptionButton("maxFps").Selected = 3;
+                    break;
+                }
+                case 300: {
+                    setting.GetNodeOptionButton("maxFps").Selected = 4;
+                    break;
+                }
+                case 0: {
+                    setting.GetNodeOptionButton("maxFps").Selected = 5;
+                    break;
+                }
+            }
             Engine.MaxFps = value;
         }
     }
@@ -215,6 +288,7 @@ public class GameInformation: object {
     }
     public void Refresh() {
         UiType = UiType;
+        Size = Size;
         Vsync = Vsync;
         MaxFps = MaxFps;
         Tts = Tts;

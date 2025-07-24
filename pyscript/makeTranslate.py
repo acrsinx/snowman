@@ -3,7 +3,10 @@
 """
 import json
 import os
+import platform
 import re
+import shutil
+import time
 
 import formatCode
 
@@ -49,20 +52,24 @@ def make_translate(path: str, output: str) -> None:
     template_file: list[tuple[str, str]] = read_translation_file(template_path)
     for i in range(len(translation_file)):
         if i >= len(template_file): # 加入了不需要翻译的语段
-            print("无需加入", translation_file[i][0])
-            break
+            os.utime(path, (time.time(), time.time()))
+            raise Exception("无需加入"+translation_file[i][0])
         tokens: tuple[str, str] = translation_file[i]
         if tokens[0] != template_file[i][0]: # 提醒翻译文件与模板文件不一致
-            print("不一致: " + tokens[0] + " != " + template_file[i][0])
+            os.utime(path, (time.time(), time.time()))
+            raise Exception("翻译文件与模板文件不一致"+tokens[0] + " != " + template_file[i][0])
         if tokens[0] == tokens[1]: # 提醒无需翻译
-            print("无需翻译: " + tokens[0])
+            os.utime(path, (time.time(), time.time()))
+            raise Exception("无需翻译: " + tokens[0])
         if tokens[1].isspace() or tokens[1] == "": # 提醒未翻译
-            print("未翻译: " + tokens[0])
+            os.utime(path, (time.time(), time.time()))
+            raise Exception("未翻译: " + tokens[0])
         if tokens[1] == "-": # 跳过无需翻译行
             continue
         translation_json[tokens[0]] = tokens[1]
     if len(translation_file) < len(template_file): # 缺少翻译
-        print("缺少翻译")
+        os.utime(path, (time.time(), time.time()))
+        raise Exception("缺少翻译")
     if not os.path.exists(os.path.dirname(output)):
         os.mkdir(os.path.dirname(output))
     with open(output, "w", encoding="utf-8") as file:
@@ -90,6 +97,25 @@ def make_translate_all() -> None:
                 continue
             make_translate(filePath, "localization\\localization\\"+language+"\\"+file.replace(".md", ".json"))
 
+def copy_translate_to_user_data() -> None:
+    """
+    将翻译文件复制到用户数据目录
+    """
+    user_data_path: str = get_godot_user_dir()
+    if user_data_path == "":
+        return
+    # localization\\localization\\ -> user_data_path\\localization\\
+    target_path: str = user_data_path+"\\localization\\"
+    shutil.copytree("localization\\localization\\", target_path, dirs_exist_ok=True)
+    print("复制翻译文件到用户数据目录: ", target_path)
+
+def get_godot_user_dir() -> str:
+    system = platform.system()
+    if system == "Windows":
+        return os.path.join(os.getenv("APPDATA"), "Godot\\app_userdata\\Thawing")
+    else:
+        return ""
+
 def plot_json_path_to_template_path(path: str) -> str:
     """
     将plotJson路径转换为本地化模板路径
@@ -114,9 +140,13 @@ def create_localization_template(path: str) -> None:
     print("创建翻译模板: ", output)
     toTranslate: dict[str, str] = {}
     with open(path, "r", encoding="utf-8") as file:
-        plotJson: dict[str, dict] = json.load(file)
+        plotJson: dict[str, dict[str, str]] = json.load(file)
         for i in range(len(plotJson)):
             toTranslate[plotJson[str(i)]["caption"]] = ""
+            if plotJson[str(i)].__contains__("startCode"):
+                toTranslate.update(find(plotJson[str(i)]["startCode"]))
+            if plotJson[str(i)].__contains__("endCode"):
+                toTranslate.update(find(plotJson[str(i)]["endCode"]))
             for n in range(3):
                 if str(n) in plotJson[str(i)].keys():
                     toTranslate[next(iter(plotJson[str(i)][str(n)]))] = ""
@@ -124,6 +154,18 @@ def create_localization_template(path: str) -> None:
         file.write("|||\n|---|---|\n")
         for key in toTranslate:
             file.write("|" + key + "||\n")
+
+def find(code: str) -> dict[str, str]:
+    """
+    查找需要翻译的代码
+    """
+    ret: dict[str, str] = {}
+    tokens: list[str] = re.split(r'[;{}]', code)
+    for token in tokens:
+        word = token.split(" ")
+        if word[0] in ["SetTaskName"]:
+            ret[word[1]] = ""
+    return ret
 
 def create_localization_template_all() -> None:
     """

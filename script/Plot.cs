@@ -13,7 +13,7 @@ public class Plot {
     /// <summary>
     /// 剧情文件路径
     /// </summary>
-    public static string path;
+    public static string path = "";
     public static Player player;
     public static void Check(Ui ui) {
         path = "res://plotJson/plot0/plot0_0.json";
@@ -25,6 +25,9 @@ public class Plot {
     /// <param name="instanceName">角色名字</param>
     /// <returns>返回角色名字</returns>
     public static PlotCharacter GetPlotCharacter(string instanceName) {
+        if (instanceName == "Player") {
+            return player.character;
+        }
         if (!InstanceName.ContainsKey(instanceName)) {
             Ui.Log("未找到剧情角色：" + instanceName);
         }
@@ -68,6 +71,21 @@ public class Plot {
         }
         gameCharacter.Position = position;
         AddCharacterInstance(instanceName, gameCharacter);
+    }
+    /// <summary>
+    /// 设置角色寻路目标
+    /// </summary>
+    /// <param name="instanceName">角色名</param>
+    /// <param name="target">目标位置</param>
+    public static void SetCharacterTarget(string instanceName, Vector3 target) {
+        AutoCharacterManager auto = ((GameCharacter) GetPlotCharacter(instanceName)).auto;
+        auto.targetPosition = target;
+        auto.ForceToGo = true;
+    }
+    public static void SetCharacterPosition(string instanceName, Vector3 position) {
+        GameCharacter character = (GameCharacter) GetPlotCharacter(instanceName);
+        character.Position = position;
+        character.Rotation = Vector3.Zero;
     }
     /// <summary>
     /// 添加角色到实例列表中
@@ -115,9 +133,7 @@ public class Plot {
     /// <returns>是否是</returns>
     public static bool IsCameraScriptLine(string word) {
         switch (word) {
-            case "LookAtCharacter": {
-                return true;
-            }
+            case "LookAtCharacter":
             case "SetCameraPosition": {
                 return true;
             }
@@ -132,6 +148,9 @@ public class Plot {
     /// <param name="scriptLine">剧情脚本</param>
     /// <returns>词</returns>
     public static List<string> SplitWord(string scriptLine) {
+        // 处理大括号
+        scriptLine = scriptLine.Replace("{", " {");
+        scriptLine = scriptLine.Replace("}", "} ");
         // 去除多余的空格
         scriptLine = scriptLine.Trim();
         // 将","，"("，")"替换为空格
@@ -139,14 +158,29 @@ public class Plot {
         scriptLine = scriptLine.Replace("(", " ");
         scriptLine = scriptLine.Replace(")", " ");
         // 分词
-        string[] words = scriptLine.Split(' ');
-        // 去除空字符串
         List<string> wordsList = new();
-        foreach (string word in words) {
-            if (word != "") {
-                wordsList.Add(word);
+        int lastIndex = 0;
+        int tabLevel = 0;
+        for (int i = 0; i < scriptLine.Length; i++) {
+            if (scriptLine[i] == ' ' && tabLevel == 0) {
+                wordsList.Add(scriptLine[lastIndex..i]);
+                lastIndex = i + 1;
+                continue;
+            }
+            if (scriptLine[i] == '{') {
+                tabLevel++;
+                continue;
+            }
+            if (scriptLine[i] == '}') {
+                tabLevel--;
+                continue;
             }
         }
+        wordsList.Add(scriptLine[lastIndex..]);
+        // 去除空字符串
+        wordsList.RemoveAll(word => {
+            return word == "";
+        });
         return wordsList;
     }
     /// <summary>
@@ -162,6 +196,14 @@ public class Plot {
                 LoadCharacter(wordsList[1], wordsList[2], new Vector3(float.Parse(wordsList[3]), float.Parse(wordsList[4]), float.Parse(wordsList[5])));
                 break;
             }
+            case "SetCharacterTarget": {
+                SetCharacterTarget(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
+                break;
+            }
+            case "SetCharacterPosition": {
+                SetCharacterPosition(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
+                break;
+            }
             case "PlayAnimation": {
                 PlayAnimation(wordsList[1], wordsList[2]);
                 break;
@@ -174,24 +216,31 @@ public class Plot {
                 LookAtCharacter(wordsList[1], float.Parse(wordsList[2]), float.Parse(wordsList[3]));
                 break;
             }
-            case "PlayerTo": {
-                player.character.GlobalPosition = new Vector3(float.Parse(wordsList[1]), float.Parse(wordsList[2]), float.Parse(wordsList[3]));
-                SetCameraPosition();
-                break;
-            }
             case "SetCameraPosition": {
                 SetCameraPosition();
                 break;
             }
+            case "SetTaskName": {
+                player.ui.TaskString = wordsList[1];
+                break;
+            }
             case "Goto": {
-                player.ui.ShowCaption(int.Parse(wordsList[1]));
+                player.ui.ShowCaption(player.ui.CaptionIndex + int.Parse(wordsList[1]));
                 break;
             }
             case "AddTrigger": {
                 TriggerSystem.AddTrigger(wordsList[1], () => {
-                    path = PlotPathToAbsolutePath(wordsList[2]);
-                    Open(player.ui);
+                    ParseScript(wordsList[2]);
                 });
+                break;
+            }
+            case "AddTarget": {
+                AddTarget(wordsList[1], float.Parse(wordsList[2]), wordsList[3]);
+                break;
+            }
+            case "Jump": {
+                path = PlotPathToAbsolutePath(wordsList[1]);
+                Open(player.ui);
                 break;
             }
             case "Exit": {
@@ -208,7 +257,35 @@ public class Plot {
         if (script == "" || script == null) {
             return;
         }
-        string[] lines = script.Split(';');
+        if (script[0] == '{' && script[^1] == '}') {
+            ParseScript(script[1..^1]);
+            return;
+        }
+        List<string> lines = new();
+        int lastIndex = 0;
+        int tabLevel = 0;
+        for (int i = 0; i < script.Length; i++) {
+            if (script[i] == ';' && tabLevel == 0) {
+                lines.Add(script[lastIndex..i]);
+                lastIndex = i + 1;
+                continue;
+            }
+            if (script[i] == '{') {
+                tabLevel++;
+                continue;
+            }
+            if (script[i] == '}') {
+                tabLevel--;
+                if (tabLevel < 0) {
+                    Ui.Log(path + "语法错误: " + script);
+                    return;
+                }
+                continue;
+            }
+        }
+        if (lastIndex < script.Length) {
+            lines.Add(script[lastIndex..]);
+        }
         foreach (string line in lines) {
             ParseScriptLine(SplitWord(line));
         }
@@ -221,6 +298,29 @@ public class Plot {
                 ParseScriptLine(wordsList);
             }
         }
+    }
+    public static void AddTarget(string characterName, float radius, string script) {
+        GameCharacter character = (GameCharacter) GetPlotCharacter(characterName);
+        character.headLabel.Text = "*";
+        Area3D trigger = new();
+        CollisionShape3D shape3D = new() {
+            Shape = new SphereShape3D() {
+                Radius = radius
+            }
+        };
+        trigger.AddChild(shape3D);
+        trigger.BodyEntered += (body) => {
+            HaveCharacter haveCharacter = HaveCharacter.GetHaveCharacter(body);
+            if (haveCharacter == null) {
+                return;
+            }
+            if (haveCharacter.GetCharacter().isPlayer) {
+                ParseScript(script);
+                character.headLabel.Text = "";
+                trigger.QueueFree();
+            }
+        };
+        character.AddChild(trigger);
     }
     public static void Open(Ui ui) {
         if (path == null) {

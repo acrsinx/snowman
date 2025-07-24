@@ -97,6 +97,8 @@ public partial class Player: Node3D {
                     ui.speakerLabel.Text = "";
                     ui.captionLabel.Text = "";
                     ui.phoneControl.Visible = ui.settingPanel.gameInformation.UiType != UiType.computer;
+                    ui.setting.Visible = true;
+                    ui.package.Visible = true;
                     ui.settingPanel.Visible = false;
                     ui.packagePanel.Visible = false;
                     ui.leftUp.Visible = true;
@@ -104,6 +106,8 @@ public partial class Player: Node3D {
                 }
                 case State.setting: {
                     ui.phoneControl.Visible = false;
+                    ui.setting.Visible = false;
+                    ui.package.Visible = false;
                     ui.settingPanel.Visible = true;
                     ui.packagePanel.Visible = false;
                     ui.rightUp.Visible = true;
@@ -112,6 +116,8 @@ public partial class Player: Node3D {
                 }
                 case State.package: {
                     ui.phoneControl.Visible = false;
+                    ui.setting.Visible = false;
+                    ui.package.Visible = false;
                     ui.settingPanel.Visible = false;
                     ui.packagePanel.Visible = true;
                     ui.rightUp.Visible = false;
@@ -291,7 +297,7 @@ public partial class Player: Node3D {
         }
         if (@event is InputEventMouseButton button) {
             if (ui.settingPanel.gameInformation.UiType == UiType.computer) {
-                if (button.IsPressed()) {
+                if (button.IsReleased()) {
                     if (PlayerState is State.move) {
                         switch (button.ButtonIndex) {
                             case MouseButton.Left: {
@@ -320,12 +326,15 @@ public partial class Player: Node3D {
         }
         if (@event is InputEventKey key) {
             if (key.Pressed) {
+                if (key.Keycode == Key.Space) {
+                    if (PlayerState is State.move) {
+                        Jump();
+                        return;
+                    }
+                }
+            } else {
                 switch (key.Keycode) {
                     case Key.Space: {
-                        if (PlayerState is State.move) {
-                            Jump();
-                            return;
-                        }
                         if (PlayerState is State.caption) {
                             ui.NextCaption();
                             return;

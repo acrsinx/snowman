@@ -5,8 +5,8 @@
 [ext_resource type="Script" path="res://script/Start.cs" id="2_4x7km"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_loctk"]
 [ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="2_x7ywo"]
-[ext_resource type="PackedScene" uid="uid://b8areypbptv4c" path="res://model/stone.gltf" id="4_wjpjh"]
 [ext_resource type="PackedScene" uid="uid://d1vaitru08e1g" path="res://scene/setting.tscn" id="7_8xoj3"]
+[ext_resource type="ArrayMesh" uid="uid://dq4ajxfrnqgu" path="res://model/stone.tres" id="7_m4wfc"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_qt0sj"]
 size = Vector2(6.77, 1.965)
@@ -40,8 +40,10 @@ transform = Transform3D(-0.328867, 0, -0.944376, 0, 2.63288, 0, 0.944376, 0, -0.
 mesh = SubResource("PlaneMesh_qt0sj")
 surface_material_override/0 = ExtResource("2_loctk")
 
-[node name="stone" parent="." instance=ExtResource("4_wjpjh")]
+[node name="stone" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.579621, 0.19057, 0.79229, 0.312335, 0.949972, 0, -0.752653, 0.24746, -0.610145, 0.225, -0.265, -1.225)
+mesh = ExtResource("7_m4wfc")
+skeleton = NodePath("")
 
 [node name="Setting" parent="." instance=ExtResource("7_8xoj3")]
 

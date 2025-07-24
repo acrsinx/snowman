@@ -1,6 +1,5 @@
 using Godot;
 public partial class Snowbear: GameCharacter {
-    public AutoCharacterManager auto;
     public static PackedScene SnowbearScene = GD.Load<PackedScene>("res://model/snowbear.gltf");
     public Snowbear(Player player): base(SnowbearScene, player, new SphereShape3D() {
         Radius = 0.5f
@@ -15,9 +14,6 @@ public partial class Snowbear: GameCharacter {
         health.die += () => {
             QueueFree();
         };
-    }
-    public override void _PhysicsProcess(double delta) {
-        auto.PhysicsProcess((float) delta);
     }
     public override int GetAttackWaitTime() {
         return 500;

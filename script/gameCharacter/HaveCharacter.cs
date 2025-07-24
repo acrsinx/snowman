@@ -3,7 +3,7 @@ public partial interface HaveCharacter {
     public GameCharacter GetCharacter();
     public static HaveCharacter GetHaveCharacter(Node node) {
         Node n = node;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 4; i++) {
             if (n is null) {
                 return null;
             }
@@ -28,7 +28,7 @@ public partial interface HaveCharacter {
             }
         }
         Node n1 = node.GetParent();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 4; i++) {
             if (n1 is null) {
                 return null;
             }

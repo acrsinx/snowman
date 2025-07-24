@@ -10,9 +10,23 @@ public class AutoCharacterManager: object {
     public bool canAttackWhenMoving = false;
     public GameCharacter character;
     public Player player;
+    private bool forceToGo = false;
+    public bool ForceToGo {
+        get {
+            return forceToGo;
+        }
+        set {
+            if (value) {
+                state = State.Walk;
+            }
+            forceToGo = value;
+        }
+    }
     public GameCharacter target;
+    public Vector3 targetPosition;
     public Tool.Void afterAttack;
     private enum State {
+        Stop,
         Idle,
         Walk,
         StartAttack,
@@ -28,18 +42,27 @@ public class AutoCharacterManager: object {
         this.player = player;
     }
     private bool IsCloseToTarget() {
-        if (target == null) {
-            return false;
+        if (target != null && !forceToGo) {
+            return character.GlobalPosition.DistanceTo(target.GlobalPosition) <= character.GetAttackRange();
         }
-        return character.GlobalPosition.DistanceTo(target.GlobalPosition) <= character.GetAttackRange();
+        if (forceToGo) {
+            return character.GlobalPosition.DistanceTo(targetPosition) <= 0.5f;
+        }
+        return false;
+    }
+    private void SetAgentTarget(float random = 0.5f) {
+        character.agent.TargetPosition = targetPosition + Tool.RandomVector3(new Vector3(random, 0, random));
     }
     public void PhysicsProcess(float fDelta) {
         if (player.PlayerState != global::State.move) {
             return;
         }
         switch (state) {
+            case State.Stop: {
+                break;
+            }
             case State.Idle: {
-                if (target == null) {
+                if (target == null && !forceToGo) {
                     target = GameCharacter.gameCharacters.Find(x => x != character && x.isEnemy != character.isEnemy);
                     if (target == null) { // 没有敌人
                         // 闲逛
@@ -53,7 +76,10 @@ public class AutoCharacterManager: object {
                     };
                     break;
                 }
-                character.agent.TargetPosition = target.GlobalPosition + Tool.RandomVector3(new Vector3(1, 0, 1));
+                if (!forceToGo) {
+                    targetPosition = target.GlobalPosition;
+                }
+                SetAgentTarget();
                 if (character.agent.IsTargetReachable()) {
                     state = State.Walk;
                 }
@@ -61,17 +87,17 @@ public class AutoCharacterManager: object {
             }
             case State.Walk: {
                 // 速度过小，多半是卡住了
-                if (character.Velocity.Length() < 0.1f) {
+                if (character.Velocity.Length() < 0.1f && !IsCloseToTarget()) {
                     stuckCount++;
                     if (stuckCount > 10) {
-                        character.agent.TargetPosition = character.GlobalPosition + Tool.RandomVector3(new Vector3(1, 0, 1));
+                        SetAgentTarget();
                         stuckCount = 0;
                     }
                 } else {
                     stuckCount = 0;
                 }
                 character.PlayWalkAnimation();
-                if (IsCloseToTarget() || character.agent.IsNavigationFinished()) {
+                if ((IsCloseToTarget() || character.agent.IsNavigationFinished()) && !forceToGo) {
                     state = State.StartAttack;
                     return;
                 }
@@ -90,6 +116,10 @@ public class AutoCharacterManager: object {
                 break;
             }
             case State.Attacking: {
+                if (forceToGo) { // 强制移动
+                    state = State.Walk;
+                    break;
+                }
                 if (character.Attackable()) { // 可以再次攻击，即攻击缓冲时间结束
                     afterAttack.Invoke();
                     state = State.Idle;

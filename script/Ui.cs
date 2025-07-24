@@ -32,6 +32,21 @@ public partial class Ui: Control {
     /// 小地图
     /// </summary>
     public Sprite2D map;
+    /// <summary>
+    /// 任务指引
+    /// </summary>
+    public Label task;
+    private string taskString = "";
+    /// <summary>
+    /// 任务指引，请赋值本地化前的，取值时为本地化后的
+    /// </summary>
+    public string TaskString {
+        get => taskString;
+        set {
+            taskString = value;
+            task.Text = Translation.Translate(taskString, Plot.PlotPathToLocalizationContent(Plot.path));
+        }
+    }
     public ProgressBar healthBar;
     /// <summary>
     /// 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
@@ -41,6 +56,9 @@ public partial class Ui: Control {
     private long captionStartTime = 0;
     public CaptionResource[] captions;
     private int captionIndex = 0;
+    public int CaptionIndex {
+        get => captionIndex;
+    }
     private static readonly string[] Logs = new string[3];
     public static void Log(string s) {
         string toLog = "[" + totalGameTime + "] " + s;
@@ -87,6 +105,7 @@ public partial class Ui: Control {
         leftUp = GetNode<Control>("LeftUp");
         panel = GetNode<Panel>("LeftUp/Panel");
         map = GetNode<Sprite2D>("LeftUp/Panel/Map");
+        task = GetNode<Label>("LeftUp/Task");
         healthBar = GetNode<ProgressBar>("RightUp/health");
         Light3D light = player.root.GetNode<Light3D>("sunLight");
         if (light is null) {
@@ -99,35 +118,38 @@ public partial class Ui: Control {
         // 添加事件
         chooseButtons[0].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
+                if (!touch.Pressed) {
                     Choose(0);
                 }
             }
         };
         chooseButtons[1].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
+                if (!touch.Pressed) {
                     Choose(1);
                 }
             }
         };
         chooseButtons[2].GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
+                if (!touch.Pressed) {
                     Choose(2);
                 }
             }
         };
         setting.GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
-                    Setting();
+                if (!touch.Pressed) {
+                    player.PlayerState = State.setting;
                 }
             }
         };
+        settingPanel.GetNodeButton("back").Pressed += () => {
+            player.PlayerState = State.move;
+        };
         package.GuiInput += @event => {
             if (@event is InputEventScreenTouch touch) {
-                if (touch.Pressed) {
+                if (!touch.Pressed) {
                     Package();
                 }
             }
@@ -138,6 +160,7 @@ public partial class Ui: Control {
             phoneSlow.GetChild<Label>(0).Text = Translation.Translate("慢");
             package.Text = Translation.Translate("包");
             setting.Text = Translation.Translate("设");
+            task.Text = TaskString;
         };
         ClearChoose();
         // 设置为加载态，前面的ClearCaption();会把player.PlayerState设为State.move
@@ -145,7 +168,7 @@ public partial class Ui: Control {
     }
     public override void _Process(double delta) {
         if (settingPanel.gameInformation.ShowInfo) {
-            string text = "fps: " + Engine.GetFramesPerSecond() + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + settingPanel.gameInformation.UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
+            string text = "fps: " + Engine.GetFramesPerSecond() + ", DrawCalls: " + Performance.GetMonitor(Performance.Monitor.RenderTotalDrawCallsInFrame) + ", 最大fps: " + Engine.MaxFps + ", 每秒处理数: " + (1 / delta) + "\n物理每秒处理数: " + Engine.PhysicsTicksPerSecond + ", state: " + player.PlayerState.ToString() + ", uiType: " + settingPanel.gameInformation.UiType.ToString() + ", 语言: " + Translation.Locale + "\ntime: " + totalGameTime + ", health: " + player.character?.health + "\n用户数据目录: " + OS.GetUserDataDir();
             text += "\n" + Logs[0];
             text += "\n" + Logs[1];
             text += "\n" + Logs[2];
@@ -288,13 +311,6 @@ public partial class Ui: Control {
             chooseButtons[i].Visible = false;
         }
         player.PlayerState = State.move;
-    }
-    public void Setting() {
-        if (player.PlayerState != State.setting) {
-            player.PlayerState = State.setting;
-        } else if (player.PlayerState == State.setting) {
-            player.PlayerState = State.move;
-        }
     }
     public void Package() {
         if (player.PlayerState != State.package) {

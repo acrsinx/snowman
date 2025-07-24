@@ -1,36 +1,41 @@
 using Godot;
 public partial class ObjectPool: object {
+    public MultiMeshInstance3D instances;
     public bool[] haveUsed;
-    public Node3D[] list;
-    public RigidBody3D[] rList;
+    public Vector3[] Velocities;
+    public Node[] owners;
     public int Count {
-        get => list.Length;
+        get => haveUsed.Length;
     }
-    public ObjectPool(int length) {
-        list = new Node3D[length];
-        rList = new RigidBody3D[length];
+    public ObjectPool(int length, Mesh mesh) {
+        instances = new MultiMeshInstance3D() {
+            Multimesh = new MultiMesh() {
+                TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
+                InstanceCount = length,
+                Mesh = mesh
+            },
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off
+        };
+        Velocities = new Vector3[length];
+        owners = new Node[length];
         haveUsed = new bool[length];
     }
     public int HaveEmpty() {
-        for (int i = 0; i < haveUsed.Length; i++) {
+        for (int i = 0; i < Count; i++) {
             if (!haveUsed[i]) {
                 return i;
             }
         }
         return -1;
     }
-    public Node3D Add(PackedScene item) {
+    public int Add(Node owner) {
         int empty = HaveEmpty();
         if (empty == -1) {
-            return null;
+            return -1;
         }
-        list[empty] = item.Instantiate<Node3D>();
-        rList[empty] = list[empty].GetChild<RigidBody3D>(0);
         haveUsed[empty] = true;
-        return list[empty];
-    }
-    public Node3D Get(int index) {
-        return list[index];
+        owners[empty] = owner;
+        return empty;
     }
     public void Remove(int index) {
         haveUsed[index] = false;

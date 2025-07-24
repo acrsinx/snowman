@@ -10,12 +10,12 @@ LoadCharacter(snowdog, dog, (-4, 0, -6));
 LoadCharacter(snowman, snowman1, (-3, 0, -4));
 LoadCharacter(snowman, snowman2, (-4, 0, -4));
 LoadCharacter(snowman, snowman3, (-5, 0, -4));
-PlayerTo(-4, 0, -2);
+SetCharacterPosition(Player, (-4, 0, -2));
 PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```
-LookAtCharacter(dog, 1.1, 1)
+LookAtCharacter(dog, 1.1, 1);
 PauseAnimation(dog);
 Goto(1)
 ```
@@ -28,7 +28,20 @@ SetCameraPosition();
 ```
 LoadCharacter(snowbear, bear1, (5, 1, 6));
 LoadCharacter(snowbear, bear2, (3, 1, 4));
-AddTrigger(bear1_die&&bear2_die, plot0/plot0_1.json);
+SetTaskName(击败雪熊。);
+AddTrigger(bear1_die&&bear2_die, {
+    SetTaskName(到雪狗处集合。);
+    SetCharacterTarget(snowman1, (-3, 0, -4));
+    SetCharacterTarget(snowman2, (-4, 0, -4));
+    SetCharacterTarget(snowman3, (-5, 0, -4));
+    AddTarget(dog, 3, {
+        SetCharacterPosition(snowman1, (-3, 0, -4));
+        SetCharacterPosition(snowman2, (-4, 0, -4));
+        SetCharacterPosition(snowman3, (-5, 0, -4));
+        SetCharacterPosition(Player, (-4, 0, -2));
+        Jump(plot0/plot0_1.json)
+    })
+});
 Exit(0)
 ```
 ## 战斗结束
@@ -47,10 +60,11 @@ Goto(1)
 `雪狗`: `就像之前一样，这次的功劳就由我上报。`  
 `caption`  
 ```
-LookAtCharacter(dog, 0.3, 2)
+LookAtCharacter(dog, 0.3, 1.5)
 ```
 ```
-Goto(2)
+LookAtCharacter(dog, 0.3, 0.9);
+Goto(1)
 ```
 ### `2`
 `愤怒的雪人`: `可是……`
@@ -59,7 +73,7 @@ Goto(2)
 LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
-Goto(3)
+Goto(1)
 ```
 ### `3`
 `雪狗`: `“可是”什么“可是”，我说话你们听着就行了。`  
@@ -68,7 +82,7 @@ Goto(3)
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```
-Goto(4)
+Goto(1)
 ```
 ### `4`
 `愤怒的雪人`: `每次胜利，都是雪狗请功去了。`  
@@ -77,7 +91,7 @@ Goto(4)
 LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
-Goto(5)
+Goto(1)
 ```
 ### `5`
 `冷静的雪人`: `是啊，它们总不把我们当成生物。`  
@@ -86,7 +100,7 @@ Goto(5)
 LookAtCharacter(snowman2, 0.7, 1.2)
 ```
 ```
-Goto(6)
+Goto(1)
 ```
 ### `6`
 `不屑的雪人`: `雪狗们自以为是，自矜攻伐。`  
@@ -95,7 +109,7 @@ Goto(6)
 LookAtCharacter(snowman3, 0.7, 1.2)
 ```
 ```
-Goto(7)
+Goto(1)
 ```
 ### `7`
 `众雪人`: `就是！就是！`  
@@ -105,7 +119,7 @@ LookAtCharacter(snowman1, 0.7, 1.2)
 ```
 ```
 LookAtCharacter(snowman3, 0.7, 1.2);
-Goto(8)
+Goto(1)
 ```
 ### `8`
 引导玩家输入自己的名字  
@@ -115,7 +129,9 @@ Goto(8)
 SetCameraPosition()
 ```
 ```
-AddTrigger(playerNamed, plot0/plot0_2.json);
+AddTrigger(playerNamed, {
+    Jump(plot0/plot0_2.json)
+});
 Exit(0)
 ```
 ## 取完名字
@@ -153,7 +169,7 @@ Exit(0)
 ```
 ```
 ```
-Goto(3)
+Goto(1)
 ```
 ### `3`
 `%name%`: `我们走！`  

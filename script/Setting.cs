@@ -23,6 +23,20 @@ public partial class Setting: Control {
         // 添加设置
         options = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>> {
             {
+                "back",
+                new System.Collections.Generic.Dictionary<string, object> {
+                    {
+                        "name",
+                        "back"
+                    }, {
+                        "text",
+                        "返回"
+                    }, {
+                        "type",
+                        OptionType.Button
+                    }
+                }
+            }, {
                 "uiType",
                 new System.Collections.Generic.Dictionary<string, object> {
                     {
@@ -36,6 +50,26 @@ public partial class Setting: Control {
                         new Array<string> {
                             "计算机",
                             "手机"
+                        }
+                    }
+                }
+            }, {
+                "size",
+                new System.Collections.Generic.Dictionary<string, object> {
+                    {
+                        "name",
+                        "size"
+                    }, {
+                        "type",
+                        OptionType.OptionButton
+                    }, {
+                        "items",
+                        new Array<string> {
+                            "很小",
+                            "小",
+                            "正常",
+                            "大",
+                            "很大"
                         }
                     }
                 }
@@ -221,16 +255,31 @@ public partial class Setting: Control {
             }
         };
         // 设备类型
-        if (OS.GetName() == "Android" || OS.GetName() == "iOS") {
-            gameInformation.UiType = UiType.phone;
-        } else if (OS.GetName() == "Windows" || OS.GetName() == "macOS" || OS.GetName() == "Linux") {
-            gameInformation.UiType = UiType.computer;
-        } else {
-            gameInformation.UiType = UiType.computer;
+        switch (OS.GetName()) {
+            case "Windows":
+            case "macOS":
+            case "Linux": {
+                gameInformation.UiType = UiType.computer;
+                break;
+            }
+            case "Android":
+            case "iOS": {
+                gameInformation.UiType = UiType.phone;
+                break;
+            }
+            default: {
+                gameInformation.UiType = UiType.computer;
+                Ui.Log("未知的设备类型！");
+                break;
+            }
         }
         // 设置初始值
-        GetNodeOptionButton("uiType").Selected = (int) gameInformation.UiType;
         Engine.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
+        if (gameInformation.UiType == UiType.phone) {
+            gameInformation.Size = 1.2f;
+        } else {
+            gameInformation.Size = 1.0f;
+        }
         GetNodeOptionButton("tts").Selected = 0;
         voices = DisplayServer.TtsGetVoices();
         for (int i = 0; i < voices.Count; i++) {
@@ -245,6 +294,30 @@ public partial class Setting: Control {
         // 绑定事件
         GetNodeOptionButton("uiType").ItemSelected += (index) => {
             gameInformation.UiType = (UiType) index;
+        };
+        GetNodeOptionButton("size").ItemSelected += (index) => {
+            switch (index) {
+                case 0: {
+                    gameInformation.Size = 0.5f;
+                    break;
+                }
+                case 1: {
+                    gameInformation.Size = 0.75f;
+                    break;
+                }
+                case 2: {
+                    gameInformation.Size = 1.0f;
+                    break;
+                }
+                case 3: {
+                    gameInformation.Size = 1.2f;
+                    break;
+                }
+                case 4: {
+                    gameInformation.Size = 1.3f;
+                    break;
+                }
+            }
         };
         GetNodeCheckButton("vsync").Pressed += () => {
             gameInformation.Vsync = GetNodeCheckButton("vsync").ButtonPressed;
@@ -344,6 +417,8 @@ public partial class Setting: Control {
         }
         // 刷新翻译
         Translation.LangageChanged.Invoke();
+        // 刷新数据
+        gameInformation.Refresh();
     }
     public OptionButton GetNodeOptionButton(string key) {
         if (!options.ContainsKey(key)) {
