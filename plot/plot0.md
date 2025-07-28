@@ -76,7 +76,7 @@ LookAtCharacter(snowman1, 0.7, 1.2)
 Goto(1)
 ```
 ### `3`
-`雪狗`: `“可是”什么“可是”，我说话你们听着就行了。`  
+`雪狗`: `“可是”什么“可是”，我说话你们听着就行了。回军营待命！`  
 `caption`  
 ```
 LookAtCharacter(dog, 0.3, 1)
@@ -130,9 +130,10 @@ SetCameraPosition()
 ```
 ```
 AddTrigger(playerNamed, {
+    SetScene(base);
     Jump(plot0/plot0_2.json)
 });
-Exit(0)
+EnterName()
 ```
 ## 取完名字
 `file` `plot0_2.json`  
@@ -177,5 +178,5 @@ Goto(1)
 ```
 ```
 ```
-Goto(1)
+Goto(-2)
 ```

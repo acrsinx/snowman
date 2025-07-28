@@ -22,6 +22,8 @@ valueNum: dict = {
     "AddTrigger": 1,
     "AddTarget": 2,
     "Jump": 1,
+    "SetScene": 1,
+    "EnterName": 0,
     "Exit": 1
 }
 """

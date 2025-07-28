@@ -4,5 +4,6 @@ public enum State {
     caption,
     setting,
     package,
-    load
+    load,
+    name
 }

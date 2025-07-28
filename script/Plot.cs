@@ -243,6 +243,13 @@ public class Plot {
                 Open(player.ui);
                 break;
             }
+            case "SetScene": {
+                break;
+            }
+            case "EnterName": {
+                player.ui.EnterName();
+                break;
+            }
             case "Exit": {
                 player.PlayerState = State.move;
                 break;
@@ -294,6 +301,9 @@ public class Plot {
         string[] lines = script.Split(';');
         foreach (string line in lines) {
             List<string> wordsList = SplitWord(line);
+            if (wordsList.Count == 0) {
+                continue;
+            }
             if (IsCameraScriptLine(wordsList[0])) {
                 ParseScriptLine(wordsList);
             }

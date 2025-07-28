@@ -132,6 +132,14 @@ public partial class Player: Node3D {
                     ui.leftUp.Visible = false;
                     break;
                 }
+                case State.name: {
+                    ui.phoneControl.Visible = false;
+                    ui.rightUp.Visible = false;
+                    ui.captionContainer.Visible = false;
+                    ui.leftUp.Visible = false;
+                    ui.ShowNamePanel();
+                    break;
+                }
             }
             playerState = value;
         }

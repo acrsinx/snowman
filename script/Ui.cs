@@ -3,6 +3,7 @@ using Godot.Collections;
 public partial class Ui: Control {
     public const string savePath = "user://save.json";
     public Player player;
+    public string playerName;
     public Label infomation;
     public PanelContainer captionContainer;
     public Label speakerLabel;
@@ -289,14 +290,14 @@ public partial class Ui: Control {
         chooseBox.Visible = true;
         for (int i = 0; i < captions[captionIndex].choose.Length; i++) {
             chooseButtons[i].Visible = true;
-            chooseButtons[i].Text = captions[id].choose[i];
+            chooseButtons[i].Text = FormatCaption(Translation.Translate(captions[id].choose[i], Plot.PlotPathToLocalizationContent(Plot.path)));
         }
     }
     private void SetCaption(string speakerName, string caption, int time) {
         player.PlayerState = State.caption;
         captionStartTime = totalGameTime;
-        speakerLabel.Text = Translation.Translate(speakerName, "character");
-        captionLabel.Text = Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path));
+        speakerLabel.Text = FormatCaption(Translation.Translate(speakerName, "character"));
+        captionLabel.Text = FormatCaption(Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path)));
         captionTime = time;
         if (settingPanel.ttsId == "") {
             return;
@@ -310,7 +311,34 @@ public partial class Ui: Control {
         for (int i = 0; i < 3; i++) {
             chooseButtons[i].Visible = false;
         }
+        if (player.PlayerState != State.caption) {
+            return;
+        }
         player.PlayerState = State.move;
+    }
+    public void EnterName() {
+        player.PlayerState = State.name;
+    }
+    public void ShowNamePanel() {
+        PackedScene enterNameScene = ResourceLoader.Load<PackedScene>("res://scene/EnterName.tscn");
+        Control enterName = enterNameScene.Instantiate<Control>();
+        AddChild(enterName);
+        LineEdit nameEdit = enterName.GetNode<LineEdit>("VBoxContainer/LineEdit");
+        Button confirmButton = enterName.GetNode<Button>("VBoxContainer/Button");
+        nameEdit.Text = Translation.Translate("输入你的名字");
+        confirmButton.Text = Translation.Translate("确定");
+        confirmButton.Pressed += () => {
+            string name = nameEdit.Text;
+            if (name == "") {
+                return;
+            }
+            name = name.Replace(" ", "_");
+            name = name.Trim();
+            playerName = name;
+            player.PlayerState = State.move;
+            enterName.QueueFree();
+            TriggerSystem.SendTrigger("playerNamed");
+        };
     }
     public void Package() {
         if (player.PlayerState != State.package) {
@@ -324,5 +352,12 @@ public partial class Ui: Control {
     }
     public void Use(GameStuff gameStuff) {
         gameStuff.Use();
+    }
+    public string FormatCaption(string text) {
+        if (text == null) {
+            return "";
+        }
+        text = text.Replace("%name%", playerName);
+        return text;
     }
 }
