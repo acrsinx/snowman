@@ -367,7 +367,7 @@ public partial class Setting: Control {
     public void SetOptions() {
         // 移除旧有的选项
         foreach (Node child in container.GetChildren()) {
-            container.RemoveChild(child);
+            child.QueueFree();
         }
         foreach (string key in options.Keys) {
             if (!options[key].ContainsKey("type")) {

@@ -13,7 +13,9 @@ public partial class Start: Node3D {
         setting.Init(gameInformation);
         settingButton = GetParent<Node>().GetNode<Button>("SettingButton");
         Translation.LangageChanged += () => {
-            settingButton.Text = Translation.Translate("设");
+            if (settingButton != null) {
+                settingButton.Text = Translation.Translate("设");
+            }
         };
         settingButton.Pressed += () => {
             setting.Visible = true;
@@ -53,6 +55,16 @@ public partial class Start: Node3D {
         GetTree().Root.AddChild(ResourceLoader.Load<PackedScene>("res://scene/Game.tscn").Instantiate());
         Player player = GetTree().Root.GetChild(1).GetNode<Player>("player");
         player.Init(setting);
-        GetTree().Root.RemoveChild(GetParent());
+        Translation.LangageChanged -= () => {
+            settingButton.Text = Translation.Translate("设");
+        };
+        Node parent = GetParent<Node>();
+        for (int i = 0; i < parent.GetChildCount(); i++) {
+            if (parent.GetChild(i) is Setting) {
+                continue;
+            }
+            parent.GetChild(i).QueueFree();
+        }
+        settingButton = null;
     }
 }
