@@ -6,6 +6,7 @@ const text = document.createElement("label");
 const edit = document.createElement("input");
 const last = document.createElement("label");
 const next = document.createElement("label");
+const relatedTokens = document.createElement("table");
 let saved = true;
 let index = 0;
 /**
@@ -32,6 +33,74 @@ function arraysEqual(a, b) {
  */
 function contentEqual(a, b) {
     return a[0] === b[0] && arraysEqual(a[2].split("/").splice(2), b[2].split("/").splice(2));
+}
+/**
+ * 判断词条相似程度
+ * @param {Array<string>} a 词条 a
+ * @param {Array<string>} b 词条 b
+ * @returns {number} 相似程度
+ */
+function contentRelationship(a, b) {
+    if (a[0] === b[0]) {
+        return 1;
+    }
+    if (a[0].includes(b[0]) || b[0].includes(a[0])) {
+        return 1;
+    }
+    /**
+     * 使用的相同字符
+     * @type {number}
+     */
+    let count = 0;
+    for (const char of a[0]) {
+        count += b[0].split(char).length - 1;
+    }
+    return count / Math.max(a[0].length, b[0].length);
+}
+/**
+ * 显示与在翻译词条的相关词条
+ * @returns {void}
+ */
+async function calculateAndShowRelatedTokens() {
+    const contentIndexAndRelationship = [];
+    for (let i = 0; i < content.length; i++) {
+        if (content[i][1].trim() === "") {
+            continue;
+        }
+        if (i == index) {
+            continue;
+        }
+        contentIndexAndRelationship.push([i, contentRelationship(content[index], content[i])]);
+    }
+    const related = contentIndexAndRelationship.sort((a, b) => b[1] - a[1]).splice(0, 10);
+    if (related.length === 0) {
+        return;
+    }
+    relatedTokens.innerHTML = "";
+    const firstRow = relatedTokens.insertRow();
+    firstRow.className = "firstRow";
+    const cell1 = firstRow.insertCell();
+    const cell2 = firstRow.insertCell();
+    const cell3 = firstRow.insertCell();
+    const cell4 = firstRow.insertCell();
+    cell1.innerText = "词条";
+    cell2.innerText = "翻译";
+    cell3.innerText = "文件路径";
+    cell4.innerText = "相似程度";
+    for (const relatedToken of related) {
+        if (relatedToken[1] === 0) {
+            break;
+        }
+        const row = relatedTokens.insertRow();
+        const cell1 = row.insertCell();
+        const cell2 = row.insertCell();
+        const cell3 = row.insertCell();
+        const cell4 = row.insertCell();
+        cell1.innerText = content[relatedToken[0]][0];
+        cell2.innerText = content[relatedToken[0]][1];
+        cell3.innerText = content[relatedToken[0]][2];
+        cell4.innerText = relatedToken[1];
+    }
 }
 function lastContent() {
     if (index <= 0) {
@@ -87,7 +156,7 @@ async function save() {
         const fileIndex = files.findIndex((e) => e[0] === contentLine[2]);
         const line = "|" + contentLine[0] + "|" + contentLine[1] + "|\n";
         if (fileIndex === -1) {
-            files.push([contentLine[2], "|||\n|---|---|\n"+line]);
+            files.push([contentLine[2], "|||\n|---|---|\n" + line]);
             continue;
         }
         files[fileIndex][1] += line;
@@ -103,6 +172,7 @@ async function save() {
 function refreshElements() {
     path.innerText = content[index][2];
     text.innerText = content[index][0];
+    calculateAndShowRelatedTokens();
     if (content[index][1] === "-") {
         edit.value = content[index][0];
         return;
@@ -170,6 +240,8 @@ function showLayout() {
         border.appendChild(document.createElement("br"));
         border.appendChild(last);
         border.appendChild(next);
+        border.appendChild(document.createElement("br"));
+        border.appendChild(relatedTokens);
         edit.addEventListener("input", () => {
             content[index][1] = edit.value;
             saved = false;
