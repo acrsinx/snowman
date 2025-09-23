@@ -360,4 +360,10 @@ public partial class Ui: Control {
         text = text.Replace("%name%", playerName);
         return text;
     }
+    public void SetScene(string sneneName) {
+        Node previousScene = player.root.GetNode<Node>("scene").GetChild<Node>(0);
+        previousScene.QueueFree();
+        PackedScene scene = ResourceLoader.Load<PackedScene>("res://maps/" + sneneName + ".tscn");
+        player.root.GetNode<Node>("scene").AddChild(scene.Instantiate<Node>());
+    }
 }

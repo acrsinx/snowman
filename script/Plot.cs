@@ -244,6 +244,7 @@ public class Plot {
                 break;
             }
             case "SetScene": {
+                player.ui.SetScene(wordsList[1]);
                 break;
             }
             case "EnterName": {
