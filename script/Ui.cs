@@ -361,9 +361,40 @@ public partial class Ui: Control {
         return text;
     }
     public void SetScene(string sneneName) {
-        Node previousScene = player.root.GetNode<Node>("scene").GetChild<Node>(0);
-        previousScene.QueueFree();
+        // 删除之前的场景
+        Node previousScene = player.root.GetNode<Node>("scene").GetChild<Node>(1);
+        previousScene.Free();
+        // 加载新场景
         PackedScene scene = ResourceLoader.Load<PackedScene>("res://maps/" + sneneName + ".tscn");
         player.root.GetNode<Node>("scene").AddChild(scene.Instantiate<Node>());
+        string map_path = "user://maps/" + sneneName + "_map.png";
+        if (!FileAccess.FileExists(map_path)) {
+            if (player.PlayerState == State.load) {
+                // return;
+            }
+            Log("地图加载失败，找不到地图", map_path);
+            return;
+        }
+        AddProgrammaticStuff(sneneName);
+        Image newMap = Image.LoadFromFile(map_path);
+        map.Texture = ImageTexture.CreateFromImage(newMap);
+    }
+    public void AddProgrammaticStuff(string sneneName) {
+        if (sneneName == "battlefield") {
+            // 在战场加载石头
+            System.Random random = new(42);
+            MultiMeshInstance3D stones = player.root.GetNode<MultiMeshInstance3D>("scene/battlefield/stones");
+            MultiMesh mesh = new() {
+                Mesh = GD.Load<Mesh>("res://model/stone.tres"),
+                TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
+                InstanceCount = 10
+            };
+            stones.Multimesh = mesh;
+            Basis basis = Basis.FromScale(Vector3.One * 0.3f);
+            for (int i = 0; i < mesh.InstanceCount; i++) {
+                Vector3 position = new(random.NextSingle() * 15 - 7, random.NextSingle() * 0.1f - 0.16f, random.NextSingle() * 15 - 7);
+                mesh.SetInstanceTransform(i, new Transform3D(basis, position));
+            }
+        }
     }
 }

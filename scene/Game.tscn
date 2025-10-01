@@ -60,11 +60,11 @@ mix_target = 1
 
 [node name="scene" type="AnimatableBody3D" parent="."]
 
-[node name="battlefield" parent="scene" instance=ExtResource("7_0cipo")]
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="scene"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.8272, 0)
 shape = SubResource("WorldBoundaryShape3D_atgam")
+
+[node name="battlefield" parent="scene" instance=ExtResource("7_0cipo")]
 
 [node name="map" type="SubViewport" parent="."]
 transparent_bg = true
