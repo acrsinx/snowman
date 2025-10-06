@@ -15,6 +15,7 @@ navigation_mesh = SubResource("NavigationMesh_olq1k")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 material_override = ExtResource("2_fkpep")
 use_collision = true
+collision_layer = 3
 size = Vector3(32, 1, 32)
 
 [node name="obstacle" parent="NavigationRegion3D" instance=ExtResource("1_3fonw")]
