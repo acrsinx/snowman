@@ -65,6 +65,7 @@ public partial class Start: Node3D {
             }
             parent.GetChild(i).QueueFree();
         }
+        parent.QueueFree();
         settingButton = null;
     }
 }
