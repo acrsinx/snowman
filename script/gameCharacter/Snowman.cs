@@ -11,7 +11,9 @@ public partial class Snowman: GameCharacter {
         Height = 0.9f
     }, new Vector3(0, 0.5f, 0), false, isPlayer) {
         if (checkCast == null) { // 第一次初始化雪人
-            checkCast = new();
+            checkCast = new() {
+                CollisionMask = 0b10
+            };
             player.root.AddChild(checkCast);
             player.root.AddChild(snowballPool.instances);
         }

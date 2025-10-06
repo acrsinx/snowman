@@ -145,8 +145,8 @@ locale/country_filter=["HK", "TW"]
 3d_render/layer_1="静物"
 3d_render/layer_2="滤镜"
 3d_render/layer_3="生物"
-3d_physics/layer_1="实物"
-3d_physics/layer_2="相机"
+3d_physics/layer_1="玩家"
+3d_physics/layer_2="非玩家"
 
 [physics]
 
