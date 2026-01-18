@@ -142,7 +142,8 @@ def create_localization_template(path: str) -> None:
     with open(path, "r", encoding="utf-8") as file:
         plotJson: dict[str, dict[str, str]] = json.load(file)
         for i in range(len(plotJson)):
-            toTranslate[plotJson[str(i)]["caption"]] = ""
+            if plotJson[str(i)].__contains__("caption"):
+                toTranslate[plotJson[str(i)]["caption"]] = ""
             if plotJson[str(i)].__contains__("startCode"):
                 toTranslate.update(find(plotJson[str(i)]["startCode"]))
             if plotJson[str(i)].__contains__("endCode"):

@@ -132,6 +132,12 @@ public partial class Player: Node3D {
                     ui.leftUp.Visible = false;
                     break;
                 }
+                case State.shot: {
+                    ui.phoneControl.Visible = false;
+                    ui.rightUp.Visible = false;
+                    ui.leftUp.Visible = false;
+                    break;
+                }
                 case State.name: {
                     ui.phoneControl.Visible = false;
                     ui.rightUp.Visible = false;

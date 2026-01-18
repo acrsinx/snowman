@@ -233,6 +233,11 @@ public partial class Ui: Control {
     /// 跳过对话或开始选择
     /// </summary>
     public void NextCaption() {
+        if (player.PlayerState == State.shot) {
+            // 跳过
+            player.cameraManager.PauseCameraAnimation();
+            Plot.ParseScript(captions[captionIndex].endCode);
+        }
         if (player.PlayerState != State.caption) {
             return;
         }
@@ -241,13 +246,13 @@ public partial class Ui: Control {
             return;
         }
         DisplayServer.TtsStop();
-        if (captions[captionIndex].canChoose) { // 如果可以选择
-            if (!chooseButtons[0].Visible) { // 如果还没显示选择按钮
-                ShowCaptionChoose(captionIndex);
-            }
-        } else { // 如果不需要选择，即普通对话，即可跳过
+        if (!captions[captionIndex].canChoose) { // 如果不需要选择，即普通对话，即可跳过
             player.cameraManager.PauseCameraAnimation();
             Plot.ParseScript(captions[captionIndex].endCode);
+            return;
+        }
+        if (!chooseButtons[0].Visible) { // 如果还没显示选择按钮
+            ShowCaptionChoose(captionIndex);
         }
     }
     public void Choose(int index) {
@@ -274,7 +279,17 @@ public partial class Ui: Control {
     }
     public void ShowCaption(int id) {
         captionIndex = id;
-        SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
+        switch (captions[id].type) {
+            case "caption":
+            case "choose": {
+                SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
+                break;
+            }
+            case "shot": {
+                player.PlayerState = State.shot;
+                break;
+            }
+        }
         Plot.ParseScript(captions[id].startCode);
         // 设置相机动画
         if (captions[id].endCode == null) {

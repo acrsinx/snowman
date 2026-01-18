@@ -134,7 +134,8 @@ public class Plot {
     public static bool IsCameraScriptLine(string word) {
         switch (word) {
             case "LookAtCharacter":
-            case "SetCameraPosition": {
+            case "SetCameraPosition":
+            case "SetCameraPositionAt": {
                 return true;
             }
             default: {
@@ -218,6 +219,14 @@ public class Plot {
             }
             case "SetCameraPosition": {
                 SetCameraPosition();
+                break;
+            }
+            case "SetCameraPositionAt": {
+                player.cameraManager.SetCameraPositionAt(new Vector3(float.Parse(wordsList[1]), float.Parse(wordsList[2]), float.Parse(wordsList[3])));
+                break;
+            }
+            case "SetCameraRotation": {
+                player.cameraManager.SetCameraRotation(float.Parse(wordsList[1]), float.Parse(wordsList[2]));
                 break;
             }
             case "SetTaskName": {
