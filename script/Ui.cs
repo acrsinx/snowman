@@ -381,7 +381,8 @@ public partial class Ui: Control {
         previousScene.Free();
         // 加载新场景
         PackedScene scene = ResourceLoader.Load<PackedScene>("res://maps/" + sneneName + ".tscn");
-        player.root.GetNode<Node>("scene").AddChild(scene.Instantiate<Node>());
+        Node sceneNode = scene.Instantiate<Node>();
+        player.root.GetNode<Node>("scene").AddChild(sceneNode);
         string map_path = "user://maps/" + sneneName + "_map.png";
         if (!FileAccess.FileExists(map_path)) {
             if (player.PlayerState == State.load) {
@@ -391,8 +392,20 @@ public partial class Ui: Control {
             return;
         }
         AddProgrammaticStuff(sneneName);
+        InitAllNodes(sceneNode);
         Image newMap = Image.LoadFromFile(map_path);
         map.Texture = ImageTexture.CreateFromImage(newMap);
+    }
+    public static void InitAllNodes(Node node) {
+        if (node.GetChildCount() == 0) {
+            return;
+        }
+        foreach (Node child in node.GetChildren()) {
+            if (child is Initable subNode) {
+                subNode.Init();
+            }
+            InitAllNodes(child);
+        }
     }
     public void AddProgrammaticStuff(string sneneName) {
         if (sneneName == "battlefield") {
