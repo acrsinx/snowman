@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://bdvrhrrde3p0i"]
+[gd_scene load_steps=9 format=3 uid="uid://bdvrhrrde3p0i"]
 
 [ext_resource type="Script" path="res://script/MultiMeshMaker.cs" id="1_y1rkg"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
 [ext_resource type="Material" uid="uid://bq1g05akax757" path="res://material/stone.tres" id="2_qdvvq"]
+[ext_resource type="PackedScene" uid="uid://cby2yh7s0masa" path="res://model/snowdrift.gltf" id="3_bu8r0"]
 [ext_resource type="PackedScene" uid="uid://dnte2duflwtue" path="res://model/log.gltf" id="3_pqd64"]
 [ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="4_6e8kc"]
 
@@ -20,52 +21,76 @@ size = Vector3(0.564209, 4.90289, 0.557129)
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_pde2o")
 
-[node name="Node3D" type="Node3D" parent="NavigationRegion3D"]
+[node name="logs" type="Node3D" parent="NavigationRegion3D"]
 script = ExtResource("1_y1rkg")
 
-[node name="log" parent="NavigationRegion3D/Node3D" instance=ExtResource("3_pqd64")]
+[node name="log" parent="NavigationRegion3D/logs" instance=ExtResource("3_pqd64")]
 transform = Transform3D(0.00214278, 0.697575, -0.716509, -0.999995, 0.00307174, 0, 0.00220093, 0.716506, 0.697578, -4.54955, 0.132642, 1.7371)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/Node3D/log"]
+[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/logs/log"]
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Node3D/log/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/logs/log/StaticBody3D"]
 transform = Transform3D(1, 0, -6.98492e-10, 0, 1, -9.31323e-10, 0, -2.32831e-10, 1, -0.00843358, 2.40234, -0.00567138)
 shape = SubResource("BoxShape3D_xrbgm")
 
-[node name="log2" parent="NavigationRegion3D/Node3D" instance=ExtResource("3_pqd64")]
+[node name="log2" parent="NavigationRegion3D/logs" instance=ExtResource("3_pqd64")]
 transform = Transform3D(-0.57569, 0.817645, 0.00605085, 4.24695e-11, -0.00740013, 0.999973, 0.817668, 0.575675, 0.00426018, -8.18919, 0.230942, 0.124078)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/Node3D/log2"]
+[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/logs/log2"]
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Node3D/log2/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/logs/log2/StaticBody3D"]
 transform = Transform3D(1, 0, -6.98492e-10, 0, 1, -9.31323e-10, 0, -2.32831e-10, 1, -0.00843358, 2.40234, -0.00567138)
 shape = SubResource("BoxShape3D_xrbgm")
 
-[node name="log3" parent="NavigationRegion3D/Node3D" instance=ExtResource("3_pqd64")]
+[node name="log3" parent="NavigationRegion3D/logs" instance=ExtResource("3_pqd64")]
 transform = Transform3D(0.698347, -0.708995, 0.0981664, 0.14819, 0.00904036, -0.988918, 0.700251, 0.705155, 0.111379, 2.34084, 0, 1.52002)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/Node3D/log3"]
+[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/logs/log3"]
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Node3D/log3/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/logs/log3/StaticBody3D"]
 transform = Transform3D(1, 0, -6.98492e-10, 0, 1, -9.31323e-10, 0, -2.32831e-10, 1, -0.00843358, 2.40234, -0.00567138)
 shape = SubResource("BoxShape3D_xrbgm")
 
-[node name="log4" parent="NavigationRegion3D/Node3D" instance=ExtResource("3_pqd64")]
+[node name="log4" parent="NavigationRegion3D/logs" instance=ExtResource("3_pqd64")]
 transform = Transform3D(0.607418, 0.794361, 0.00587854, -8.16569e-12, -0.00740013, 0.999973, 0.794383, -0.607401, -0.00449497, 0.711749, 0.230942, 2.14094)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/Node3D/log4"]
+[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/logs/log4"]
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Node3D/log4/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/logs/log4/StaticBody3D"]
 transform = Transform3D(1, 0, -6.98492e-10, 0, 1, -9.31323e-10, 0, -2.32831e-10, 1, -0.00843358, 2.40234, -0.00567138)
 shape = SubResource("BoxShape3D_xrbgm")
+
+[node name="snowdrifts" type="Node3D" parent="NavigationRegion3D"]
+script = ExtResource("1_y1rkg")
+
+[node name="snowdrift" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
+transform = Transform3D(1.40286, 0, -0.726019, 0, 1.40344, 0, 0.705597, 0, 1.44346, 0.817531, 0, 2.35981)
+
+[node name="snowdrift2" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
+transform = Transform3D(0.921409, 0, 0.388593, 0, 1, 0, -0.388593, 0, 0.921409, -4.02636, 0, 2.79356)
+
+[node name="snowdrift3" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
+transform = Transform3D(1.32458, 0, 0, 0, 1.32458, 0, 0, 0, 1.32458, -4.83588, 0, 1.9129)
+
+[node name="snowdrift4" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
+transform = Transform3D(-0.113671, 0, 0.993518, 0, 1, 0, -0.993518, 0, -0.113671, -4.64402, 0, 1.74767)
+
+[node name="snowdrift5" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
+transform = Transform3D(1.54467, 0, 1.01273, 0, 1.84706, 0, -1.01273, 0, 1.54467, -1.09345, -5.96046e-08, 5.01372)
+
+[node name="snowdrift6" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
+transform = Transform3D(0.53287, 0, 2.31043, 0, 1.56427, 0, -1.97971, 0, 0.621888, 1.34091, -1.19209e-07, 1.93094)
+
+[node name="snowdrift7" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
+transform = Transform3D(-0.748035, 0, 0.487301, 0, 0.76281, 0, -0.456961, 0, -0.797701, 4.56301, 0.000446588, -0.782135)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
