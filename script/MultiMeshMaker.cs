@@ -1,6 +1,9 @@
 using Godot;
 using Godot.Collections;
 public partial class MultiMeshMaker: Node3D, Initable {
+    [Export] public bool addProgrammaticStuffs = false;
+    [Export] public int seed = 42;
+    [Export] public int count = 10;
     public Array<MeshInstance3D> nodes = new();
     public Array<StaticBody3D> staticBodies = new();
     public void Init() {
@@ -18,14 +21,23 @@ public partial class MultiMeshMaker: Node3D, Initable {
                 return;
             }
         }
+        int totalCount = nodes.Count + (addProgrammaticStuffs?count:0);
         // 生成 MultiMeshInstance3D
         MultiMesh multiMesh = new() {
             TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
-            InstanceCount = nodes.Count,
+            InstanceCount = totalCount,
             Mesh = mesh
         };
         for (int i = 0; i < nodes.Count; i++) {
             multiMesh.SetInstanceTransform(i, nodes[i].GlobalTransform);
+        }
+        if (addProgrammaticStuffs) {
+            System.Random random = new(42);
+            Basis basis = Basis.FromScale(Vector3.One * 0.3f);
+            for (int i = nodes.Count; i < totalCount; i++) {
+                Vector3 position = new(random.NextSingle() * 15 - 7, random.NextSingle() * 0.1f - 0.16f, random.NextSingle() * 15 - 7);
+                multiMesh.SetInstanceTransform(i, new Transform3D(basis, position));
+            }
         }
         MultiMeshInstance3D multiMeshInstance = new() {
             Multimesh = multiMesh

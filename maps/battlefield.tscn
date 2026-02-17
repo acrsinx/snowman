@@ -184,6 +184,8 @@ transform = Transform3D(-0.999988, -3.06029e-09, -0.00481711, -2.63958e-09, 1, -
 transform = Transform3D(1.03512, 0.217469, 0.00719612, -0.243663, 0.923846, -0.00169393, -0.00786962, 0, 0.998983, 7.65348, -0.273833, -7.67028)
 
 [node name="stones" type="Node3D" parent="NavigationRegion3D"]
+script = ExtResource("1_y1rkg")
+addProgrammaticStuffs = true
 
 [node name="Stone" type="MeshInstance3D" parent="NavigationRegion3D/stones"]
 transform = Transform3D(-0.242448, -0.988046, 0.396691, -0.524427, -0.281623, -0.814034, 0.887224, -0.436463, -0.372764, -8.11346, -0.214056, 8.39039)
