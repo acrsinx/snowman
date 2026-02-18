@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bdvrhrrde3p0i"]
+[gd_scene load_steps=20 format=3 uid="uid://bdvrhrrde3p0i"]
 
 [ext_resource type="Script" path="res://script/MultiMeshMaker.cs" id="1_y1rkg"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="4_6e8kc"]
 [ext_resource type="PackedScene" uid="uid://cjws473nh6e35" path="res://model/obstacle.gltf" id="4_rnujj"]
 [ext_resource type="ArrayMesh" uid="uid://dq4ajxfrnqgu" path="res://model/stone.tres" id="5_7jcqo"]
+[ext_resource type="Shader" path="res://shader/fog.gdshader" id="8_v8kfn"]
+[ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="9_fmpuu"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_pde2o"]
 vertices = PackedVector3Array(-1.56653, 0.2871, 3.60935, -0.066534, 0.2871, 2.60935, -0.066534, 0.2871, 1.35935, -3.81653, 0.2871, 0.85935, 4.93347, 0.2871, -1.64065, 5.43347, 0.2871, -0.64065, 7.93347, 0.2871, -0.64065, 7.93347, 0.2871, -6.89065, 3.43347, 0.2871, -1.39065, 4.93347, 0.2871, -1.64065, 7.93347, 0.2871, -6.89065, -7.81653, 0.2871, -0.89065, -5.31653, 0.2871, 1.10935, -3.81653, 0.2871, 0.85935, -3.81653, 0.2871, 0.85935, -0.066534, 0.2871, 1.35935, 3.43347, 0.2871, -1.39065, 7.93347, 0.2871, -6.89065, -7.81653, 0.2871, -6.89065, -7.81653, 0.2871, -0.89065, 7.93347, 0.2871, -0.64065, 5.43347, 0.2871, -0.64065, 5.43347, 0.2871, -0.14065, 5.43347, 0.2871, -0.14065, 3.18347, 0.2871, 1.35935, 3.18347, 0.2871, 2.10935, 7.93347, 0.2871, -0.64065, -1.81653, 0.2871, 6.10935, -3.81653, 0.2871, 3.85935, -4.81653, 0.2871, 3.85935, -7.81653, 0.2871, 6.60935, -4.81653, 0.2871, 3.85935, -7.81653, 0.2871, 1.60935, -7.81653, 0.2871, 6.60935, 7.93347, 0.2871, 6.60935, 7.93347, 0.2871, -0.64065, 3.18347, 0.2871, 2.10935, -0.816534, 0.2871, 6.10935, -0.816534, 0.2871, 6.10935, -1.81653, 0.2871, 6.10935, -7.81653, 0.2871, 6.60935, 7.93347, 0.2871, 6.60935)
@@ -35,6 +37,14 @@ plane = Plane(1, 0, 0, -8.26)
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_mrj3e"]
 plane = Plane(-1, 0, 0, -8.315)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0hhhf"]
+size = Vector2(100, 100)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yhhnd"]
+render_priority = 0
+shader = ExtResource("8_v8kfn")
+shader_parameter/noise = ExtResource("9_fmpuu")
 
 [node name="battlefield" type="Node3D"]
 
@@ -264,3 +274,8 @@ material_override = ExtResource("2_02hm0")
 use_collision = true
 collision_layer = 3
 size = Vector3(17.1144, 14.828, 15.6207)
+
+[node name="cloud" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("PlaneMesh_0hhhf")
+surface_material_override/0 = SubResource("ShaderMaterial_yhhnd")
