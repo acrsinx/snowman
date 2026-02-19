@@ -17,11 +17,15 @@ valueNum: dict = {
     "PauseAnimation": 1,
     "LookAtCharacter": 3,
     "SetCameraPosition": 0,
+    "SetCameraPositionAt": 3,
+    "SetCameraRotation": 2,
     "SetTaskName": 1,
     "Goto": 1,
     "AddTrigger": 1,
     "AddTarget": 2,
     "Jump": 1,
+    "SetScene": 1,
+    "EnterName": 0,
     "Exit": 1
 }
 """
@@ -131,22 +135,26 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
                 json_file_data = {}
                 while i < len(tokens) and tokens[i] != "file":
                     caption_index: str = tokens[i]
-                    actorName: str = tokens[i + 1]
-                    caption: str = tokens[i + 2]
-                    captionType: str = tokens[i + 3]
-                    startCode: str = simplify_script(tokens[i + 4], markdown_file)
+                    captionType: str = tokens[i + 1]
                     if captionType == "caption":  # 对话
+                        actorName: str = tokens[i + 2]
+                        caption: str = tokens[i + 3]
+                        startCode: str = simplify_script(tokens[i + 4], markdown_file)
+                        endCode: str = simplify_script(tokens[i + 5], markdown_file)
                         json_line = {
                             caption_index: {
                                 "actorName": actorName,
                                 "caption": caption,
                                 "type": captionType,
                                 "startCode": startCode,
-                                "endCode": simplify_script(tokens[i + 5], markdown_file)
+                                "endCode": endCode
                             }
                         }
                         i += 6
                     elif captionType == "choose":  # 选择
+                        actorName: str = tokens[i + 2]
+                        caption: str = tokens[i + 3]
+                        startCode: str = simplify_script(tokens[i + 4], markdown_file)
                         i += 5
                         texts = []
                         # 读取选项
@@ -176,6 +184,21 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
                         json_line = {
                             caption_index: a_json
                         }
+                    elif captionType == "shot": # 无对话镜头
+                        shotTime: str = str(tokens[i + 2])
+                        # 检测时间是否是正整数
+                        assert shotTime.isdigit() and int(shotTime) > 0, "镜头时间必须是正整数"
+                        startCode: str = simplify_script(tokens[i + 3], markdown_file)
+                        endCode: str = simplify_script(tokens[i + 4], markdown_file)
+                        json_line = {
+                            caption_index: {
+                                "type": captionType,
+                                "time": shotTime,
+                                "startCode": startCode,
+                                "endCode": endCode
+                            }
+                        }
+                        i += 5
                     else:
                         os.utime(markdown_file, (time.time(), time.time()))
                         raise Exception("未知对话类型: ", captionType)

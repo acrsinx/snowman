@@ -3,6 +3,7 @@ using Godot.Collections;
 public partial class Ui: Control {
     public const string savePath = "user://save.json";
     public Player player;
+    public string playerName;
     public Label infomation;
     public PanelContainer captionContainer;
     public Label speakerLabel;
@@ -232,6 +233,11 @@ public partial class Ui: Control {
     /// 跳过对话或开始选择
     /// </summary>
     public void NextCaption() {
+        if (player.PlayerState == State.shot) {
+            // 跳过
+            player.cameraManager.PauseCameraAnimation();
+            Plot.ParseScript(captions[captionIndex].endCode);
+        }
         if (player.PlayerState != State.caption) {
             return;
         }
@@ -240,13 +246,13 @@ public partial class Ui: Control {
             return;
         }
         DisplayServer.TtsStop();
-        if (captions[captionIndex].canChoose) { // 如果可以选择
-            if (!chooseButtons[0].Visible) { // 如果还没显示选择按钮
-                ShowCaptionChoose(captionIndex);
-            }
-        } else { // 如果不需要选择，即普通对话，即可跳过
+        if (!captions[captionIndex].canChoose) { // 如果不需要选择，即普通对话，即可跳过
             player.cameraManager.PauseCameraAnimation();
             Plot.ParseScript(captions[captionIndex].endCode);
+            return;
+        }
+        if (!chooseButtons[0].Visible) { // 如果还没显示选择按钮
+            ShowCaptionChoose(captionIndex);
         }
     }
     public void Choose(int index) {
@@ -273,7 +279,17 @@ public partial class Ui: Control {
     }
     public void ShowCaption(int id) {
         captionIndex = id;
-        SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
+        switch (captions[id].type) {
+            case "caption":
+            case "choose": {
+                SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
+                break;
+            }
+            case "shot": {
+                player.PlayerState = State.shot;
+                break;
+            }
+        }
         Plot.ParseScript(captions[id].startCode);
         // 设置相机动画
         if (captions[id].endCode == null) {
@@ -289,14 +305,14 @@ public partial class Ui: Control {
         chooseBox.Visible = true;
         for (int i = 0; i < captions[captionIndex].choose.Length; i++) {
             chooseButtons[i].Visible = true;
-            chooseButtons[i].Text = captions[id].choose[i];
+            chooseButtons[i].Text = FormatCaption(Translation.Translate(captions[id].choose[i], Plot.PlotPathToLocalizationContent(Plot.path)));
         }
     }
     private void SetCaption(string speakerName, string caption, int time) {
         player.PlayerState = State.caption;
         captionStartTime = totalGameTime;
-        speakerLabel.Text = Translation.Translate(speakerName, "character");
-        captionLabel.Text = Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path));
+        speakerLabel.Text = FormatCaption(Translation.Translate(speakerName, "character"));
+        captionLabel.Text = FormatCaption(Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path)));
         captionTime = time;
         if (settingPanel.ttsId == "") {
             return;
@@ -310,7 +326,34 @@ public partial class Ui: Control {
         for (int i = 0; i < 3; i++) {
             chooseButtons[i].Visible = false;
         }
+        if (player.PlayerState != State.caption) {
+            return;
+        }
         player.PlayerState = State.move;
+    }
+    public void EnterName() {
+        player.PlayerState = State.name;
+    }
+    public void ShowNamePanel() {
+        PackedScene enterNameScene = ResourceLoader.Load<PackedScene>("res://scene/EnterName.tscn");
+        Control enterName = enterNameScene.Instantiate<Control>();
+        AddChild(enterName);
+        LineEdit nameEdit = enterName.GetNode<LineEdit>("VBoxContainer/LineEdit");
+        Button confirmButton = enterName.GetNode<Button>("VBoxContainer/Button");
+        nameEdit.Text = Translation.Translate("输入你的名字");
+        confirmButton.Text = Translation.Translate("确定");
+        confirmButton.Pressed += () => {
+            string name = nameEdit.Text;
+            if (name == "") {
+                return;
+            }
+            name = name.Replace(" ", "_");
+            name = name.Trim();
+            playerName = name;
+            player.PlayerState = State.move;
+            enterName.QueueFree();
+            TriggerSystem.SendTrigger("playerNamed");
+        };
     }
     public void Package() {
         if (player.PlayerState != State.package) {
@@ -324,5 +367,43 @@ public partial class Ui: Control {
     }
     public void Use(GameStuff gameStuff) {
         gameStuff.Use();
+    }
+    public string FormatCaption(string text) {
+        if (text == null) {
+            return "";
+        }
+        text = text.Replace("%name%", playerName);
+        return text;
+    }
+    public void SetScene(string sneneName) {
+        // 删除之前的场景
+        Node previousScene = player.root.GetNode<Node>("scene").GetChild<Node>(1);
+        previousScene.Free();
+        // 加载新场景
+        PackedScene scene = ResourceLoader.Load<PackedScene>("res://maps/" + sneneName + ".tscn");
+        Node sceneNode = scene.Instantiate<Node>();
+        player.root.GetNode<Node>("scene").AddChild(sceneNode);
+        string map_path = "user://maps/" + sneneName + "_map.png";
+        if (!FileAccess.FileExists(map_path)) {
+            if (player.PlayerState == State.load) {
+                // return;
+            }
+            Log("地图加载失败，找不到地图", map_path);
+            return;
+        }
+        InitAllNodes(sceneNode);
+        Image newMap = Image.LoadFromFile(map_path);
+        map.Texture = ImageTexture.CreateFromImage(newMap);
+    }
+    public static void InitAllNodes(Node node) {
+        if (node.GetChildCount() == 0) {
+            return;
+        }
+        foreach (Node child in node.GetChildren()) {
+            if (child is Initable subNode) {
+                subNode.Init();
+            }
+            InitAllNodes(child);
+        }
     }
 }

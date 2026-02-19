@@ -6,12 +6,14 @@ public partial class Snowman: GameCharacter {
     public static readonly Vector3 gravity = new(0, -9.8f, 0);
     public static RayCast3D checkCast;
     public static ObjectPool snowballPool = new(32, SnowballMesh);
-    public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CylinderShape3D() {
-        Radius = 0.25f,
+    public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CapsuleShape3D() {
+        Radius = 0.3f,
         Height = 0.9f
     }, new Vector3(0, 0.5f, 0), false, isPlayer) {
         if (checkCast == null) { // 第一次初始化雪人
-            checkCast = new();
+            checkCast = new() {
+                CollisionMask = 0b10
+            };
             player.root.AddChild(checkCast);
             player.root.AddChild(snowballPool.instances);
         }

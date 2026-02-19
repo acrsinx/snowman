@@ -1,7 +1,10 @@
 using Godot;
 public partial class Load: Control {
+    /// <summary>
+    /// 进度（-1: 停止）
+    /// </summary>
     public int progress = 0;
-    public const int maxProgress = 6;
+    public const int maxProgress = 12;
     /// <summary>
     /// 地图
     /// </summary>
@@ -15,7 +18,7 @@ public partial class Load: Control {
         progressBar = GetNode<ProgressBar>("PanelContainer/VBoxContainer/ProgressBar");
     }
     public override void _Process(double delta) {
-        if (progress >= maxProgress) {
+        if (progress >= maxProgress || progress < 0) {
             return;
         }
         Do();
@@ -32,50 +35,62 @@ public partial class Load: Control {
         switch (progress) {
             case 0: {
                 Plot.player = ui.player;
+                ui.player.character = new Snowman(ui.player);
+                if (!DirAccess.DirExistsAbsolute("user://maps")) {
+                    DirAccess.MakeDirAbsolute("user://maps");
+                }
+                break;
+            }
+            case 1: {
+                // 加载地图摄像机
                 map = ui.player.root.GetNode<SubViewport>("map");
                 map.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
                 map.GetChild<Camera3D>(0).Size = Map.mapSizes[0];
+                break;
+            }
+            case 2: {
                 // 加载用户数据
                 ui.settingPanel.gameInformation.LoadInformation(Ui.savePath);
                 label.Text = Translation.Translate("加载中");
                 break;
             }
-            case 1: {
-                ui.player.character = new Snowman(ui.player);
-                System.Random random = new(42);
-                MultiMeshInstance3D stones = ui.player.root.GetNode<MultiMeshInstance3D>("scene/battlefield/stones");
-                MultiMesh mesh = new() {
-                    Mesh = GD.Load<Mesh>("res://model/stone.tres"),
-                    TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
-                    InstanceCount = 10
-                };
-                stones.Multimesh = mesh;
-                Basis basis = Basis.FromScale(Vector3.One * 0.3f);
-                for (int i = 0; i < mesh.InstanceCount; i++) {
-                    Vector3 position = new(random.NextSingle() * 15 - 7, random.NextSingle() * 0.1f - 0.16f, random.NextSingle() * 15 - 7);
-                    mesh.SetInstanceTransform(i, new Transform3D(basis, position));
-                }
-                break;
-            }
-            case 2: {
+            case 3: {
                 // 强行刷新，防止语言不变未刷新
                 Translation.LangageChanged.Invoke();
                 break;
             }
-            case 3: {
-                ui.settingPanel.gameInformation.Refresh();
-                break;
-            }
             case 4: {
-                map.GetTexture().GetImage().SavePng("user://map.png");
-                map.QueueFree();
+                ui.SetScene("battlefield");
                 break;
             }
             case 5: {
+                map.GetTexture().GetImage().SavePng("user://maps/battlefield_map.png");
+                break;
+            }
+            case 6: {
+                ui.SetScene("base");
+                break;
+            }
+            case 7: {
+                map.GetTexture().GetImage().SavePng("user://maps/base_map.png");
+                break;
+            }
+            case 8: {
+                map.QueueFree();
+                break;
+            }
+            case 9: {
+                ui.SetScene("battlefield");
+                break;
+            }
+            case 10: {
+                ui.settingPanel.gameInformation.Refresh();
+                break;
+            }
+            case 11: {
                 ui.player.PlayerState = State.move;
                 Plot.Check(ui);
                 Visible = false;
-                ui.map.Texture = ImageTexture.CreateFromImage(Image.LoadFromFile("user://map.png"));
                 QueueFree();
                 break;
             }

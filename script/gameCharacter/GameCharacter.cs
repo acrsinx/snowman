@@ -47,6 +47,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         agent.DebugEnabled = true;
         # endif
         AddChild(agent);
+        CollisionLayer = 0b11;
         collisionShape3D = new CollisionShape3D() {
             Shape = shape3D,
             Position = offsetPosition

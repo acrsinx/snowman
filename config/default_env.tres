@@ -1,6 +1,8 @@
 [gd_resource type="Environment" load_steps=3 format=3 uid="uid://ufrg2ux2wxys"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vko5d"]
+ground_bottom_color = Color(1, 1, 1, 1)
+ground_energy_multiplier = 1.5
 
 [sub_resource type="Sky" id="Sky_h3a1m"]
 sky_material = SubResource("ProceduralSkyMaterial_vko5d")

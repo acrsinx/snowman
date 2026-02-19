@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://dasgkirtux3vq"]
+
+[ext_resource type="PackedScene" uid="uid://cjws473nh6e35" path="res://model/obstacle.gltf" id="1_3fonw"]
+[ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_fkpep"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_olq1k"]
+region_min_size = 32.0
+
+[node name="Base" type="Node3D"]
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_olq1k")
+
+[node name="floor" type="CSGBox3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+material_override = ExtResource("2_fkpep")
+use_collision = true
+collision_layer = 3
+size = Vector3(32, 1, 32)
+
+[node name="obstacle" parent="NavigationRegion3D" instance=ExtResource("1_3fonw")]

@@ -24,3 +24,5 @@
 |设|Opts|
 |退|Back|
 |使用|Use|
+|输入你的名字|Enter your name|
+|确定|Confirm|

@@ -134,7 +134,8 @@ public class Plot {
     public static bool IsCameraScriptLine(string word) {
         switch (word) {
             case "LookAtCharacter":
-            case "SetCameraPosition": {
+            case "SetCameraPosition":
+            case "SetCameraPositionAt": {
                 return true;
             }
             default: {
@@ -220,6 +221,14 @@ public class Plot {
                 SetCameraPosition();
                 break;
             }
+            case "SetCameraPositionAt": {
+                player.cameraManager.SetCameraPositionAt(new Vector3(float.Parse(wordsList[1]), float.Parse(wordsList[2]), float.Parse(wordsList[3])));
+                break;
+            }
+            case "SetCameraRotation": {
+                player.cameraManager.SetCameraRotation(float.Parse(wordsList[1]), float.Parse(wordsList[2]));
+                break;
+            }
             case "SetTaskName": {
                 player.ui.TaskString = wordsList[1];
                 break;
@@ -241,6 +250,14 @@ public class Plot {
             case "Jump": {
                 path = PlotPathToAbsolutePath(wordsList[1]);
                 Open(player.ui);
+                break;
+            }
+            case "SetScene": {
+                player.ui.SetScene(wordsList[1]);
+                break;
+            }
+            case "EnterName": {
+                player.ui.EnterName();
                 break;
             }
             case "Exit": {
@@ -294,6 +311,9 @@ public class Plot {
         string[] lines = script.Split(';');
         foreach (string line in lines) {
             List<string> wordsList = SplitWord(line);
+            if (wordsList.Count == 0) {
+                continue;
+            }
             if (IsCameraScriptLine(wordsList[0])) {
                 ParseScriptLine(wordsList);
             }

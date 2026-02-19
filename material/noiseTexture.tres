@@ -5,4 +5,5 @@ frequency = 0.0077
 offset = Vector3(131.15, 688.53, 0)
 
 [resource]
+seamless = true
 noise = SubResource("FastNoiseLite_f5unq")

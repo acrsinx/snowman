@@ -3,14 +3,24 @@
 `file` `plot0_0.json`  
 引导玩家开战。  
 ### `0`
-`雪狗`: `这雪熊又来侵扰斯诺镇了！`  
-`caption`  
+`shot` `2000`
 ```
 LoadCharacter(snowdog, dog, (-4, 0, -6));
 LoadCharacter(snowman, snowman1, (-3, 0, -4));
 LoadCharacter(snowman, snowman2, (-4, 0, -4));
 LoadCharacter(snowman, snowman3, (-5, 0, -4));
 SetCharacterPosition(Player, (-4, 0, -2));
+SetCameraPositionAt((0, 1, 0));
+SetCameraRotation(0, 180);
+```
+```
+SetCameraPositionAt((0, 2.5, 0));
+Goto(1)
+```
+### `1`
+`caption`  
+`雪狗`: `这雪熊又来侵扰斯诺镇了！`  
+```
 PlayAnimation(dog, talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
@@ -19,9 +29,9 @@ LookAtCharacter(dog, 1.1, 1);
 PauseAnimation(dog);
 Goto(1)
 ```
-### `1`
-`雪狗`: `雪人们，开战！`  
+### `2`
 `caption`  
+`雪狗`: `雪人们，开战！`  
 ```
 SetCameraPosition();
 ```
@@ -48,8 +58,8 @@ Exit(0)
 `file` `plot0_1.json`  
 战斗结束，引导玩家输入名字。  
 ### `0`
-`雪狗`: `雪人们，在我的带领下，我们胜利了！`  
 `caption`  
+`雪狗`: `雪人们，在我的带领下，我们胜利了！`  
 ```
 LookAtCharacter(dog, 0.3, 1)
 ```
@@ -57,8 +67,8 @@ LookAtCharacter(dog, 0.3, 1)
 Goto(1)
 ```
 ### `1`
-`雪狗`: `就像之前一样，这次的功劳就由我上报。`  
 `caption`  
+`雪狗`: `就像之前一样，这次的功劳就由我上报。`  
 ```
 LookAtCharacter(dog, 0.3, 1.5)
 ```
@@ -67,8 +77,8 @@ LookAtCharacter(dog, 0.3, 0.9);
 Goto(1)
 ```
 ### `2`
-`愤怒的雪人`: `可是……`
 `caption`  
+`愤怒的雪人`: `可是……`
 ```
 LookAtCharacter(snowman1, 0.7, 1.2)
 ```
@@ -76,8 +86,8 @@ LookAtCharacter(snowman1, 0.7, 1.2)
 Goto(1)
 ```
 ### `3`
-`雪狗`: `“可是”什么“可是”，我说话你们听着就行了。`  
 `caption`  
+`雪狗`: `“可是”什么“可是”，我说话你们听着就行了。回军营待命！`  
 ```
 LookAtCharacter(dog, 0.3, 1)
 ```
@@ -85,8 +95,8 @@ LookAtCharacter(dog, 0.3, 1)
 Goto(1)
 ```
 ### `4`
-`愤怒的雪人`: `每次胜利，都是雪狗请功去了。`  
 `caption`  
+`愤怒的雪人`: `每次胜利，都是雪狗请功去了。`  
 ```
 LookAtCharacter(snowman1, 0.7, 1.2)
 ```
@@ -94,8 +104,8 @@ LookAtCharacter(snowman1, 0.7, 1.2)
 Goto(1)
 ```
 ### `5`
-`冷静的雪人`: `是啊，它们总不把我们当成生物。`  
 `caption`  
+`冷静的雪人`: `是啊，它们总不把我们当成生物。`  
 ```
 LookAtCharacter(snowman2, 0.7, 1.2)
 ```
@@ -103,8 +113,8 @@ LookAtCharacter(snowman2, 0.7, 1.2)
 Goto(1)
 ```
 ### `6`
-`不屑的雪人`: `雪狗们自以为是，自矜攻伐。`  
 `caption`  
+`不屑的雪人`: `雪狗们自以为是，自矜攻伐。`  
 ```
 LookAtCharacter(snowman3, 0.7, 1.2)
 ```
@@ -112,8 +122,8 @@ LookAtCharacter(snowman3, 0.7, 1.2)
 Goto(1)
 ```
 ### `7`
-`众雪人`: `就是！就是！`  
 `caption`  
+`众雪人`: `就是！就是！`  
 ```
 LookAtCharacter(snowman1, 0.7, 1.2)
 ```
@@ -123,23 +133,24 @@ Goto(1)
 ```
 ### `8`
 引导玩家输入自己的名字  
-`你`: `（或许，成为一个独立自主的雪人要取一个名字。）`  
 `caption`  
+`你`: `（或许，成为一个独立自主的雪人要取一个名字。）`  
 ```
 SetCameraPosition()
 ```
 ```
 AddTrigger(playerNamed, {
+    SetScene(base);
     Jump(plot0/plot0_2.json)
 });
-Exit(0)
+EnterName()
 ```
 ## 取完名字
 `file` `plot0_2.json`  
 玩家输入名字后，引导玩家离开雪地。  
 ### `0`
-`愤怒的雪人`: `我们离开这里！看它那雪狗怎么办！`  
 `choose`  
+`愤怒的雪人`: `我们离开这里！看它那雪狗怎么办！`  
 ```
 ```
 `走！`  
@@ -156,26 +167,26 @@ Goto(2)
 ```
 `endChoose`
 ### `1`
-`冷静的雪人`: `北郊有一个荒地，我们或许可以建造属于自己的村子。`  
 `caption`  
+`冷静的雪人`: `北郊有一个荒地，我们或许可以建造属于自己的村子。`  
 ```
 ```
 ```
 Exit(0)
 ```
 ### `2`
-`%name%`: `（或许，再这样待下去，我们也不过是雪狗的工具罢。）`  
 `caption`  
+`%name%`: `（或许，再这样待下去，我们也不过是雪狗的工具罢。）`  
 ```
 ```
 ```
 Goto(1)
 ```
 ### `3`
-`%name%`: `我们走！`  
 `caption`  
+`%name%`: `我们走！`  
 ```
 ```
 ```
-Goto(1)
+Goto(-2)
 ```

@@ -98,6 +98,21 @@ public class CameraManager: object {
         SetFov();
     }
     /// <summary>
+    /// 将相机移动到指定位置
+    /// </summary>
+    /// <param name="position">目标位置</param>
+    public void SetCameraPositionAt(Vector3 position) {
+        camera.GlobalPosition = position;
+    }
+    /// <summary>
+    /// 将相机旋转到指定角度
+    /// </summary>
+    /// <param name="x">x 角度制</param>
+    /// <param name="y">y 角度制</param>
+    public void SetCameraRotation(float x, float y) {
+        camera.GlobalRotation = new Vector3(Mathf.DegToRad(x), Mathf.DegToRad(y), 0);
+    }
+    /// <summary>
     /// 玩家移动时回正相机
     /// </summary>
     public void UpdateCameraWhenMoving() {

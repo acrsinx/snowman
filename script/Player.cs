@@ -37,6 +37,10 @@ public partial class Player: Node3D {
     /// </summary>
     public static readonly float runSpeed = 0.6f;
     /// <summary>
+    /// 移动速度（空中）
+    /// </summary>
+    public static readonly float airSpeed = 0.01f;
+    /// <summary>
     /// 重力加速度 
     /// </summary>
     public static readonly Vector3 gravity = new(0, -30f, 0);
@@ -132,6 +136,20 @@ public partial class Player: Node3D {
                     ui.leftUp.Visible = false;
                     break;
                 }
+                case State.shot: {
+                    ui.phoneControl.Visible = false;
+                    ui.rightUp.Visible = false;
+                    ui.leftUp.Visible = false;
+                    break;
+                }
+                case State.name: {
+                    ui.phoneControl.Visible = false;
+                    ui.rightUp.Visible = false;
+                    ui.captionContainer.Visible = false;
+                    ui.leftUp.Visible = false;
+                    ui.ShowNamePanel();
+                    break;
+                }
             }
             playerState = value;
         }
@@ -183,47 +201,49 @@ public partial class Player: Node3D {
             }
             cameraManager.UpdateCameraWhenTurning(mouseMove);
         }
+        if (ui.settingPanel.gameInformation.UiType == UiType.computer) {
+            front = Input.GetAxis("up", "down");
+            right = Input.GetAxis("right", "left");
+        }
+        // 规格化(right, front)
+        float length = MathF.Sqrt(right * right + front * front);
+        if (length > 0) {
+            right /= length;
+            front /= length;
+        }
+        isSlow = Input.IsActionPressed("slow");
         if (character.IsOnFloor()) {
-            if (ui.settingPanel.gameInformation.UiType == UiType.computer) {
-                front = Input.GetAxis("up", "down");
-                right = Input.GetAxis("right", "left");
-            }
-            // 规格化(right, front)
-            float length = MathF.Sqrt(right * right + front * front);
-            if (length > 0) {
-                right /= length;
-                front /= length;
-            }
-            isSlow = Input.IsActionPressed("slow");
             front *= isSlow?moveSpeed:runSpeed;
             right *= isSlow?moveSpeed:runSpeed;
-            if (Input.IsActionPressed("alt")) {
-                front = 0;
-                right = 0;
-            }
-            float sin = MathF.Sin(cameraManager.cameraMarker.GlobalRotation.Y);
-            float cos = MathF.Cos(cameraManager.cameraMarker.GlobalRotation.Y);
-            character.Velocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
             // 在跳跃缓冲时间内可以跳跃
             if (lastJumpTime + jumpDelay > Ui.totalGameTime) {
                 character.Velocity += new Vector3(0, jumpSpeed, 0);
             }
-            if (front != 0 || right != 0) { // 移动时
-                direction = Mathf.LerpAngle(direction, new Vector2(-right, front).AngleTo(new(0, -1)), fDelta * 5.0f);
-                cameraManager.UpdateCameraWhenMoving();
-            } else {
-                if (mouseMove.X != 0 && CanTurn) {
-                    direction = Mathf.Lerp(direction, -cameraManager.cameraMarker.Rotation.Y, fDelta * 10.0f);
-                }
-            }
-            character.character.Rotation = new Vector3(character.character.Rotation.X, Mathf.LerpAngle(character.character.Rotation.Y, direction, fDelta * 5.0f), character.character.Rotation.Z);
             // 在地板上时有阻力
             character.Velocity *= 0.95f;
         } else {
             character.Velocity += gravity * fDelta;
+            front *= isSlow?0:airSpeed;
+            right *= isSlow?0:airSpeed;
             // 不在地板上时也有阻力，但阻力更小
             character.Velocity *= 0.99f;
         }
+        if (Input.IsActionPressed("alt")) {
+            front = 0;
+            right = 0;
+        }
+        float sin = MathF.Sin(cameraManager.cameraMarker.GlobalRotation.Y);
+        float cos = MathF.Cos(cameraManager.cameraMarker.GlobalRotation.Y);
+        character.Velocity += new Vector3(front * sin - right * cos, 0, front * cos + right * sin);
+        if (front != 0 || right != 0) { // 移动时
+            direction = Mathf.LerpAngle(direction, new Vector2(-right, front).AngleTo(new(0, -1)), fDelta * 5.0f);
+            cameraManager.UpdateCameraWhenMoving();
+        } else {
+            if (mouseMove.X != 0 && CanTurn) {
+                direction = Mathf.Lerp(direction, -cameraManager.cameraMarker.Rotation.Y, fDelta * 10.0f);
+            }
+        }
+        character.character.Rotation = new Vector3(character.character.Rotation.X, Mathf.LerpAngle(character.character.Rotation.Y, direction, fDelta * 5.0f), character.character.Rotation.Z);
         // 限速
         float lengthY = MathF.Abs(character.Velocity.Y);
         if (lengthY > 10.0f) {

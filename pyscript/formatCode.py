@@ -34,7 +34,7 @@ operator_after_right_parenthesis: tuple = (".", ",", ";", "(", ")", "]", "[")
 前面加右括号不空格的
 """
 
-operator_before_left_square_bracket: tuple = (";", "}")
+operator_before_left_square_bracket: tuple = (";", "}", "{")
 """
 后面加左方括号要空开的
 """
