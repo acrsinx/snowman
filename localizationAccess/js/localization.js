@@ -7,6 +7,8 @@ const edit = document.createElement("input");
 const last = document.createElement("label");
 const next = document.createElement("label");
 const relatedTokens = document.createElement("table");
+const glossaryList = document.createElement("table");
+var glossaryWords = [];
 let saved = true;
 let index = 0;
 /**
@@ -81,12 +83,8 @@ async function calculateAndShowRelatedTokens() {
     firstRow.className = "firstRow";
     const cell1 = firstRow.insertCell();
     const cell2 = firstRow.insertCell();
-    const cell3 = firstRow.insertCell();
-    const cell4 = firstRow.insertCell();
     cell1.innerText = "词条";
     cell2.innerText = "翻译";
-    cell3.innerText = "文件路径";
-    cell4.innerText = "相似程度";
     for (const relatedToken of related) {
         if (relatedToken[1] === 0) {
             break;
@@ -94,13 +92,17 @@ async function calculateAndShowRelatedTokens() {
         const row = relatedTokens.insertRow();
         const cell1 = row.insertCell();
         const cell2 = row.insertCell();
-        const cell3 = row.insertCell();
-        const cell4 = row.insertCell();
         cell1.innerText = content[relatedToken[0]][0];
         cell2.innerText = content[relatedToken[0]][1];
-        cell3.innerText = content[relatedToken[0]][2];
-        cell4.innerText = relatedToken[1];
     }
+}
+function findGlossary() {
+    glossaryWords = content.filter(e => e[2].endsWith("character.md"));
+    var targetText = text.innerText;
+    for (const word of glossaryWords) {
+        targetText = targetText.replace(word[0], `<b>` + word[0] + `</b>`);
+    }
+    text.innerHTML = targetText;
 }
 function lastContent() {
     if (index <= 0) {
@@ -172,6 +174,7 @@ async function save() {
 function refreshElements() {
     path.innerText = content[index][2];
     text.innerText = content[index][0];
+    findGlossary();
     calculateAndShowRelatedTokens();
     if (content[index][1] === "-") {
         edit.value = content[index][0];
@@ -231,21 +234,23 @@ function showLayout() {
     }
     Promise.all(fileReadPromises).then(() => {
         refreshElements();
-        const border = document.getElementsByClassName("border")[0];
-        border.appendChild(path);
-        border.appendChild(document.createElement("br"));
-        border.appendChild(text);
-        border.appendChild(document.createElement("br"));
-        border.appendChild(edit);
-        border.appendChild(document.createElement("br"));
-        border.appendChild(last);
-        border.appendChild(next);
-        border.appendChild(document.createElement("br"));
-        border.appendChild(relatedTokens);
+        const main = document.getElementsByClassName("main")[0];
+        main.appendChild(path);
+        main.appendChild(document.createElement("br"));
+        main.appendChild(text);
+        main.appendChild(document.createElement("br"));
+        main.appendChild(edit);
+        main.appendChild(document.createElement("br"));
+        main.appendChild(last);
+        main.appendChild(next);
+        main.appendChild(document.createElement("br"));
+        main.appendChild(relatedTokens);
         edit.addEventListener("input", () => {
             content[index][1] = edit.value;
             saved = false;
         });
+        const glossary = document.getElementsByClassName("glossary")[0];
+        glossary.appendChild(glossaryList);
     })
 }
 function init() {
