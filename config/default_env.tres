@@ -14,7 +14,6 @@ sky = SubResource("Sky_h3a1m")
 ambient_light_source = 2
 ambient_light_color = Color(0.298642, 0.355504, 0.498379, 1)
 reflected_light_source = 2
-fog_enabled = true
 fog_light_color = Color(1, 1, 1, 1)
 fog_light_energy = 0.01
 fog_sun_scatter = 0.12
