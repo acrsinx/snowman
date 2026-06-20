@@ -116,6 +116,10 @@ public class AutoCharacterManager: object {
                 break;
             }
             case State.Attacking: {
+                if (!character.IsOnFloor()) { // 在空中
+                    state = State.Idle;
+                    break;
+                }
                 if (forceToGo) { // 强制移动
                     state = State.Walk;
                     break;

@@ -1,12 +1,15 @@
 using Godot;
 public partial class Snowbear: GameCharacter {
-    public static PackedScene SnowbearScene = GD.Load<PackedScene>("res://model/snowbear.gltf");
+    public static readonly PackedScene SnowbearScene = GD.Load<PackedScene>("res://model/snowbear.gltf");
     public Snowbear(Player player): base(SnowbearScene, player, new SphereShape3D() {
         Radius = 0.5f
     }, new Vector3(0, 0.5f, 0), true) {
         auto = new AutoCharacterManager(this, player);
         auto.afterAttack += () => {
-            player.character.BeAttack((int)(20.0f / character.GlobalPosition.DistanceTo(player.character.GlobalPosition)), DamageType.sound, isEnemy);
+            // 产生声波
+            SoundWave soundWave = new(player, GlobalPosition) {
+                GlobalPosition = character.GlobalPosition
+            };
             GetPlotCharacter().PauseAnimation();
         };
         health.MaxHealth = 100;
