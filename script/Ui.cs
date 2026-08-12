@@ -180,7 +180,7 @@ public partial class Ui: Control {
         }
         if (player.PlayerState == State.caption) {
             if (totalGameTime - captionStartTime <= captionTime) {
-                captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
+                captionLabel.VisibleRatio = (float) (totalGameTime - captionStartTime) / captionTime;
                 return;
             }
             // 计时器结束，显示全部字符
@@ -194,7 +194,7 @@ public partial class Ui: Control {
     }
     public override void _PhysicsProcess(double delta) {
         // 计时器累加
-        totalGameTime += (long)(delta * 1e3);
+        totalGameTime += (long) (delta * 1e3);
         // 更新相机动画
         player.cameraManager.PosesAnimation();
     }

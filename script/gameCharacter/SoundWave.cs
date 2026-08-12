@@ -15,17 +15,16 @@ public partial class SoundWave: MeshInstance3D {
             Material = material
         };
         player.root.AddChild(this);
-        area = new Area3D()
-		{
-			CollisionLayer = 0b11
-		};
+        area = new Area3D() {
+            CollisionLayer = 0b11
+        };
         AddChild(area);
-		area.AddChild(new CollisionShape3D() {
-			Shape = shape
-		});
-		area.BodyEntered += (body) => {
-			HaveCharacter.GetHaveCharacter(body)?.GetCharacter().BeAttack((int) (10 - Scale.X * 5), DamageType.sound, true);
-		};
+        area.AddChild(new CollisionShape3D() {
+            Shape = shape
+        });
+        area.BodyEntered += (body) => {
+            HaveCharacter.GetHaveCharacter(body)?.GetCharacter().BeAttack((int) (10 - Scale.X * 5), DamageType.sound, true);
+        };
         GlobalPosition = globalPosition;
         Scale = new Vector3(0.1f, 0.1f, 0.1f);
     }
@@ -35,7 +34,7 @@ public partial class SoundWave: MeshInstance3D {
         Scale = new Vector3(Scale.X + fDeltaScale, Scale.Y + fDeltaScale, Scale.Z + fDeltaScale);
         if (Scale.X > 2) {
             QueueFree();
-			return;
+            return;
         }
     }
 }

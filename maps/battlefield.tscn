@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bdvrhrrde3p0i"]
+[gd_scene load_steps=21 format=3 uid="uid://bdvrhrrde3p0i"]
 
 [ext_resource type="Script" path="res://script/MultiMeshMaker.cs" id="1_y1rkg"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="4_6e8kc"]
 [ext_resource type="PackedScene" uid="uid://cjws473nh6e35" path="res://model/obstacle.gltf" id="4_rnujj"]
 [ext_resource type="ArrayMesh" uid="uid://dq4ajxfrnqgu" path="res://model/stone.tres" id="5_7jcqo"]
+[ext_resource type="PackedScene" uid="uid://by22q04w24xh2" path="res://model/snowShell.glb" id="6_dku78"]
 [ext_resource type="Shader" path="res://shader/fog.gdshader" id="8_v8kfn"]
 [ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="9_fmpuu"]
 
@@ -170,6 +171,9 @@ transform = Transform3D(1.01134, 0, -1.4905, 0, 0.818244, 0, 1.4905, 0, 1.01134,
 [node name="snowdrift13" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
 transform = Transform3D(1.01782, 0, -1.32049, 0, 0.945831, 0, 1.671, 0, 0.804321, 6.72173, 0.00834024, -7.76535)
 
+[node name="snowdrift14" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
+transform = Transform3D(0.931986, -0.16071, -1.16887, 0.631525, 0.873783, 0.0268145, 1.42853, -0.281433, 0.750726, -8.22336, 0.43906, 8.52957)
+
 [node name="obstacles" type="Node3D" parent="NavigationRegion3D"]
 script = ExtResource("1_y1rkg")
 
@@ -212,6 +216,45 @@ skeleton = NodePath("../../..")
 transform = Transform3D(0.48538, 0.0617207, -0.41225, 0.366183, 0.346872, 0.408799, 0.260765, -0.601986, 0.193288, -0.729984, -0.366543, -7.84297)
 mesh = ExtResource("5_7jcqo")
 skeleton = NodePath("../../..")
+
+[node name="snowShells" type="Node3D" parent="NavigationRegion3D"]
+script = ExtResource("1_y1rkg")
+
+[node name="snowShell2" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(1.21185, -0.0456694, 0, 0.0365173, 1.51557, 0, 0, 0, 1.95397, 5.79294, 0.893897, 8.81995)
+
+[node name="snowShell3" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(-1.21229, 0.0151879, 0.0183094, 0.0121469, 1.51618, 0.000368182, -0.0113578, 0.000428025, -1.95388, 5.67399, 0.771326, 8.32659)
+
+[node name="snowShell4" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(-1.21973, 0.0159585, 0.0192379, 0.003873, 1.32812, -1.13395, -0.0162774, -0.879827, -1.71138, 5.85717, 0.233985, 7.90547)
+
+[node name="snowShell5" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(-1.61824, 0.0532499, 0.0229191, -0.0443582, -1.36438, 0.812531, 0.0411573, 0.623219, 1.77687, 0.0973373, 1.03517, 8.72111)
+
+[node name="snowShell6" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(1.61942, 0.0160616, -0.00671825, -0.017212, 1.51107, 0.000505834, 0.00559007, -0.000337018, 1.94781, 0.0883414, 0.274867, 7.94964)
+
+[node name="snowShell7" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(1.62941, -0.0107164, -0.00908311, 0.0128382, 1.48635, 0.719739, 0.00290211, -0.55844, 1.91584, -0.00598259, 0.655222, 8.37185)
+
+[node name="snowShell8" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(1.21236, 0.00987917, 0.00931396, -0.00857872, 1.50356, 0.251964, -0.00471212, -0.195566, 1.93763, -5.81617, 0.738029, 8.68914)
+
+[node name="snowShell9" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(-1.21233, -0.00757059, 0.0183018, -0.00689686, 1.51187, -0.148069, -0.0108644, -0.114974, -1.94826, -5.71695, 0.735334, 8.12746)
+
+[node name="snowShell10" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(1.17877, -0.0196882, 0.00799857, 0.0148454, 1.5898, -0.141713, -0.00357512, 0.110042, 2.04879, -5.79659, 0.31013, 7.96924)
+
+[node name="snowShell11" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(1.13922, -0.0203534, 0.111715, 0.0143593, 2.0861, -0.185167, -0.0465878, 0.145268, 2.67472, -8.68032, 0.226332, 8.98244)
+
+[node name="snowShell12" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(1.1391, -0.0338608, 0.112911, 0.0290379, 2.03435, -0.617903, -0.0424224, 0.483292, 2.60889, -5.87901, 0.226332, 9.01711)
+
+[node name="snowShell13" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
+transform = Transform3D(-2.99545, -0.0297501, 0.00501034, -0.0406649, 2.11593, 0.35015, -0.0110114, 0.278889, -2.65605, 2.26306, 0.353167, 9.13027)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0528564, -7.48145, 0.25)

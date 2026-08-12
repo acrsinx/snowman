@@ -16,7 +16,7 @@ this_time: float = max([os.path.getmtime(os.path.join(pyscript_path, file)) for 
 """
 operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&",
                             "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>",
-                            "??", "::", "<<=", ">>=", "??="]
+                            "??", "?.", "::", "<<=", ">>=", "??="]
 """
 符号列表
 从短到长
@@ -24,12 +24,12 @@ operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|
 
 operator_tuple: tuple = tuple(operator_list)
 
-operator_before_left_parenthesis: tuple = (",", ";", "{", "=>", "??", "for", "foreach", "elif", "switch", "if", "while", "return")
+operator_before_left_parenthesis: tuple = (")", ",", ";", "{", "=>", "??", "for", "foreach", "elif", "switch", "if", "while", "return")
 """
 后面加左括号要空格的
 """
 
-operator_after_right_parenthesis: tuple = (".", ",", ";", "(", ")", "]", "[")
+operator_after_right_parenthesis: tuple = (".", ",", ";", ")", "]", "[", "?.")
 """
 前面加右括号不空格的
 """
