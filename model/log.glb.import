@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dnte2duflwtue"
-path="res://.godot/imported/log.gltf-e37f150aa48a061de6e2ed41d5154075.scn"
+uid="uid://cqeacuoswthmn"
+path="res://.godot/imported/log.glb-ae359e7b3e5553e98cadaf597873a92f.scn"
 
 [deps]
 
-source_file="res://model/log.gltf"
-dest_files=["res://.godot/imported/log.gltf-e37f150aa48a061de6e2ed41d5154075.scn"]
+source_file="res://model/log.glb"
+dest_files=["res://.godot/imported/log.glb-ae359e7b3e5553e98cadaf597873a92f.scn"]
 
 [params]
 
@@ -32,10 +32,6 @@ import_script/path=""
 _subresources={
 "materials": {
 "bark": {
-"use_external/enabled": true,
-"use_external/path": "res://material/wood.tres"
-},
-"crossSection": {
 "use_external/enabled": true,
 "use_external/path": "res://material/wood.tres"
 }

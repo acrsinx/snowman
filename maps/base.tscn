@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bwengelrykadc" path="res://model/wall.glb" id="3_srryl"]
 [ext_resource type="PackedScene" uid="uid://bgnmvnmp3wvd0" path="res://model/pillar.glb" id="4_3ed6x"]
 [ext_resource type="PackedScene" uid="uid://cby2yh7s0masa" path="res://model/snowdrift.gltf" id="6_yp8lg"]
-[ext_resource type="PackedScene" uid="uid://dnte2duflwtue" path="res://model/log.gltf" id="7_7m6d8"]
+[ext_resource type="PackedScene" uid="uid://cqeacuoswthmn" path="res://model/log.glb" id="7_7m6d8"]
 [ext_resource type="PackedScene" uid="uid://by22q04w24xh2" path="res://model/snowShell.glb" id="8_tcjeb"]
 [ext_resource type="PackedScene" uid="uid://cjr53miagvwy6" path="res://model/tower.glb" id="9_joml6"]
 

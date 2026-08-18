@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://script/MultiMeshMaker.cs" id="1_y1rkg"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
 [ext_resource type="PackedScene" uid="uid://cby2yh7s0masa" path="res://model/snowdrift.gltf" id="3_bu8r0"]
-[ext_resource type="PackedScene" uid="uid://dnte2duflwtue" path="res://model/log.gltf" id="3_pqd64"]
+[ext_resource type="PackedScene" uid="uid://cqeacuoswthmn" path="res://model/log.glb" id="3_pqd64"]
 [ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="4_6e8kc"]
 [ext_resource type="PackedScene" uid="uid://cjws473nh6e35" path="res://model/obstacle.gltf" id="4_rnujj"]
 [ext_resource type="ArrayMesh" uid="uid://dq4ajxfrnqgu" path="res://model/stone.tres" id="5_7jcqo"]
