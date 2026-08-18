@@ -53,7 +53,7 @@ public partial class Start: Node3D {
     /// </summary>
     public void StartGame() {
         GetTree().Root.AddChild(ResourceLoader.Load<PackedScene>("res://scene/Game.tscn").Instantiate());
-        Player player = GetTree().Root.GetChild(1).GetNode<Player>("player");
+        Player player = GetTree().Root.GetChild(1).GetNode<Player>("container/main/player");
         player.Init(setting);
         Translation.LangageChanged -= () => {
             settingButton.Text = Translation.Translate("设");

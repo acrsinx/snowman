@@ -169,20 +169,6 @@ public partial class Setting: Control {
                     }
                 }
             }, {
-                "useScreenShader",
-                new System.Collections.Generic.Dictionary<string, object> {
-                    {
-                        "name",
-                        "useScreenShader"
-                    }, {
-                        "text",
-                        "使用屏幕着色器"
-                    }, {
-                        "type",
-                        OptionType.CheckButton
-                    }
-                }
-            }, {
                 "showInfo",
                 new System.Collections.Generic.Dictionary<string, object> {
                     {
@@ -347,9 +333,6 @@ public partial class Setting: Control {
         };
         GetNodeCheckButton("develop").Pressed += () => {
             gameInformation.Develop = GetNodeCheckButton("develop").ButtonPressed;
-        };
-        GetNodeCheckButton("useScreenShader").Pressed += () => {
-            gameInformation.UseScreenShader = GetNodeCheckButton("useScreenShader").ButtonPressed;
         };
         GetNodeCheckButton("showInfo").Pressed += () => {
             gameInformation.ShowInfo = GetNodeCheckButton("showInfo").ButtonPressed;

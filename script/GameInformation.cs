@@ -9,7 +9,7 @@ public class GameInformation: object {
     /// <summary>
     /// 屏幕着色器
     /// </summary>
-    public MeshInstance3D screenShader;
+    public SubViewportContainer screenShader;
     public Light3D light;
     private UiType uiType;
     public UiType UiType {
@@ -158,23 +158,8 @@ public class GameInformation: object {
         set {
             develop = value;
             setting.GetNodeCheckButton("develop").ButtonPressed = value;
-            setting.GetNodeCheckButton("useScreenShader").Visible = value;
             setting.GetNodeCheckButton("showInfo").Visible = value;
             setting.SetWindowVisible();
-        }
-    }
-    private bool useScreenShader;
-    public bool UseScreenShader {
-        get {
-            return useScreenShader;
-        }
-        set {
-            useScreenShader = value;
-            setting.GetNodeCheckButton("useScreenShader").ButtonPressed = value;
-            if (screenShader == null) {
-                return;
-            }
-            screenShader.Visible = value;
         }
     }
     private bool showInfo;
@@ -210,7 +195,7 @@ public class GameInformation: object {
         setting = ui.settingPanel;
         gameInformation = ui.infomation;
     }
-    public GameInformation(Setting setting, MeshInstance3D screenShader, Label gameInformation) {
+    public GameInformation(Setting setting, SubViewportContainer screenShader, Label gameInformation) {
         this.setting = setting;
         this.screenShader = screenShader;
         this.gameInformation = gameInformation;
@@ -239,9 +224,6 @@ public class GameInformation: object {
             }, {
                 "develop",
                 Develop?"1":"0"
-            }, {
-                "useScreenShader",
-                UseScreenShader?"1":"0"
             }, {
                 "showInfo",
                 ShowInfo?"1":"0"
@@ -273,7 +255,6 @@ public class GameInformation: object {
         Tts = int.Parse(SafeRead(information, "tts") ?? "0");
         Shadow = (SafeRead(information, "shadow") ?? "1") == "1";
         Develop = (SafeRead(information, "develop") ?? "0") == "1";
-        UseScreenShader = (SafeRead(information, "useScreenShader") ?? "1") == "1";
         ShowInfo = (SafeRead(information, "showInfo") ?? "0") == "1";
         Window = (SafeRead(information, "window") ?? "0") == "1";
         string locale = SafeRead(information, "local") ?? TranslationServer.GetLocale();
@@ -294,7 +275,6 @@ public class GameInformation: object {
         Tts = Tts;
         Shadow = Shadow;
         Develop = Develop;
-        UseScreenShader = UseScreenShader;
         ShowInfo = ShowInfo;
         Window = Window;
     }

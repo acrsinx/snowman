@@ -9,12 +9,13 @@
 [ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="6_tvi10"]
 [ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://maps/battlefield.tscn" id="7_0cipo"]
 
-[sub_resource type="QuadMesh" id="QuadMesh_u6jo2"]
-size = Vector2(20, 20)
+[sub_resource type="ViewportTexture" id="ViewportTexture_3ug8b"]
+viewport_path = NodePath("container/main")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4t0to"]
-render_priority = 0
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lpwlb"]
+resource_local_to_scene = true
 shader = ExtResource("4_cot8f")
+shader_parameter/screen_texture = SubResource("ViewportTexture_3ug8b")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iwtqv"]
 radius = 0.1
@@ -52,31 +53,37 @@ transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.9
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("2_s0cah")
 
-[node name="player" type="Node3D" parent="."]
+[node name="container" type="SubViewportContainer" parent="."]
+material = SubResource("ShaderMaterial_lpwlb")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="main" type="SubViewport" parent="container"]
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="player" type="Node3D" parent="container/main"]
 script = ExtResource("3_tepjv")
 
-[node name="CameraMarker" type="Marker3D" parent="player"]
+[node name="CameraMarker" type="Marker3D" parent="container/main/player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.56, 0)
 
-[node name="Camera3D" type="Camera3D" parent="player/CameraMarker"]
+[node name="Camera3D" type="Camera3D" parent="container/main/player/CameraMarker"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
 
-[node name="screenShader" type="MeshInstance3D" parent="player/CameraMarker/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
-layers = 2
-cast_shadow = 0
-ignore_occlusion_culling = true
-mesh = SubResource("QuadMesh_u6jo2")
-surface_material_override/0 = SubResource("ShaderMaterial_4t0to")
-
-[node name="ShapeCast3D" type="ShapeCast3D" parent="player/CameraMarker/Camera3D"]
+[node name="ShapeCast3D" type="ShapeCast3D" parent="container/main/player/CameraMarker/Camera3D"]
 shape = SubResource("SphereShape3D_iwtqv")
 target_position = Vector3(0, 0, 0)
 margin = 0.3
 max_results = 1
 collision_mask = 2
 
-[node name="GPUParticles3D" type="GPUParticles3D" parent="player/CameraMarker/Camera3D"]
+[node name="GPUParticles3D" type="GPUParticles3D" parent="container/main/player/CameraMarker/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -3)
 cast_shadow = 0
 ignore_occlusion_culling = true

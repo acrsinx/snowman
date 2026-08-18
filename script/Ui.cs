@@ -199,6 +199,7 @@ public partial class Ui: Control {
         player.cameraManager.PosesAnimation();
     }
     public override void _Input(InputEvent @event) {
+        player.InputBorrowFromUI(@event);
         if (@event.IsAction("show_info")) {
             if (@event.IsReleased()) {
                 return;
