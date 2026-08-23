@@ -302,8 +302,6 @@ shape = SubResource("WorldBoundaryShape3D_mrj3e")
 [node name="snowMountain" parent="." instance=ExtResource("4_6e8kc")]
 transform = Transform3D(-0.234177, 0, 4.07127, 0, 10.738, 0, -4.07127, 0, -0.234177, 1.45576, 36.7403, 60.7329)
 
-[node name="stones" type="MultiMeshInstance3D" parent="."]
-
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.068571, -7.42725, 16.8431)
 material_override = ExtResource("2_02hm0")
