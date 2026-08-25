@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cfuse5s8ctik2"]
+[gd_scene load_steps=20 format=3 uid="uid://cfuse5s8ctik2"]
 
 [ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="1_vrbr4"]
 [ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="2_s0cah"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://dvb6254jkwq0j" path="res://image/snowParticle.png" id="5_iqyn1"]
 [ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="6_tvi10"]
 [ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://maps/battlefield.tscn" id="7_0cipo"]
+[ext_resource type="Texture2D" uid="uid://c6ap1jetaqg23" path="res://image/snowmanStamp.png" id="9_nk7eh"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_3ug8b"]
 viewport_path = NodePath("container/main")
@@ -44,6 +45,17 @@ material = SubResource("StandardMaterial3D_7qlgb")
 size = Vector2(0.1, 0.1)
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_atgam"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_gs8th"]
+blend_mode = 4
+
+[sub_resource type="QuadMesh" id="QuadMesh_ky130"]
+size = Vector2(16, 16)
+
+[sub_resource type="MultiMesh" id="MultiMesh_u72h4"]
+instance_count = 1
+mesh = SubResource("QuadMesh_ky130")
+buffer = PackedFloat32Array(1, 0, 0, 0, 8.40779e-45, 1.12104e-44, 9.80909e-45, 8.40779e-45)
 
 [node name="Node" type="Node"]
 
@@ -122,3 +134,14 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 50,
 cull_mask = 1048569
 projection = 1
 size = 17.0
+
+[node name="snowCover" type="SubViewport" parent="."]
+size = Vector2i(64, 64)
+render_target_clear_mode = 2
+
+[node name="Camera2D" type="Camera2D" parent="snowCover"]
+
+[node name="snowmanStamp" type="MultiMeshInstance2D" parent="snowCover"]
+material = SubResource("CanvasItemMaterial_gs8th")
+multimesh = SubResource("MultiMesh_u72h4")
+texture = ExtResource("9_nk7eh")

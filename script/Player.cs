@@ -21,6 +21,10 @@ public partial class Player: Node3D {
     /// </summary>
     public GameCharacter character;
     /// <summary>
+    /// 雪地
+    /// </summary>
+    public SnowCover snowCover = null;
+    /// <summary>
     /// 玩家欲移动方向
     /// </summary>
     public float front, right;
@@ -210,6 +214,7 @@ public partial class Player: Node3D {
             front /= length;
         }
         isSlow = Input.IsActionPressed("slow");
+        bool toStamp = false;
         if (character.IsOnFloor()) {
             front *= isSlow?moveSpeed:runSpeed;
             right *= isSlow?moveSpeed:runSpeed;
@@ -219,6 +224,8 @@ public partial class Player: Node3D {
             }
             // 在地板上时有阻力
             character.Velocity *= 0.95f;
+            // 留下印子
+            toStamp = true;
         } else {
             character.Velocity += gravity * fDelta;
             front *= isSlow?0:airSpeed;
@@ -252,6 +259,9 @@ public partial class Player: Node3D {
         if (lengthXZ > maxSpeed) {
             float factor = maxSpeed / lengthXZ;
             character.Velocity = new Vector3(character.Velocity.X * factor, character.Velocity.Y, character.Velocity.Z * factor);
+        }
+        if (toStamp) {
+            snowCover?.Stamp(character, character.Velocity.Z, -character.Velocity.X);
         }
         // 移动
         character.MoveAndSlide();

@@ -191,7 +191,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
             word += data[i]
             continue
         # 注释
-        if (data[i] == "/" and data[i + 1] == "/") or (data[i] == "#" and data[i + 1] == " "):
+        if (data[i] == "/" and data[i + 1] == "/") or data[i] == "#":
             if len(word) > 0:
                 words.append(package(word))
                 word = ""
