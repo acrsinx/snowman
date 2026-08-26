@@ -4,6 +4,7 @@ public partial class Ui: Control {
     public const string savePath = "user://save.json";
     public Player player;
     public string playerName;
+    public int currentScene = 0;
     public Label infomation;
     public PanelContainer captionContainer;
     public Label speakerLabel;
@@ -393,6 +394,25 @@ public partial class Ui: Control {
             return;
         }
         InitAllNodes(sceneNode);
+        switch (sneneName)
+        {
+            case "battlefield":
+                {
+                    currentScene = 0;
+                    break;
+                }
+            case "base":
+                {
+                    currentScene = 1;
+                    break;
+                }
+            default:
+                {
+                    Log("未知场景", sneneName);
+                    break;
+                }
+        }
+        player.snowCover.RefreshSnowCover();
         Image newMap = Image.LoadFromFile(map_path);
         map.Texture = ImageTexture.CreateFromImage(newMap);
     }

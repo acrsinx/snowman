@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cfuse5s8ctik2"]
+[gd_scene load_steps=26 format=3 uid="uid://cfuse5s8ctik2"]
 
 [ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="1_vrbr4"]
 [ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="2_s0cah"]
@@ -9,6 +9,9 @@
 [ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="6_tvi10"]
 [ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://maps/battlefield.tscn" id="7_0cipo"]
 [ext_resource type="Texture2D" uid="uid://c6ap1jetaqg23" path="res://image/snowmanStamp.png" id="9_nk7eh"]
+[ext_resource type="Shader" path="res://shader/snow_cover.gdshader" id="10_hxpwj"]
+[ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="11_6qi4a"]
+[ext_resource type="Script" path="res://script/SnowCover.cs" id="12_q5udi"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_3ug8b"]
 viewport_path = NodePath("container/main")
@@ -56,6 +59,18 @@ size = Vector2(16, 16)
 instance_count = 1
 mesh = SubResource("QuadMesh_ky130")
 buffer = PackedFloat32Array(1, 0, 0, 0, 8.40779e-45, 1.12104e-44, 9.80909e-45, 8.40779e-45)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_6eokv"]
+viewport_path = NodePath("snowCover")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cao2t"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("10_hxpwj")
+shader_parameter/height = SubResource("ViewportTexture_6eokv")
+shader_parameter/noise = ExtResource("11_6qi4a")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_sf45c"]
 
 [node name="Node" type="Node"]
 
@@ -145,3 +160,9 @@ render_target_clear_mode = 2
 material = SubResource("CanvasItemMaterial_gs8th")
 multimesh = SubResource("MultiMesh_u72h4")
 texture = ExtResource("9_nk7eh")
+
+[node name="snowCover2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00640398, 0)
+material_override = SubResource("ShaderMaterial_cao2t")
+mesh = SubResource("PlaneMesh_sf45c")
+script = ExtResource("12_q5udi")

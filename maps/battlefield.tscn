@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://bdvrhrrde3p0i"]
+[gd_scene load_steps=21 format=3 uid="uid://bdvrhrrde3p0i"]
 
 [ext_resource type="Script" path="res://script/MultiMeshMaker.cs" id="1_y1rkg"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
@@ -10,8 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://by22q04w24xh2" path="res://model/snowShell.glb" id="6_dku78"]
 [ext_resource type="Shader" path="res://shader/fog.gdshader" id="8_v8kfn"]
 [ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="9_fmpuu"]
-[ext_resource type="Shader" path="res://shader/snow_cover.gdshader" id="11_r4yft"]
-[ext_resource type="Script" path="res://script/SnowCover.cs" id="12_tkcjd"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_pde2o"]
 vertices = PackedVector3Array(-1.56653, 0.2871, 3.60935, -0.066534, 0.2871, 2.60935, -0.066534, 0.2871, 1.35935, -3.81653, 0.2871, 0.85935, 4.93347, 0.2871, -1.64065, 5.43347, 0.2871, -0.64065, 7.93347, 0.2871, -0.64065, 7.93347, 0.2871, -6.89065, 3.43347, 0.2871, -1.39065, 4.93347, 0.2871, -1.64065, 7.93347, 0.2871, -6.89065, -7.81653, 0.2871, -0.89065, -5.31653, 0.2871, 1.10935, -3.81653, 0.2871, 0.85935, -3.81653, 0.2871, 0.85935, -0.066534, 0.2871, 1.35935, 3.43347, 0.2871, -1.39065, 7.93347, 0.2871, -6.89065, -7.81653, 0.2871, -6.89065, -7.81653, 0.2871, -0.89065, 7.93347, 0.2871, -0.64065, 5.43347, 0.2871, -0.64065, 5.43347, 0.2871, -0.14065, 5.43347, 0.2871, -0.14065, 3.18347, 0.2871, 1.35935, 3.18347, 0.2871, 2.10935, 7.93347, 0.2871, -0.64065, -1.81653, 0.2871, 6.10935, -3.81653, 0.2871, 3.85935, -4.81653, 0.2871, 3.85935, -7.81653, 0.2871, 6.60935, -4.81653, 0.2871, 3.85935, -7.81653, 0.2871, 1.60935, -7.81653, 0.2871, 6.60935, 7.93347, 0.2871, 6.60935, 7.93347, 0.2871, -0.64065, 3.18347, 0.2871, 2.10935, -0.816534, 0.2871, 6.10935, -0.816534, 0.2871, 6.10935, -1.81653, 0.2871, 6.10935, -7.81653, 0.2871, 6.60935, 7.93347, 0.2871, 6.60935)
@@ -47,11 +45,6 @@ size = Vector2(100, 100)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yhhnd"]
 render_priority = 0
 shader = ExtResource("8_v8kfn")
-shader_parameter/noise = ExtResource("9_fmpuu")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_i1wyl"]
-render_priority = 0
-shader = ExtResource("11_r4yft")
 shader_parameter/noise = ExtResource("9_fmpuu")
 
 [node name="battlefield" type="Node3D"]
@@ -327,8 +320,3 @@ size = Vector3(17.1144, 14.828, 15.6207)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 mesh = SubResource("PlaneMesh_0hhhf")
 surface_material_override/0 = SubResource("ShaderMaterial_yhhnd")
-
-[node name="snowCover" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00640398, 0)
-material_override = SubResource("ShaderMaterial_i1wyl")
-script = ExtResource("12_tkcjd")

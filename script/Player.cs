@@ -187,6 +187,9 @@ public partial class Player: Node3D {
         Marker3D m = GetChild<Marker3D>(0);
         Camera3D c = m.GetChild<Camera3D>(0);
         cameraManager = new(c, c.GetChild<ShapeCast3D>(0), this, m);
+        // 设置雪地
+        snowCover = root.GetNode<SnowCover>("snowCover2");
+        snowCover.Init(this);
     }
     public override void _PhysicsProcess(double delta) {
         if (PlayerState != State.move) {

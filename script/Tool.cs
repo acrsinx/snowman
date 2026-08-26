@@ -108,4 +108,8 @@ public class Tool: object {
         }
         dir.ListDirEnd();
     }
+    public static Vector2 Vector2(float x)
+    {
+        return new Vector2(x, x);
+    }
 }
