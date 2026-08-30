@@ -415,6 +415,8 @@ public partial class Ui: Control {
         player.snowCover.RefreshSnowCover();
         Image newMap = Image.LoadFromFile(map_path);
         map.Texture = ImageTexture.CreateFromImage(newMap);
+        // 刷新设置
+        settingPanel.gameInformation.Refresh();
     }
     public static void InitAllNodes(Node node) {
         if (node.GetChildCount() == 0) {

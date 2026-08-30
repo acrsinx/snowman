@@ -6,10 +6,7 @@ using Godot.Collections;
 public class GameInformation: object {
     public Setting setting;
     public Label gameInformation;
-    /// <summary>
-    /// 屏幕着色器
-    /// </summary>
-    public SubViewportContainer screenShader;
+    public SnowCover snowCover;
     public Light3D light;
     private UiType uiType;
     public UiType UiType {
@@ -150,6 +147,88 @@ public class GameInformation: object {
             light.ShadowEnabled = value;
         }
     }
+    private int snowCoverSubDivide;
+    public int SnowCoverSubDivide {
+        get {
+            return snowCoverSubDivide;
+        }
+        set {
+            snowCoverSubDivide = value;
+            switch (snowCoverSubDivide) {
+                case 0: {
+                    setting.GetNodeOptionButton("snowCoverSubDivide").Selected = 0;
+                    break;
+                }
+                case 31: {
+                    setting.GetNodeOptionButton("snowCoverSubDivide").Selected = 1;
+                    break;
+                }
+                case 63: {
+                    setting.GetNodeOptionButton("snowCoverSubDivide").Selected = 2;
+                    break;
+                }
+                case 127: {
+                    setting.GetNodeOptionButton("snowCoverSubDivide").Selected = 3;
+                    break;
+                }
+                case 255: {
+                    setting.GetNodeOptionButton("snowCoverSubDivide").Selected = 4;
+                    break;
+                }
+            }
+            if (snowCover == null) {
+                return;
+            }
+            snowCover.SetSubDivide(value);
+        }
+    }
+    private int snowCoverSize;
+    public int SnowCoverSize {
+        get {
+            return snowCoverSize;
+        }
+        set {
+            snowCoverSize = value;
+            switch (snowCoverSize) {
+                case 4: {
+                    setting.GetNodeOptionButton("snowCoverSize").Selected = 0;
+                    break;
+                }
+                case 64: {
+                    setting.GetNodeOptionButton("snowCoverSize").Selected = 1;
+                    break;
+                }
+                case 128: {
+                    setting.GetNodeOptionButton("snowCoverSize").Selected = 2;
+                    break;
+                }
+                case 256: {
+                    setting.GetNodeOptionButton("snowCoverSize").Selected = 3;
+                    break;
+                }
+                case 512: {
+                    setting.GetNodeOptionButton("snowCoverSize").Selected = 4;
+                    break;
+                }
+                case 1024: {
+                    setting.GetNodeOptionButton("snowCoverSize").Selected = 5;
+                    break;
+                }
+                case 2048: {
+                    setting.GetNodeOptionButton("snowCoverSize").Selected = 6;
+                    break;
+                }
+                case 4096: {
+                    setting.GetNodeOptionButton("snowCoverSize").Selected = 7;
+                    break;
+                }
+            }
+            if (snowCover == null) {
+                return;
+            }
+            snowCover.SetSnowCoverSize(value);
+        }
+    }
     private bool develop;
     public bool Develop {
         get {
@@ -191,14 +270,8 @@ public class GameInformation: object {
             DisplayServer.WindowSetMode(mode);
         }
     }
-    public GameInformation(Ui ui) {
-        setting = ui.settingPanel;
-        gameInformation = ui.infomation;
-    }
-    public GameInformation(Setting setting, SubViewportContainer screenShader, Label gameInformation) {
+    public GameInformation(Setting setting) {
         this.setting = setting;
-        this.screenShader = screenShader;
-        this.gameInformation = gameInformation;
     }
     /// <summary>
     /// 保存游戏信息到指定文件
@@ -274,6 +347,8 @@ public class GameInformation: object {
         MaxFps = MaxFps;
         Tts = Tts;
         Shadow = Shadow;
+        SnowCoverSubDivide = SnowCoverSubDivide;
+        SnowCoverSize = SnowCoverSize;
         Develop = Develop;
         ShowInfo = ShowInfo;
         Window = Window;

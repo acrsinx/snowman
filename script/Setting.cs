@@ -155,6 +155,49 @@ public partial class Setting: Control {
                     }
                 }
             }, {
+                "snowCoverSubDivide",
+                new System.Collections.Generic.Dictionary<string, object> {
+                    {
+                        "name",
+                        "snowCoverSubDivide"
+                    }, {
+                        "type",
+                        OptionType.OptionButton
+                    }, {
+                        "items",
+                        new Array<string> {
+                            "0",
+                            "31",
+                            "63",
+                            "127",
+                            "255"
+                        }
+                    }
+                }
+            }, {
+                "snowCoverSize",
+                new System.Collections.Generic.Dictionary<string, object> {
+                    {
+                        "name",
+                        "snowCoverSize"
+                    }, {
+                        "type",
+                        OptionType.OptionButton
+                    }, {
+                        "items",
+                        new Array<string> {
+                            "4",
+                            "64",
+                            "128",
+                            "256",
+                            "512",
+                            "1024",
+                            "2048",
+                            "4096"
+                        }
+                    }
+                }
+            }, {
                 "develop",
                 new System.Collections.Generic.Dictionary<string, object> {
                     {
@@ -263,8 +306,12 @@ public partial class Setting: Control {
         Engine.MaxFps = GetNodeOptionButton("maxFps").GetItemText(GetNodeOptionButton("maxFps").GetSelectedId()).ToInt();
         if (gameInformation.UiType == UiType.phone) {
             gameInformation.Size = 1.2f;
+            gameInformation.SnowCoverSubDivide = 31;
+            gameInformation.SnowCoverSize = 32;
         } else {
             gameInformation.Size = 1.0f;
+            gameInformation.SnowCoverSubDivide = 127;
+            gameInformation.SnowCoverSize = 512;
         }
         GetNodeOptionButton("tts").Selected = 0;
         voices = DisplayServer.TtsGetVoices();
@@ -330,6 +377,12 @@ public partial class Setting: Control {
         };
         GetNodeCheckButton("shadow").Pressed += () => {
             gameInformation.Shadow = GetNodeCheckButton("shadow").ButtonPressed;
+        };
+        GetNodeOptionButton("snowCoverSubDivide").ItemSelected += (index) => {
+            gameInformation.SnowCoverSubDivide = GetNodeOptionButton("snowCoverSubDivide").GetItemText(GetNodeOptionButton("snowCoverSubDivide").GetSelectedId()).ToInt();
+        };
+        GetNodeOptionButton("snowCoverSize").ItemSelected += (index) => {
+            gameInformation.SnowCoverSize = GetNodeOptionButton("snowCoverSize").GetItemText(GetNodeOptionButton("snowCoverSize").GetSelectedId()).ToInt();
         };
         GetNodeCheckButton("develop").Pressed += () => {
             gameInformation.Develop = GetNodeCheckButton("develop").ButtonPressed;

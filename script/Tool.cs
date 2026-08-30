@@ -112,4 +112,8 @@ public class Tool: object {
     {
         return new Vector2(x, x);
     }
+    public static Vector2I Vector2I(int x)
+    {
+        return new Vector2I(x, x);
+    }
 }

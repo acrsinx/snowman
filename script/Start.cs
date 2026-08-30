@@ -9,7 +9,7 @@ public partial class Start: Node3D {
     public Button settingButton;
     public override void _Ready() {
         setting = GetParent<Node>().GetNode<Setting>("Setting");
-        gameInformation = new(setting, null, null);
+        gameInformation = new(setting);
         setting.Init(gameInformation);
         settingButton = GetParent<Node>().GetNode<Button>("SettingButton");
         Translation.LangageChanged += () => {
