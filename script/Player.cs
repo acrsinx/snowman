@@ -263,8 +263,10 @@ public partial class Player: Node3D {
             float factor = maxSpeed / lengthXZ;
             character.Velocity = new Vector3(character.Velocity.X * factor, character.Velocity.Y, character.Velocity.Z * factor);
         }
-        if (toStamp) {
-            snowCover?.Stamp(character, character.Velocity.Z, -character.Velocity.X);
+        if (toStamp && SnowCover.IsOnSnowCover(character.GlobalPosition)) {
+            if (character.Velocity.X != 0 || character.Velocity.Z != 0) {
+                snowCover?.Stamp(character, 0);
+            }
         }
         // 移动
         character.MoveAndSlide();

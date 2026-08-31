@@ -394,23 +394,19 @@ public partial class Ui: Control {
             return;
         }
         InitAllNodes(sceneNode);
-        switch (sneneName)
-        {
-            case "battlefield":
-                {
-                    currentScene = 0;
-                    break;
-                }
-            case "base":
-                {
-                    currentScene = 1;
-                    break;
-                }
-            default:
-                {
-                    Log("未知场景", sneneName);
-                    break;
-                }
+        switch (sneneName) {
+            case "battlefield": {
+                currentScene = 0;
+                break;
+            }
+            case "base": {
+                currentScene = 1;
+                break;
+            }
+            default: {
+                Log("未知场景", sneneName);
+                break;
+            }
         }
         player.snowCover.RefreshSnowCover();
         Image newMap = Image.LoadFromFile(map_path);
