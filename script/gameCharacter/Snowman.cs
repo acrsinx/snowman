@@ -1,6 +1,6 @@
 using Godot;
 public partial class Snowman: GameCharacter {
-    public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
+    public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.glb");
     public static readonly Mesh SnowballMesh = ResourceLoader.Load<Mesh>("res://model/snowball.tres");
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
     public static readonly Vector3 gravity = new(0, -9.8f, 0);

@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://cw61wb80nj4lg"]
 
-[ext_resource type="PackedScene" uid="uid://hfry0p6xwyov" path="res://model/snowman.gltf" id="1_cpd10"]
+[ext_resource type="PackedScene" uid="uid://blamux3fl14mc" path="res://model/snowman.glb" id="1_cpd1"]
 [ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="2_0st4p"]
 [ext_resource type="Script" path="res://script/Start.cs" id="2_4x7km"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_loctk"]
@@ -13,7 +13,7 @@ size = Vector2(6.77, 1.965)
 
 [node name="Node" type="Node"]
 
-[node name="snowman2" parent="." instance=ExtResource("1_cpd10")]
+[node name="snowman2" parent="." instance=ExtResource("1_cpd1")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 script = ExtResource("2_4x7km")
 

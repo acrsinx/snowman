@@ -57,7 +57,7 @@ size = Vector2(16, 16)
 [sub_resource type="MultiMesh" id="MultiMesh_u72h4"]
 instance_count = 1
 mesh = SubResource("QuadMesh_ky130")
-buffer = PackedFloat32Array(1, 0, 0, 0, 8.40779e-45, 1.12104e-44, 9.80909e-45, 8.40779e-45)
+buffer = PackedFloat32Array(1, 0, 0, 0, 0, 0, 0, 0)
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_6eokv"]
 viewport_path = NodePath("snowCover")
