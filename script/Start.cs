@@ -1,14 +1,24 @@
 using Godot;
 public partial class Start: Node3D {
-    private const float MinX = -1.3f;
-    private const float MaxX = -0.3f;
+    private const float MinX = 1.68f;
+    private const float MaxX = 1.72f;
     private const float MidX = (MinX + MaxX) / 2.0f;
     private const float Rx = (MaxX - MinX) / 2.0f;
+    private const float MinY = 0.69f;
+    private const float MaxY = 0.75f;
+    private const float MidY = (MinY + MaxY) / 2.0f;
+    private const float Ry = (MaxY - MinY) / 2.0f;
+    private const float MinZ = -0.78f;
+    private const float MaxZ = -0.82f;
+    private const float MidZ = (MinZ + MaxZ) / 2.0f;
+    private const float Rz = (MaxZ - MinZ) / 2.0f;
+    private Camera3D camera;
     public Setting setting;
     public GameInformation gameInformation;
     public Button settingButton;
     public override void _Ready() {
         setting = GetParent<Node>().GetNode<Setting>("Setting");
+        camera = GetChild<Camera3D>(1);
         gameInformation = new(setting);
         setting.Init(gameInformation);
         settingButton = GetParent<Node>().GetNode<Button>("SettingButton");
@@ -31,8 +41,10 @@ public partial class Start: Node3D {
         gameInformation.LoadInformation(Ui.savePath);
     }
     public override void _Process(double delta) {
-        float t = Time.GetTicksMsec() / 5000.0f;
-        Position = new Vector3(Mathf.Sin(t) * Rx + MidX, 0.0f, 0.0f);
+        float t = Time.GetTicksMsec() * 0.0001f;
+        float ty = Time.GetTicksMsec() * 0.0007f;
+        camera.Position = new Vector3(Mathf.Cos(t) * Rx + MidX, Mathf.Sin(ty) * Ry + MidY, -Mathf.Sin(t+0.1f) * Rz + MidZ);
+        camera.Rotate(Vector3.Forward, Mathf.Sin(t) * 0.000001f);
     }
     public override void _Input(InputEvent @event) {
         if (!@event.IsAction("next_caption")) {

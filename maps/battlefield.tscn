@@ -4,10 +4,10 @@
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
 [ext_resource type="PackedScene" uid="uid://cby2yh7s0masa" path="res://model/snowdrift.gltf" id="3_bu8r0"]
 [ext_resource type="PackedScene" uid="uid://cqeacuoswthmn" path="res://model/log.glb" id="3_pqd64"]
-[ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="4_6e8kc"]
 [ext_resource type="PackedScene" uid="uid://cjws473nh6e35" path="res://model/obstacle.gltf" id="4_rnujj"]
 [ext_resource type="ArrayMesh" uid="uid://dq4ajxfrnqgu" path="res://model/stone.tres" id="5_7jcqo"]
 [ext_resource type="PackedScene" uid="uid://by22q04w24xh2" path="res://model/snowShell.glb" id="6_dku78"]
+[ext_resource type="PackedScene" uid="uid://w1w4u5xle1sr" path="res://model/mountain.glb" id="8_0052c"]
 [ext_resource type="Shader" path="res://shader/fog.gdshader" id="8_v8kfn"]
 [ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="9_fmpuu"]
 
@@ -299,8 +299,8 @@ shape = SubResource("WorldBoundaryShape3D_4vs5b")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D6"]
 shape = SubResource("WorldBoundaryShape3D_mrj3e")
 
-[node name="snowMountain" parent="." instance=ExtResource("4_6e8kc")]
-transform = Transform3D(-0.234177, 0, 4.07127, 0, 10.738, 0, -4.07127, 0, -0.234177, 1.45576, 36.7403, 60.7329)
+[node name="snowMountain" parent="." instance=ExtResource("8_0052c")]
+transform = Transform3D(1.79591, 0, 3.39189, 0, 8.163, 0, -3.39189, 0, 1.79591, 1.404, -1.492, 65.845)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.068571, -7.42725, 16.8431)
