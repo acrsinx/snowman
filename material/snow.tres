@@ -4,12 +4,9 @@
 [ext_resource type="Texture2D" uid="uid://ci3jfkgts87f7" path="res://material/雪_法线.png" id="2_e5hi0"]
 
 [resource]
-shading_mode = 2
-specular_mode = 2
 albedo_texture = ExtResource("1_sawrl")
-detail_enabled = true
-detail_blend_mode = 1
-detail_albedo = ExtResource("1_sawrl")
-detail_normal = ExtResource("2_e5hi0")
+roughness = 0.8
+normal_enabled = true
+normal_texture = ExtResource("2_e5hi0")
 proximity_fade_distance = 0.5
 distance_fade_max_distance = 5.0
