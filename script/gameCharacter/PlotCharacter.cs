@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 public interface PlotCharacter {
     public Node3D GetCharacterNode();
@@ -5,6 +6,7 @@ public interface PlotCharacter {
         set;
         get;
     }
+    public static Dictionary<string, AnimationLibrary> loadedLibraries = new();
     public static AnimationPlayer GetAnimationPlayer(Node node) {
         if (node is null) {
             return null;
@@ -29,6 +31,14 @@ public interface PlotCharacter {
             n1 = n1.GetParent();
         }
         return null;
+    }
+    public static void AddAnimationPlayer(GameCharacter character, string type) {
+        character.AnimationPlayer = new AnimationPlayer();
+        if (!loadedLibraries.ContainsKey(type)) {
+            loadedLibraries.Add(type, ResourceLoader.Load<AnimationLibrary>("res://animation/" + type + ".glb"));
+        }
+        character.AnimationPlayer.AddAnimationLibrary(type, loadedLibraries[type]);
+        character.character.AddChild(character.AnimationPlayer);
     }
     public void PlayAnimation(string animationName) {
         if (!CheckAnimationPlayer()) {
@@ -62,7 +72,6 @@ public interface PlotCharacter {
         return AnimationPlayer.CurrentAnimation;
     }
     private bool CheckAnimationPlayer() {
-        AnimationPlayer ??= GetAnimationPlayer(GetCharacterNode());
         if (AnimationPlayer == null) {
             return false;
         }

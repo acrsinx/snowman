@@ -2,12 +2,6 @@ using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 public class Plot {
-    public static readonly Dictionary CharacterPath = new() {
-        {
-            "snowdog",
-            "res://model/snowdog.gltf"
-        }
-    };
     public static System.Collections.Generic.Dictionary<string, GameCharacter> InstanceName = new() {
     };
     /// <summary>
@@ -44,20 +38,14 @@ public class Plot {
             Ui.Log("已存在角色：" + instanceName);
             return;
         }
-        if (CharacterPath.ContainsKey(characterName)) {
-            PackedScene character = ResourceLoader.Load<PackedScene>((string) CharacterPath[characterName]);
-            GameCharacter plotCharacter = new(character, player, new SphereShape3D() {
-                Radius = 0.25f
-            }, new Vector3(0, 0.125f, 0), false) {
-                Position = position
-            };
-            AddCharacterInstance(instanceName, plotCharacter);
-            return;
-        }
         GameCharacter gameCharacter;
         switch (characterName) {
             case "snowman": {
                 gameCharacter = new Snowman(player, false);
+                break;
+            }
+            case "snowdog": {
+                gameCharacter = new Snowdog(player);
                 break;
             }
             case "snowbear": {

@@ -43,7 +43,7 @@ public partial class Start: Node3D {
     public override void _Process(double delta) {
         float t = Time.GetTicksMsec() * 0.0001f;
         float ty = Time.GetTicksMsec() * 0.0007f;
-        camera.Position = new Vector3(Mathf.Cos(t) * Rx + MidX, Mathf.Sin(ty) * Ry + MidY, -Mathf.Sin(t+0.1f) * Rz + MidZ);
+        camera.Position = new Vector3(Mathf.Cos(t) * Rx + MidX, Mathf.Sin(ty) * Ry + MidY, -Mathf.Sin(t + 0.1f) * Rz + MidZ);
         camera.Rotate(Vector3.Forward, Mathf.Sin(t) * 0.000001f);
     }
     public override void _Input(InputEvent @event) {
