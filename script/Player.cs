@@ -217,7 +217,6 @@ public partial class Player: Node3D {
             front /= length;
         }
         isSlow = Input.IsActionPressed("slow");
-        bool toStamp = false;
         if (character.IsOnFloor()) {
             front *= isSlow?moveSpeed:runSpeed;
             right *= isSlow?moveSpeed:runSpeed;
@@ -227,8 +226,6 @@ public partial class Player: Node3D {
             }
             // 在地板上时有阻力
             character.Velocity *= 0.95f;
-            // 留下印子
-            toStamp = true;
         } else {
             character.Velocity += gravity * fDelta;
             front *= isSlow?0:airSpeed;
@@ -263,11 +260,7 @@ public partial class Player: Node3D {
             float factor = maxSpeed / lengthXZ;
             character.Velocity = new Vector3(character.Velocity.X * factor, character.Velocity.Y, character.Velocity.Z * factor);
         }
-        if (toStamp && SnowCover.IsOnSnowCover(character.GlobalPosition)) {
-            if (character.Velocity.X != 0 || character.Velocity.Z != 0) {
-                snowCover?.Stamp(character, 0);
-            }
-        }
+        snowCover?.Stamp(character, 0);
         // 移动
         character.MoveAndSlide();
         cameraManager.UpdateCamera();

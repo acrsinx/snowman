@@ -14,7 +14,19 @@ public partial class SnowCover: MeshInstance3D {
         snowmanStamp = snowCoverTexture.GetChild<MultiMeshInstance2D>(1);
         snowmanStamp.Multimesh.InstanceCount = 4;
     }
+    /// <summary>
+    /// 雪地印
+    /// </summary>
     public void Stamp(GameCharacter character, int id) {
+        if (!character.IsOnFloor()) {
+            return;
+        }
+        if (!IsOnSnowCover(character.GlobalPosition)) {
+            return;
+        }
+        if (character.Velocity.X == 0 && character.Velocity.Z == 0) {
+            return;
+        }
         float x = character.Velocity.Z;
         float y = -character.Velocity.X;
         float size = Map.mapSizes[player.ui.currentScene];

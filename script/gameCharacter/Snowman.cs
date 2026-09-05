@@ -72,12 +72,7 @@ public partial class Snowman: GameCharacter {
         if (auto == null) {
             return;
         }
-        // 雪地印
-        if (IsOnFloor() && SnowCover.IsOnSnowCover(GlobalPosition)) {
-            if (Velocity.X != 0 || Velocity.Z != 0) {
-                player.snowCover?.Stamp(this, snowmanID);
-            }
-        }
+        player.snowCover?.Stamp(this, snowmanID);
     }
     public static void PhysicsProcess(float fDelta) {
         for (int i = 0; i < snowballPool.Count; i++) {
