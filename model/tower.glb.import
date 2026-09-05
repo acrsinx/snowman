@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://hfry0p6xwyov"
-path="res://.godot/imported/snowman.gltf-74593c3e70d7d8333046c3a94f2b4de6.scn"
+uid="uid://cjr53miagvwy6"
+path="res://.godot/imported/tower.glb-9d9a9ee01faed9b3adf88092807a0df6.scn"
 
 [deps]
 
-source_file="res://model/snowman.gltf"
-dest_files=["res://.godot/imported/snowman.gltf-74593c3e70d7d8333046c3a94f2b4de6.scn"]
+source_file="res://model/tower.glb"
+dest_files=["res://.godot/imported/tower.glb-9d9a9ee01faed9b3adf88092807a0df6.scn"]
 
 [params]
 
@@ -31,30 +31,20 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "materials": {
-"@MATERIAL:0": {
+"snow": {
 "use_external/enabled": true,
 "use_external/path": "res://material/snow.tres"
 },
-"@MATERIAL:1": {
+"stone": {
 "use_external/enabled": true,
-"use_external/path": "res://material/wood.tres"
-}
-},
-"meshes": {
-"snowman_球体": {
-"generate/lightmap_uv": 0,
-"generate/lods": 1,
-"generate/shadow_meshes": 0,
-"lods/normal_merge_angle": 60.0,
-"lods/normal_split_angle": 25.0,
-"save_to_file/enabled": false,
-"save_to_file/make_streamable": "",
-"save_to_file/path": ""
+"use_external/path": "res://material/stone.tres"
 }
 },
 "nodes": {
-"PATH:snowman": {
-"mesh_instance/layers": 4
+"PATH:tower": {
+"physics/layer": 3,
+"physics/mask": 3,
+"physics/shape_type": 2
 }
 }
 }

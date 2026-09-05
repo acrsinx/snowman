@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using Godot;
 public partial class Snowman: GameCharacter {
-    public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.gltf");
+    public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.glb");
     public static readonly Mesh SnowballMesh = ResourceLoader.Load<Mesh>("res://model/snowball.tres");
     public static readonly Vector3 snowballOffset = new(0, 1.0f, 0);
     public static readonly Vector3 gravity = new(0, -9.8f, 0);
     public static RayCast3D checkCast;
     public static ObjectPool snowballPool = new(32, SnowballMesh);
+    private int snowmanID;
+    private static readonly List<Snowman> snowmen = new();
     public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CapsuleShape3D() {
         Radius = 0.3f,
         Height = 0.9f
@@ -17,6 +20,8 @@ public partial class Snowman: GameCharacter {
             player.root.AddChild(checkCast);
             player.root.AddChild(snowballPool.instances);
         }
+        snowmen.Add(this);
+        snowmanID = snowmen.Count - 1;
         Position = new Vector3(0, 0.1f, 0);
         if (isPlayer) {
             player.cameraManager.cameraMarker.Reparent(this, false);
@@ -65,6 +70,7 @@ public partial class Snowman: GameCharacter {
         if (auto == null) {
             return;
         }
+        player.snowCover?.Stamp(this, snowmanID);
     }
     public static void PhysicsProcess(float fDelta) {
         for (int i = 0; i < snowballPool.Count; i++) {

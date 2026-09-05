@@ -90,7 +90,7 @@ def simplify_script(code: str, markdown_file: str) -> str:
     check_script(simpleCode, markdown_file)
     return simpleCode
 
-def make_json() -> None:
+def make_json(is_release: bool = False) -> None:
     """
     生成剧情脚本
     """
@@ -106,9 +106,9 @@ def make_json() -> None:
         this_plot_dir: str = plot_json_dir+file[:-3]+"\\"
         os.makedirs(this_plot_dir, exist_ok=True)
         markdown_file: str = plot_dir+file
-        make_json_file(markdown_file, this_plot_dir)
+        make_json_file(markdown_file, this_plot_dir, is_release)
 
-def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
+def make_json_file(markdown_file: str, this_plot_dir: str, is_release: bool = False) -> None:
     """
     从一个 markdown 文件中生成 json 文件
     """
@@ -122,7 +122,7 @@ def make_json_file(markdown_file: str, this_plot_dir: str) -> None:
             fileName: str = this_plot_dir + tokens[i + 1]
             if os.path.exists(fileName):
                 # 比较生成文件时间，如果生成文件时间比原文件晚，比Python脚本晚，则跳过，这样可以避免重复生成
-                if formatCode.check_time(markdown_file, fileName):
+                if formatCode.check_time(markdown_file, fileName) and not is_release:
                     i += 1
                     while tokens[i] != "file":
                         i += 1

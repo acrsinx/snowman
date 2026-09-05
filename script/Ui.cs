@@ -4,6 +4,7 @@ public partial class Ui: Control {
     public const string savePath = "user://save.json";
     public Player player;
     public string playerName;
+    public int currentScene = 0;
     public Label infomation;
     public PanelContainer captionContainer;
     public Label speakerLabel;
@@ -180,7 +181,7 @@ public partial class Ui: Control {
         }
         if (player.PlayerState == State.caption) {
             if (totalGameTime - captionStartTime <= captionTime) {
-                captionLabel.VisibleRatio = (float)(totalGameTime - captionStartTime) / captionTime;
+                captionLabel.VisibleRatio = (float) (totalGameTime - captionStartTime) / captionTime;
                 return;
             }
             // 计时器结束，显示全部字符
@@ -194,11 +195,12 @@ public partial class Ui: Control {
     }
     public override void _PhysicsProcess(double delta) {
         // 计时器累加
-        totalGameTime += (long)(delta * 1e3);
+        totalGameTime += (long) (delta * 1e3);
         // 更新相机动画
         player.cameraManager.PosesAnimation();
     }
     public override void _Input(InputEvent @event) {
+        player.InputBorrowFromUI(@event);
         if (@event.IsAction("show_info")) {
             if (@event.IsReleased()) {
                 return;
@@ -392,8 +394,25 @@ public partial class Ui: Control {
             return;
         }
         InitAllNodes(sceneNode);
+        switch (sneneName) {
+            case "battlefield": {
+                currentScene = 0;
+                break;
+            }
+            case "base": {
+                currentScene = 1;
+                break;
+            }
+            default: {
+                Log("未知场景", sneneName);
+                break;
+            }
+        }
+        player.snowCover.RefreshSnowCover();
         Image newMap = Image.LoadFromFile(map_path);
         map.Texture = ImageTexture.CreateFromImage(newMap);
+        // 刷新设置
+        settingPanel.gameInformation.Refresh();
     }
     public static void InitAllNodes(Node node) {
         if (node.GetChildCount() == 0) {

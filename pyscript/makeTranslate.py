@@ -33,7 +33,7 @@ def read_translation_file(path: str) -> list[tuple[str, str]]:
             ret.append((tokens[0], tokens[1]))
     return ret
 
-def make_translate(path: str, output: str) -> None:
+def make_translate(path: str, output: str, is_release: bool = False) -> None:
     """
     生成翻译文件
     - path: 源文件路径
@@ -42,7 +42,7 @@ def make_translate(path: str, output: str) -> None:
     # 本地化模板路径
     template_path: str = localization_path_to_template_path(path)
     # 未被修改则跳过
-    if formatCode.check_time(path, output) and formatCode.check_time(template_path, output):
+    if formatCode.check_time(path, output) and formatCode.check_time(template_path, output) and not is_release:
         return
     print("生成翻译文件: ", path)
     translation_json: dict[str, str] = {}
@@ -61,9 +61,10 @@ def make_translate(path: str, output: str) -> None:
         if tokens[0] == tokens[1]: # 提醒无需翻译
             os.utime(path, (time.time(), time.time()))
             raise Exception("无需翻译: " + tokens[0])
-        if tokens[1].isspace() or tokens[1] == "": # 提醒未翻译
-            os.utime(path, (time.time(), time.time()))
-            raise Exception("未翻译: " + tokens[0])
+        if is_release:
+            if tokens[1].isspace() or tokens[1] == "": # 提醒未翻译
+                os.utime(path, (time.time(), time.time()))
+                raise Exception("未翻译: " + tokens[0])
         if tokens[1] == "-": # 跳过无需翻译行
             continue
         translation_json[tokens[0]] = tokens[1]
@@ -75,7 +76,7 @@ def make_translate(path: str, output: str) -> None:
     with open(output, "w", encoding="utf-8") as file:
         json.dump(translation_json, file)
 
-def make_translate_all() -> None:
+def make_translate_all(is_release: bool = False) -> None:
     """
     生成所有翻译文件
     """
@@ -92,10 +93,10 @@ def make_translate_all() -> None:
                 for subFile in os.listdir(filePath):
                     if not subFile.endswith(".md"):
                         continue
-                    make_translate(filePath+"\\"+subFile, "localization\\localization\\"+language+"\\"+file+"\\"+subFile.replace(".md", ".json"))
+                    make_translate(filePath+"\\"+subFile, "localization\\localization\\"+language+"\\"+file+"\\"+subFile.replace(".md", ".json"), is_release)
             if not file.endswith(".md"):
                 continue
-            make_translate(filePath, "localization\\localization\\"+language+"\\"+file.replace(".md", ".json"))
+            make_translate(filePath, "localization\\localization\\"+language+"\\"+file.replace(".md", ".json"), is_release)
 
 def copy_translate_to_user_data() -> None:
     """
@@ -129,13 +130,13 @@ def localization_path_to_template_path(path: str) -> str:
     # 将语言段换成"template"即可
     return re.sub(r"localization\\(.*?)\\", r"localization\\template\\", path)
 
-def create_localization_template(path: str) -> None:
+def create_localization_template(path: str, is_release: bool = False) -> None:
     """
     创建翻译模板
     """
     output: str = plot_json_path_to_template_path(path)
     # 未被修改则跳过
-    if formatCode.check_time(path, output):
+    if formatCode.check_time(path, output) and not is_release:
         return
     print("创建翻译模板: ", output)
     toTranslate: dict[str, str] = {}
@@ -168,7 +169,7 @@ def find(code: str) -> dict[str, str]:
             ret[word[1]] = ""
     return ret
 
-def create_localization_template_all() -> None:
+def create_localization_template_all(is_release: bool = False) -> None:
     """
     创建所有翻译模板
     """
@@ -179,4 +180,4 @@ def create_localization_template_all() -> None:
         for subFile in os.listdir(subPath):
             if not subFile.endswith(".json"):
                 continue
-            create_localization_template(subPath + "\\" + subFile)
+            create_localization_template(subPath + "\\" + subFile, is_release)

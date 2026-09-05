@@ -1,44 +1,115 @@
-[gd_scene load_steps=9 format=3 uid="uid://cw61wb80nj4lg"]
+[gd_scene load_steps=15 format=3 uid="uid://cw61wb80nj4lg"]
 
-[ext_resource type="PackedScene" uid="uid://hfry0p6xwyov" path="res://model/snowman.gltf" id="1_cpd10"]
-[ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="2_0st4p"]
+[ext_resource type="PackedScene" uid="uid://blamux3fl14mc" path="res://model/snowman.glb" id="1_cpd1"]
 [ext_resource type="Script" path="res://script/Start.cs" id="2_4x7km"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_loctk"]
-[ext_resource type="PackedScene" uid="uid://b66cbvsyjb4u1" path="res://scene/snowMountain.tscn" id="2_x7ywo"]
+[ext_resource type="PackedScene" uid="uid://w1w4u5xle1sr" path="res://model/mountain.glb" id="4_wtyau"]
+[ext_resource type="Script" path="res://script/MultiMeshMaker.cs" id="4_xkwxh"]
 [ext_resource type="PackedScene" uid="uid://d1vaitru08e1g" path="res://scene/setting.tscn" id="7_8xoj3"]
+[ext_resource type="Shader" path="res://shader/fog.gdshader" id="7_8xxym"]
 [ext_resource type="ArrayMesh" uid="uid://dq4ajxfrnqgu" path="res://model/stone.tres" id="7_m4wfc"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pyuxu"]
+sky_curve = 0.117687
+
+[sub_resource type="Sky" id="Sky_sfxhy"]
+sky_material = SubResource("ProceduralSkyMaterial_pyuxu")
+radiance_size = 0
+
+[sub_resource type="Environment" id="Environment_4u54w"]
+background_mode = 2
+sky = SubResource("Sky_sfxhy")
+ambient_light_source = 2
+ambient_light_color = Color(0.329496, 0.389513, 0.539852, 1)
+reflected_light_source = 2
+tonemap_mode = 2
+tonemap_exposure = 0.38
+fog_enabled = true
+fog_light_color = Color(0.4575, 0.799218, 0.857059, 1)
+fog_light_energy = 0.01
+fog_sun_scatter = 0.3
+fog_density = 0.033
+fog_aerial_perspective = 0.06
+fog_sky_affect = 0.87
+
 [sub_resource type="PlaneMesh" id="PlaneMesh_qt0sj"]
-size = Vector2(6.77, 1.965)
+size = Vector2(8.605, 1.965)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_7c7vq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ojqmc"]
+render_priority = 0
+shader = ExtResource("7_8xxym")
 
 [node name="Node" type="Node"]
 
-[node name="snowman2" parent="." instance=ExtResource("1_cpd10")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+[node name="snowman2" parent="." instance=ExtResource("1_cpd1")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, -0.1, 0)
 script = ExtResource("2_4x7km")
 
 [node name="Camera3D" type="Camera3D" parent="snowman2"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.7, 0.555, -0.82)
+transform = Transform3D(-4.37114e-08, -0.111469, 0.993768, 0, 0.993768, 0.111469, -1, 4.87246e-09, -4.3439e-08, 1.7, 0.775, -0.8)
 fov = 60.0
 
-[node name="sunLight" parent="." instance=ExtResource("2_0st4p")]
-transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.994522, 0.064928, -0.0819187, 0, 0, 0)
+[node name="sunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.994151, 0.0116639, -0.107368, 0, 0.994151, 0.107999, 0.107999, 0.107368, -0.988336, 0, 0, 0)
+light_color = Color(0.804843, 0.787964, 0.564818, 1)
+light_energy = 3.578
+light_bake_mode = 1
+light_cull_mask = 4294967293
+shadow_enabled = true
+directional_shadow_mode = 1
 
-[node name="snowMountain" parent="." instance=ExtResource("2_x7ywo")]
-transform = Transform3D(0.481754, 0, -0.876307, 0, 2.63288, 0, 0.876307, 0, 0.481754, -3.53644, 3.816, -16.59)
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.857167, 0.515038, 0, -0.515038, 0.857167, 0, 1.635, 3.025)
+spot_range = 3.656
+spot_attenuation = 0.87055
+spot_angle = 40.55
 
-[node name="snowMountain2" parent="." instance=ExtResource("2_x7ywo")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 2.63288, 0, 1, 0, -4.37114e-08, -9.01344, 2.746, -8.695)
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_4u54w")
 
-[node name="snowMountain3" parent="." instance=ExtResource("2_x7ywo")]
-transform = Transform3D(-0.921863, 0, -0.387516, 0, 2.63288, 0, 0.387516, 0, -0.921863, 9.96856, 3.421, -12.735)
+[node name="snowMountain" type="Node3D" parent="."]
+script = ExtResource("4_xkwxh")
 
-[node name="snowMountain4" parent="." instance=ExtResource("2_x7ywo")]
-transform = Transform3D(-0.328867, 0, -0.944376, 0, 2.63288, 0, 0.944376, 0, -0.328867, 14.985, 1.236, -28.472)
+[node name="mountain2" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(0.877976, 0.195437, -0.502102, -0.0766431, 2.2388, 0.0438311, 0.528669, 0, 0.840211, -12.9446, -5.6247, -14.9787)
+
+[node name="mountain3" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(-0.878911, -1.07809, -0.192226, -0.494758, 1.96748, -0.0413406, 0.197325, 0.131165, -0.959856, 8.60442, -8.42773, -18.1488)
+
+[node name="mountain4" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(0.296868, 2.14568, -0.429585, -0.374518, 2.33239, 0.251937, 0.39633, 0.596827, 0.559849, -15.2705, -7.91901, -28.3285)
+
+[node name="mountain5" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(0.315604, -0.992008, 0.602304, 0.188725, 2.11798, 0.267332, -0.816108, 0.106154, 0.294743, 10.1439, -3.96346, -24.6045)
+
+[node name="mountain6" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(-1.45791, 1.5808, -1.63333, 0.480426, 6.51566, 0.320635, 2.0609, -0.400614, -1.23019, 37.4786, -13.468, -41.8337)
+
+[node name="mountain7" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(-0.793134, 0.859991, -0.888569, 0.261362, 3.54466, 0.174432, 1.12117, -0.217943, -0.669249, -48.0438, -15.1846, -43.1677)
+
+[node name="mountain8" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(-0.826143, 0.241248, -0.905309, 0.1219, 3.63951, 0.019933, 1.12117, -0.217943, -0.669249, -24.7518, -9.21386, -49.1032)
+
+[node name="mountain9" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(-1.13, -0.330325, 1.28022, 0.05721, 5.08029, 0.157234, -1.59347, 0.416646, -0.902222, 14.4643, -11.8249, -104.418)
+
+[node name="mountain10" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(4.30062, -0.47931, -0.610939, 0.238902, 12.6646, 0.338841, 0.731886, -1.31754, 3.47931, -44.6363, -23.2612, -181.248)
+
+[node name="mountain11" parent="snowMountain" instance=ExtResource("4_wtyau")]
+transform = Transform3D(0.563988, -0.554034, -0.0945466, 0.198286, 1.66953, 0.02152, 0.101583, -0.182869, 0.482915, 7.14317, -5.22953, -9.98306)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_qt0sj")
 surface_material_override/0 = ExtResource("2_loctk")
+
+[node name="fog" type="MeshInstance3D" parent="."]
+transform = Transform3D(300, 0, 0, 0, 300, 0, 0, 0, 300, 0, -11.075, 0)
+mesh = SubResource("PlaneMesh_7c7vq")
+surface_material_override/0 = SubResource("ShaderMaterial_ojqmc")
 
 [node name="stone" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.579621, 0.19057, 0.79229, 0.312335, 0.949972, 0, -0.752653, 0.24746, -0.610145, 0.225, -0.265, -1.225)

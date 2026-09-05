@@ -175,7 +175,7 @@ public class CameraManager: object {
             return;
         }
         // 混合系数
-        float factor = (float)(Ui.totalGameTime - animationStartTime) / posesAnimationTime;
+        float factor = (float) (Ui.totalGameTime - animationStartTime) / posesAnimationTime;
         // 检测是否结束
         if (factor > 1) {
             factor = 1;

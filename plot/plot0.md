@@ -21,7 +21,7 @@ Goto(1)
 `caption`  
 `雪狗`: `这雪熊又来侵扰斯诺镇了！`  
 ```
-PlayAnimation(dog, talk);
+PlayAnimation(dog, fourFeet/talk);
 LookAtCharacter(dog, 0.3, 1)
 ```
 ```

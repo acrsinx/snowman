@@ -1,24 +1,73 @@
-[gd_scene load_steps=12 format=3 uid="uid://cfuse5s8ctik2"]
+[gd_scene load_steps=26 format=3 uid="uid://cfuse5s8ctik2"]
 
 [ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="1_vrbr4"]
 [ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="2_s0cah"]
 [ext_resource type="Script" path="res://script/Player.cs" id="3_tepjv"]
 [ext_resource type="Shader" path="res://shader/toon.gdshader" id="4_cot8f"]
 [ext_resource type="PackedScene" uid="uid://d1ag14jieptrf" path="res://scene/ui.tscn" id="5_0yomq"]
+[ext_resource type="Texture2D" uid="uid://dvb6254jkwq0j" path="res://image/snowParticle.png" id="5_iqyn1"]
 [ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="6_tvi10"]
 [ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://maps/battlefield.tscn" id="7_0cipo"]
+[ext_resource type="Texture2D" uid="uid://c6ap1jetaqg23" path="res://image/snowmanStamp.png" id="9_nk7eh"]
+[ext_resource type="Shader" path="res://shader/snow_cover.gdshader" id="10_hxpwj"]
+[ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="11_6qi4a"]
+[ext_resource type="Script" path="res://script/SnowCover.cs" id="12_q5udi"]
 
-[sub_resource type="QuadMesh" id="QuadMesh_u6jo2"]
-size = Vector2(20, 20)
+[sub_resource type="ViewportTexture" id="ViewportTexture_3ug8b"]
+viewport_path = NodePath("container/main")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4t0to"]
-render_priority = 0
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lpwlb"]
+resource_local_to_scene = true
 shader = ExtResource("4_cot8f")
+shader_parameter/screen_texture = SubResource("ViewportTexture_3ug8b")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iwtqv"]
 radius = 0.1
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7jsqg"]
+emission_shape = 3
+emission_box_extents = Vector3(3, 3, 3)
+scale_min = 0.1
+turbulence_enabled = true
+turbulence_influence_min = 0.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7qlgb"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 2
+alpha_antialiasing_edge = 0.3
+shading_mode = 2
+albedo_texture = ExtResource("5_iqyn1")
+roughness = 0.69
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+disable_receive_shadows = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_nyavp"]
+material = SubResource("StandardMaterial3D_7qlgb")
+size = Vector2(0.1, 0.1)
+
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_atgam"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_gs8th"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_ky130"]
+size = Vector2(16, 16)
+
+[sub_resource type="MultiMesh" id="MultiMesh_u72h4"]
+mesh = SubResource("QuadMesh_ky130")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_6eokv"]
+viewport_path = NodePath("snowCover")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cao2t"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("10_hxpwj")
+shader_parameter/height = SubResource("ViewportTexture_6eokv")
+shader_parameter/noise = ExtResource("11_6qi4a")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_sf45c"]
 
 [node name="Node" type="Node"]
 
@@ -28,29 +77,46 @@ transform = Transform3D(-0.104529, 0.617745, -0.7794, 0, 0.783693, 0.621148, 0.9
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("2_s0cah")
 
-[node name="player" type="Node3D" parent="."]
+[node name="container" type="SubViewportContainer" parent="."]
+material = SubResource("ShaderMaterial_lpwlb")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="main" type="SubViewport" parent="container"]
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="player" type="Node3D" parent="container/main"]
 script = ExtResource("3_tepjv")
 
-[node name="CameraMarker" type="Marker3D" parent="player"]
+[node name="CameraMarker" type="Marker3D" parent="container/main/player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.56, 0)
 
-[node name="Camera3D" type="Camera3D" parent="player/CameraMarker"]
+[node name="Camera3D" type="Camera3D" parent="container/main/player/CameraMarker"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
 
-[node name="screenShader" type="MeshInstance3D" parent="player/CameraMarker/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
-layers = 2
-cast_shadow = 0
-ignore_occlusion_culling = true
-mesh = SubResource("QuadMesh_u6jo2")
-surface_material_override/0 = SubResource("ShaderMaterial_4t0to")
-
-[node name="ShapeCast3D" type="ShapeCast3D" parent="player/CameraMarker/Camera3D"]
+[node name="ShapeCast3D" type="ShapeCast3D" parent="container/main/player/CameraMarker/Camera3D"]
 shape = SubResource("SphereShape3D_iwtqv")
 target_position = Vector3(0, 0, 0)
 margin = 0.3
 max_results = 1
 collision_mask = 2
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="container/main/player/CameraMarker/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -3)
+cast_shadow = 0
+ignore_occlusion_culling = true
+amount = 32
+interpolate = false
+fract_delta = false
+transform_align = 3
+process_material = SubResource("ParticleProcessMaterial_7jsqg")
+draw_pass_1 = SubResource("QuadMesh_nyavp")
 
 [node name="ui" parent="." instance=ExtResource("5_0yomq")]
 
@@ -80,3 +146,20 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 50,
 cull_mask = 1048569
 projection = 1
 size = 17.0
+
+[node name="snowCover" type="SubViewport" parent="."]
+size = Vector2i(64, 64)
+render_target_clear_mode = 2
+
+[node name="Camera2D" type="Camera2D" parent="snowCover"]
+
+[node name="snowmanStamp" type="MultiMeshInstance2D" parent="snowCover"]
+material = SubResource("CanvasItemMaterial_gs8th")
+multimesh = SubResource("MultiMesh_u72h4")
+texture = ExtResource("9_nk7eh")
+
+[node name="snowCover2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00640398, 0)
+material_override = SubResource("ShaderMaterial_cao2t")
+mesh = SubResource("PlaneMesh_sf45c")
+script = ExtResource("12_q5udi")

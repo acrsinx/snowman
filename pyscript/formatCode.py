@@ -16,7 +16,7 @@ this_time: float = max([os.path.getmtime(os.path.join(pyscript_path, file)) for 
 """
 operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|", "^", "~", "==", "++", "--", "&&",
                             "||", ">=", "<=", "==", "!=", "<<", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "=>",
-                            "??", "::", "<<=", ">>=", "??="]
+                            "??", "?.", "::", "<<=", ">>=", "??="]
 """
 符号列表
 从短到长
@@ -24,12 +24,12 @@ operator_list: list[str] = ["=", "+", "-", "*", "/", "%", "!", ">", "<", "&", "|
 
 operator_tuple: tuple = tuple(operator_list)
 
-operator_before_left_parenthesis: tuple = (",", ";", "{", "=>", "??", "for", "foreach", "elif", "switch", "if", "while", "return")
+operator_before_left_parenthesis: tuple = (")", ",", ";", "{", "=>", "??", "for", "foreach", "elif", "switch", "if", "while", "return")
 """
 后面加左括号要空格的
 """
 
-operator_after_right_parenthesis: tuple = (".", ",", ";", "(", ")", "]", "[")
+operator_after_right_parenthesis: tuple = (".", ",", ";", ")", "]", "[", "?.")
 """
 前面加右括号不空格的
 """
@@ -91,6 +91,22 @@ def read_ignore(path: str) -> tuple[list[str], list[str]]:
                 lines.pop(i)
         return lines, suffix
 
+def get_ignore_list() -> list[str]:
+    """
+    获取忽略列表
+    """
+    current_directory: str = main.check_current_directory()
+    ignore_list, _ = read_ignore(current_directory + "\\.gitignore")
+    # 将斜杠替换为反斜杠
+    for i in range(len(ignore_list)):
+        ignore_list[i] = ignore_list[i].replace("/", "\\")
+    return ignore_list + [".git\\", "export\\"]
+
+def is_ignore_dir(path: str, ignore_list: list[str]) -> bool:
+    """
+    判断是否是忽略的文件夹
+    """
+    return any([i in path for i in ignore_list])
 
 def is_operator(operator: str) -> bool:
     """
@@ -175,7 +191,7 @@ def split_word(data: str) -> list[tuple[str, NoteType]]:
             word += data[i]
             continue
         # 注释
-        if (data[i] == "/" and data[i + 1] == "/") or (data[i] == "#" and data[i + 1] == " "):
+        if (data[i] == "/" and data[i + 1] == "/") or data[i] == "#":
             if len(word) > 0:
                 words.append(package(word))
                 word = ""
@@ -579,7 +595,7 @@ def output(path: str, words: list[tuple[str, NoteType]]):
         for i in range(len(words)):
             f.write(words[i][1] * 4 * " " + words[i][0] + "\n")
 
-def format_file(path: str):
+def format_file(path: str, is_release: bool = False):
     """
     整理代码
     """
@@ -588,7 +604,7 @@ def format_file(path: str):
     copy_path: str = os.path.abspath("copy\\" + os.path.relpath(path, os.getcwd()))
     copy_file: str = copy_path + ".copy"
     if os.path.exists(os.path.dirname(copy_file)) and os.path.exists(copy_file):
-        if check_time(path, copy_file):
+        if check_time(path, copy_file) and not is_release:
             return
     else:
         os.makedirs(os.path.dirname(copy_path), exist_ok=True)
@@ -605,7 +621,7 @@ def format_file(path: str):
     time.sleep(0.01)
     os.utime(copy_file, (time.time(), time.time()))
 
-def format_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str]):
+def format_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str], is_release: bool = False):
     """
     整理代码
     """
@@ -614,24 +630,20 @@ def format_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_lis
     for dir_name in dir_list:
         real_dir: str = os.path.join(current_dir, dir_name)
         relpath: str = os.path.relpath(real_dir, base_dir) + "\\"
-        if any([i in relpath for i in ignore_list]):  # 忽略文件夹
+        if is_ignore_dir(relpath, ignore_list):  # 忽略文件夹
             continue
         if os.path.isdir(real_dir):  # 如果是文件夹
-            format_code(base_dir, real_dir, os.listdir(real_dir), ignore_list)
+            format_code(base_dir, real_dir, os.listdir(real_dir), ignore_list, is_release)
             continue
         if real_dir.split(".")[-1] not in allow_suffix_list:  # 如果不是白名单文件
             continue
-        format_file(real_dir)
+        format_file(real_dir, is_release)
 
-def format_whole_project() -> None:
+def format_whole_project(is_release: bool = False) -> None:
     """
     整理项目代码
     - 其实就是格式化
     """
     current_directory: str = main.check_current_directory()
-    ignore_list, _ = read_ignore(current_directory + "\\.gitignore")
     dir_list: list[str] = os.listdir(current_directory)
-    # 将斜杠替换为反斜杠
-    for i in range(len(ignore_list)):
-        ignore_list[i] = ignore_list[i].replace("/", "\\")
-    format_code(current_directory, current_directory, dir_list, ignore_list + [".git\\", "export\\"])
+    format_code(current_directory, current_directory, dir_list, get_ignore_list(), is_release)

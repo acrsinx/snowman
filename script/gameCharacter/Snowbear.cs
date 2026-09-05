@@ -1,12 +1,16 @@
 using Godot;
 public partial class Snowbear: GameCharacter {
-    public static PackedScene SnowbearScene = GD.Load<PackedScene>("res://model/snowbear.gltf");
+    public static readonly PackedScene SnowbearScene = GD.Load<PackedScene>("res://model/snowbear.glb");
     public Snowbear(Player player): base(SnowbearScene, player, new SphereShape3D() {
         Radius = 0.5f
     }, new Vector3(0, 0.5f, 0), true) {
+        PlotCharacter.AddAnimationPlayer(this, "fourFeet");
         auto = new AutoCharacterManager(this, player);
         auto.afterAttack += () => {
-            player.character.BeAttack((int)(20.0f / character.GlobalPosition.DistanceTo(player.character.GlobalPosition)), DamageType.sound, isEnemy);
+            // 产生声波
+            SoundWave soundWave = new(player, GlobalPosition) {
+                GlobalPosition = character.GlobalPosition
+            };
             GetPlotCharacter().PauseAnimation();
         };
         health.MaxHealth = 100;
@@ -22,13 +26,13 @@ public partial class Snowbear: GameCharacter {
         base.CharacterAttack();
         auto.Attack();
         GetPlotCharacter().PauseAnimation();
-        GetPlotCharacter().PlayAnimation("attack");
+        GetPlotCharacter().PlayAnimation("fourFeet/attack");
     }
     public override void PlayWalkAnimation() {
-        if (GetPlotCharacter().GetAnimationName() == "walk") {
+        if (GetPlotCharacter().GetAnimationName() == "fourFeet/walk") {
             return;
         }
         GetPlotCharacter().PauseAnimation();
-        GetPlotCharacter().PlayAnimation("walk");
+        GetPlotCharacter().PlayAnimation("fourFeet/walk");
     }
 }

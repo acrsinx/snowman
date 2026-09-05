@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dnte2duflwtue"
-path="res://.godot/imported/log.gltf-e37f150aa48a061de6e2ed41d5154075.scn"
+uid="uid://bgnmvnmp3wvd0"
+path="res://.godot/imported/pillar.glb-ac1dd65ed5226c9acf784709e3031089.scn"
 
 [deps]
 
-source_file="res://model/log.gltf"
-dest_files=["res://.godot/imported/log.gltf-e37f150aa48a061de6e2ed41d5154075.scn"]
+source_file="res://model/pillar.glb"
+dest_files=["res://.godot/imported/pillar.glb-ac1dd65ed5226c9acf784709e3031089.scn"]
 
 [params]
 
@@ -31,13 +31,9 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "materials": {
-"bark": {
+"stone": {
 "use_external/enabled": true,
-"use_external/path": "res://material/wood.tres"
-},
-"crossSection": {
-"use_external/enabled": true,
-"use_external/path": "res://material/wood.tres"
+"use_external/path": "res://material/stone.tres"
 }
 }
 }

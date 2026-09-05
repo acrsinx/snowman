@@ -21,6 +21,10 @@ public partial class Player: Node3D {
     /// </summary>
     public GameCharacter character;
     /// <summary>
+    /// 雪地
+    /// </summary>
+    public SnowCover snowCover = null;
+    /// <summary>
     /// 玩家欲移动方向
     /// </summary>
     public float front, right;
@@ -175,16 +179,17 @@ public partial class Player: Node3D {
     public static readonly float jumpSpeed = 10.0f;
     public void Init(Setting setting) {
         Ui.Log("Init");
-        root = GetParent();
+        root = GetParent().GetParent().GetParent();
         // 设置用户界面管理器
         ui = root.GetNode<Ui>("ui");
         ui.Init(setting, this);
         // 设置相机管理器
         Marker3D m = GetChild<Marker3D>(0);
         Camera3D c = m.GetChild<Camera3D>(0);
-        MeshInstance3D m3d = c.GetChild<MeshInstance3D>(0);
-        cameraManager = new(c, c.GetChild<ShapeCast3D>(1), this, m);
-        ui.settingPanel.gameInformation.screenShader = m3d;
+        cameraManager = new(c, c.GetChild<ShapeCast3D>(0), this, m);
+        // 设置雪地
+        snowCover = root.GetNode<SnowCover>("snowCover2");
+        snowCover.Init(this);
     }
     public override void _PhysicsProcess(double delta) {
         if (PlayerState != State.move) {
@@ -255,6 +260,7 @@ public partial class Player: Node3D {
             float factor = maxSpeed / lengthXZ;
             character.Velocity = new Vector3(character.Velocity.X * factor, character.Velocity.Y, character.Velocity.Z * factor);
         }
+        snowCover?.Stamp(character, 0);
         // 移动
         character.MoveAndSlide();
         cameraManager.UpdateCamera();
@@ -262,7 +268,7 @@ public partial class Player: Node3D {
         jump = false;
         isSlow = false;
     }
-    public override void _Input(InputEvent @event) {
+    public void InputBorrowFromUI(InputEvent @event) {
         if (@event is InputEventScreenDrag drag) {
             if (ui.settingPanel.gameInformation.UiType == UiType.phone) {
                 if (drag.Index == moveIndex) { // 移动

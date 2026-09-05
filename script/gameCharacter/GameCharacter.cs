@@ -7,7 +7,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     public Node3D character;
     public PhysicsBody3D physicsBody3D;
     public CollisionShape3D collisionShape3D;
-    private AnimationPlayer animationPlayer;
+    private AnimationPlayer animationPlayer = null;
     /// <summary>
     /// 寻路节点
     /// </summary>

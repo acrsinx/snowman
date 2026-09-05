@@ -45,7 +45,6 @@ public partial class Load: Control {
                 // 加载地图摄像机
                 map = ui.player.root.GetNode<SubViewport>("map");
                 map.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
-                map.GetChild<Camera3D>(0).Size = Map.mapSizes[0];
                 break;
             }
             case 2: {
@@ -61,6 +60,7 @@ public partial class Load: Control {
             }
             case 4: {
                 ui.SetScene("battlefield");
+                map.GetChild<Camera3D>(0).Size = Map.mapSizes[0];
                 break;
             }
             case 5: {
@@ -69,6 +69,7 @@ public partial class Load: Control {
             }
             case 6: {
                 ui.SetScene("base");
+                map.GetChild<Camera3D>(0).Size = Map.mapSizes[1];
                 break;
             }
             case 7: {
