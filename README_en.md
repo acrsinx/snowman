@@ -1,3 +1,6 @@
+
+[简体中文](README_zh_CN.md)  
+
 # Thawing
 Thawing is a game project made with the Godot engine, in which player can control a snowman to complete the plot. The game is mainly made with C#.  
 ## Report Bugs
