@@ -43,9 +43,19 @@ public partial class SnowCover: MeshInstance3D {
     public void SetSnowCoverSize(int size) {
         snowCoverTexture.Size = Tool.Vector2I(size);
         snowCoverTexture.RenderTargetClearMode = SubViewport.ClearMode.Once;
+        ClearStamps();
     }
     private void UpdateMesh() {
         mesh.Size = new Vector2(Map.mapSizes[player.ui.currentScene], Map.mapSizes[player.ui.currentScene]);
+        ClearStamps();
+    }
+    private void ClearStamps() {
+        if (snowmanStamp == null) {
+            return;
+        }
+        for (int i = 0; i < snowmanStamp.Multimesh.InstanceCount; i++) {
+            snowmanStamp.Multimesh.SetInstanceTransform2D(i, Tool.ZeroTransform2D);
+        }
     }
     public static bool IsOnSnowCover(Vector3 globalPosition) {
         return MathF.Abs(globalPosition.Y) < 0.05f;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 public partial class Snowman: GameCharacter {
     public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.glb");
@@ -6,8 +7,8 @@ public partial class Snowman: GameCharacter {
     public static readonly Vector3 gravity = new(0, -9.8f, 0);
     public static RayCast3D checkCast;
     public static ObjectPool snowballPool = new(32, SnowballMesh);
-    private static int totalSnowman = 0;
     private int snowmanID;
+    private static readonly List<Snowman> snowmen = new();
     public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CapsuleShape3D() {
         Radius = 0.3f,
         Height = 0.9f
@@ -18,12 +19,9 @@ public partial class Snowman: GameCharacter {
             };
             player.root.AddChild(checkCast);
             player.root.AddChild(snowballPool.instances);
-            snowmanID = 0;
-            totalSnowman = 1;
-        } else {
-            snowmanID = totalSnowman;
-            totalSnowman++;
         }
+        snowmen.Add(this);
+        snowmanID = snowmen.Count - 1;
         Position = new Vector3(0, 0.1f, 0);
         if (isPlayer) {
             player.cameraManager.cameraMarker.Reparent(this, false);
