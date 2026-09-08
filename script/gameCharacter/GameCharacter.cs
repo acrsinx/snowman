@@ -41,6 +41,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
             player.GetTree().Root.AddChild(this);
         }
         AddChild(this.character);
+        SetChildLayer(this.character, 0b100);
         // 添加寻路节点
         agent = new NavigationAgent3D();
         # if TOOLS
@@ -158,5 +159,14 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     }
     public Node3D GetCharacterNode() {
         return character;
+    }
+    public static void SetChildLayer(Node node, uint layer) {
+        for (int i = 0; i < node.GetChildCount(); i++) {
+            Node child = node.GetChild<Node>(i);
+            if (child is VisualInstance3D visualInstance3D) {
+                visualInstance3D.Layers = layer;
+            }
+            SetChildLayer(child, layer);
+        }
     }
 }

@@ -382,17 +382,10 @@ public partial class Ui: Control {
         Node previousScene = player.root.GetNode<Node>("scene").GetChild<Node>(1);
         previousScene.Free();
         // 加载新场景
-        PackedScene scene = ResourceLoader.Load<PackedScene>("res://maps/" + sneneName + ".tscn");
+        PackedScene scene = ResourceLoader.Load<PackedScene>("res://scene/" + sneneName + "/" + sneneName + ".tscn");
         Node sceneNode = scene.Instantiate<Node>();
         player.root.GetNode<Node>("scene").AddChild(sceneNode);
         string map_path = "user://maps/" + sneneName + "_map.png";
-        if (!FileAccess.FileExists(map_path)) {
-            if (player.PlayerState == State.load) {
-                // return;
-            }
-            Log("地图加载失败，找不到地图", map_path);
-            return;
-        }
         InitAllNodes(sceneNode);
         switch (sneneName) {
             case "battlefield": {
@@ -409,8 +402,10 @@ public partial class Ui: Control {
             }
         }
         player.snowCover.RefreshSnowCover();
-        Image newMap = Image.LoadFromFile(map_path);
-        map.Texture = ImageTexture.CreateFromImage(newMap);
+        if (FileAccess.FileExists(map_path)) {
+            Image newMap = Image.LoadFromFile(map_path);
+            map.Texture = ImageTexture.CreateFromImage(newMap);
+        }
         // 刷新设置
         settingPanel.gameInformation.Refresh();
     }

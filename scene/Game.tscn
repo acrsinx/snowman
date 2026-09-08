@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://d1ag14jieptrf" path="res://scene/ui.tscn" id="5_0yomq"]
 [ext_resource type="Texture2D" uid="uid://dvb6254jkwq0j" path="res://image/snowParticle.png" id="5_iqyn1"]
 [ext_resource type="AudioStream" uid="uid://d4jlaudp5hbdi" path="res://music/test.mp3" id="6_tvi10"]
-[ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://maps/battlefield.tscn" id="7_0cipo"]
+[ext_resource type="PackedScene" uid="uid://bdvrhrrde3p0i" path="res://scene/battlefield/battlefield.tscn" id="7_0cipo"]
 [ext_resource type="Texture2D" uid="uid://c6ap1jetaqg23" path="res://image/snowmanStamp.png" id="9_nk7eh"]
 [ext_resource type="Shader" path="res://shader/snow_cover.gdshader" id="10_hxpwj"]
 [ext_resource type="Texture2D" uid="uid://d1x881erv7r4l" path="res://material/noiseTexture.tres" id="11_6qi4a"]
@@ -109,6 +109,7 @@ collision_mask = 2
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="container/main/player/CameraMarker/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -3)
+layers = 2
 cast_shadow = 0
 ignore_occlusion_culling = true
 amount = 32
@@ -143,7 +144,7 @@ render_target_update_mode = 4
 
 [node name="mapCamera3D" type="Camera3D" parent="map"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 50, 0)
-cull_mask = 1048569
+cull_mask = 1048561
 projection = 1
 size = 17.0
 
@@ -160,6 +161,7 @@ texture = ExtResource("9_nk7eh")
 
 [node name="snowCover2" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00640398, 0)
+layers = 8
 material_override = SubResource("ShaderMaterial_cao2t")
 mesh = SubResource("PlaneMesh_sf45c")
 script = ExtResource("12_q5udi")
