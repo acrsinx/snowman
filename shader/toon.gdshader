@@ -1,6 +1,6 @@
 shader_type canvas_item;
 render_mode unshaded;
-uniform sampler2D screen_texture: filter_linear;
+uniform sampler2D screen_texture: filter_nearest;
 vec3 deepenColor(vec3 c, float a) {
     float len = max(length(c), 0.0);
     float targetLen = max(len - (a < 0.5?0.0:1.0), 0.0);
