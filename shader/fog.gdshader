@@ -15,5 +15,5 @@ void fragment() {
     float passLength = 1.0 / dot(view_world, vec3(0, 1, 0));
     passLength = min(passLength, passDistance);
     float value = 0.05 * exp(passLength) * texture(noise, UV + vec2(TIME * 0.01)).r;
-    ALBEDO = texture(screen, SCREEN_UV).rgb * exp(-passDistance*0.3) + vec3(0.3843, 0.4549, 0.5490) * value;
+    ALBEDO = texture(screen, SCREEN_UV).rgb * exp(-passDistance * 0.3) + vec3(0.3843, 0.4549, 0.5490) * value;
 }

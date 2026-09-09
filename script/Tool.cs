@@ -2,8 +2,8 @@ using Godot;
 using System;
 public class Tool: object {
     public delegate void Void();
-    public static Transform2D ZeroTransform2D = new();
-    public static Transform3D ZeroTransform3D = new();
+    public static readonly Transform2D ZeroTransform2D = new();
+    public static readonly Transform3D ZeroTransform3D = new();
     public static readonly Random random = new();
     /// <summary>
     /// 随机单精度浮点数
@@ -11,16 +11,18 @@ public class Tool: object {
     /// <param name="min">最小值</param>
     /// <param name="max">最大值</param>
     /// <returns>随机数</returns>
-    public static float RandomFloat(float min, float max) {
-        return random.NextSingle() * (max - min) + min;
+    public static float RandomFloat(float min, float max, Random rand = null) {
+        rand ??= random;
+        return rand.NextSingle() * (max - min) + min;
     }
     /// <summary>
     /// 随机三维向量
     /// </summary>
     /// <param name="range">向量的范围(x, y, z), x ∈ [-range.X, range.X), y ∈ [-range.Y, range.Y), z ∈ [-range.Z, range.Z)</param>
     /// <returns>随机向量</returns>
-    public static Vector3 RandomVector3(Vector3 range) {
-        return new Vector3(RandomFloat(-1, 1) * range.X, RandomFloat(-1, 1) * range.Y, RandomFloat(-1, 1) * range.Z);
+    public static Vector3 RandomVector3(Vector3 range, Random rand = null) {
+        rand ??= random;
+        return new Vector3(RandomFloat(-1, 1, rand) * range.X, RandomFloat(-1, 1, rand) * range.Y, RandomFloat(-1, 1, rand) * range.Z);
     }
     /// <summary>
     /// 用于将from平滑地移动到to，速度为speed，但不会超过to，返回新的from
@@ -112,7 +114,21 @@ public class Tool: object {
     public static Vector2 Vector2(float x) {
         return new Vector2(x, x);
     }
+    public static Vector3 Vector3(float x) {
+        return new Vector3(x, x, x);
+    }
     public static Vector2I Vector2I(int x) {
         return new Vector2I(x, x);
+    }
+    public static float AngleXZ(Vector3 v) {
+        return Mathf.Atan2(v.X, v.Z);
+    }
+    public static Vector3 Rotate(Vector3 v, Vector3 rotate) {
+        return v.Rotated(Godot.Vector3.Up, rotate.Y).Rotated(Godot.Vector3.Right, rotate.X).Rotated(Godot.Vector3.Forward, rotate.Z);
+    }
+    public static void Rotate(Node3D n, Vector3 rotate) {
+        n.Rotate(Godot.Vector3.Up, rotate.Y);
+        n.Rotate(Godot.Vector3.Right, rotate.X);
+        n.Rotate(Godot.Vector3.Forward, rotate.Z);
     }
 }

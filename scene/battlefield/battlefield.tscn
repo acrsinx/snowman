@@ -1,8 +1,8 @@
-[gd_scene load_steps=21 format=3 uid="uid://bdvrhrrde3p0i"]
+[gd_scene load_steps=22 format=3 uid="uid://bdvrhrrde3p0i"]
 
-[ext_resource type="Script" path="res://script/MultiMeshMaker.cs" id="1_y1rkg"]
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
 [ext_resource type="PackedScene" uid="uid://cby2yh7s0masa" path="res://model/snowdrift.gltf" id="3_bu8r0"]
+[ext_resource type="Script" path="res://script/proceduralGeneration/MultiMeshMaker.cs" id="3_lav6i"]
 [ext_resource type="PackedScene" uid="uid://cqeacuoswthmn" path="res://model/log.glb" id="3_pqd64"]
 [ext_resource type="PackedScene" uid="uid://cjws473nh6e35" path="res://model/obstacle.gltf" id="4_rnujj"]
 [ext_resource type="ArrayMesh" uid="uid://dq4ajxfrnqgu" path="res://model/stone.tres" id="5_7jcqo"]
@@ -53,7 +53,7 @@ shader_parameter/noise = ExtResource("9_fmpuu")
 navigation_mesh = SubResource("NavigationMesh_pde2o")
 
 [node name="logs" type="Node3D" parent="NavigationRegion3D"]
-script = ExtResource("1_y1rkg")
+script = ExtResource("3_lav6i")
 
 [node name="log" parent="NavigationRegion3D/logs" instance=ExtResource("3_pqd64")]
 transform = Transform3D(0.00214278, 0.697575, -0.716509, -0.999995, 0.00307174, 0, 0.00220093, 0.716506, 0.697578, -4.54955, 0.132642, 1.7371)
@@ -130,7 +130,7 @@ transform = Transform3D(0.00491218, -0.999687, 0.0245604, 0.48376, 0.0238712, 0.
 transform = Transform3D(0.00431411, -3.90953, -0.0190279, 0.0899182, -0.0589023, 1.24241, -1.43017, -0.0154965, 0.0780556, 8.21504, 0.262161, 9.11989)
 
 [node name="snowdrifts" type="Node3D" parent="NavigationRegion3D"]
-script = ExtResource("1_y1rkg")
+script = ExtResource("3_lav6i")
 
 [node name="snowdrift" parent="NavigationRegion3D/snowdrifts" instance=ExtResource("3_bu8r0")]
 transform = Transform3D(1.40286, 0, -0.726019, 0, 1.40344, 0, 0.705597, 0, 1.44346, 0.817531, 0, 2.35981)
@@ -175,7 +175,7 @@ transform = Transform3D(1.01782, 0, -1.32049, 0, 0.945831, 0, 1.671, 0, 0.804321
 transform = Transform3D(0.931986, -0.16071, -1.16887, 0.631525, 0.873783, 0.0268145, 1.42853, -0.281433, 0.750726, -8.22336, 0.43906, 8.52957)
 
 [node name="obstacles" type="Node3D" parent="NavigationRegion3D"]
-script = ExtResource("1_y1rkg")
+script = ExtResource("3_lav6i")
 
 [node name="obstacle" parent="NavigationRegion3D/obstacles" instance=ExtResource("4_rnujj")]
 transform = Transform3D(-0.999988, -3.06029e-09, -0.00481711, -0.000330407, 0.997645, 0.068589, 0.00480576, 0.0685898, -0.997633, -6.89113, -0.0590983, -8.07787)
@@ -199,8 +199,7 @@ transform = Transform3D(-0.999988, -3.06029e-09, -0.00481711, -2.63958e-09, 1, -
 transform = Transform3D(1.03512, 0.217469, 0.00719612, -0.243663, 0.923846, -0.00169393, -0.00786962, 0, 0.998983, 7.65348, -0.273833, -7.67028)
 
 [node name="stones" type="Node3D" parent="NavigationRegion3D"]
-script = ExtResource("1_y1rkg")
-addProgrammaticStuffs = true
+script = ExtResource("3_lav6i")
 
 [node name="Stone" type="MeshInstance3D" parent="NavigationRegion3D/stones"]
 transform = Transform3D(-0.242448, -0.988046, 0.396691, -0.524427, -0.281623, -0.814034, 0.887224, -0.436463, -0.372764, -8.11346, -0.214056, 8.39039)
@@ -218,7 +217,7 @@ mesh = ExtResource("5_7jcqo")
 skeleton = NodePath("../../..")
 
 [node name="snowShells" type="Node3D" parent="NavigationRegion3D"]
-script = ExtResource("1_y1rkg")
+script = ExtResource("3_lav6i")
 
 [node name="snowShell2" parent="NavigationRegion3D/snowShells" instance=ExtResource("6_dku78")]
 transform = Transform3D(1.21185, -0.0456694, 0, 0.0365173, 1.51557, 0, 0, 0, 1.95397, 5.79294, 0.893897, 8.81995)
