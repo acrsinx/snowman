@@ -53,6 +53,7 @@ public class CameraManager: object {
     private Vector3 cameraPosition2;
     private Vector3 cameraRotation2;
     private long animationStartTime;
+    private Tool.Void end;
     public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
         this.camera = camera;
         this.cameraCast = cameraCast;
@@ -180,6 +181,8 @@ public class CameraManager: object {
         if (factor > 1) {
             factor = 1;
             pushState = PushState.none;
+            end();
+            return;
         }
         // 混合起始与结束
         cameraMarker.GlobalPosition = Tool.Mix(markerPosition1, markerPosition2, factor);
@@ -271,7 +274,7 @@ public class CameraManager: object {
     public static Vector3 GetDirection(Vector3 rotation) {
         return new Vector3(MathF.Cos(rotation.Y), 0, MathF.Sin(rotation.Y));
     }
-    public void SetPosesAnimationTime(int time) {
+    public void SetPosesAnimationTime(int time, Tool.Void endCode = null) {
         if (pushState != PushState.none) {
             Ui.Log("在不合适的时机设置相机运动时间");
         }
@@ -280,6 +283,9 @@ public class CameraManager: object {
             return;
         }
         posesAnimationTime = time;
+        if (endCode != null) {
+            end = endCode;
+        }
         pushState = PushState.timeSet;
     }
     public void PushCurrentCameraPose() {

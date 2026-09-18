@@ -5,31 +5,78 @@ import os
 import re
 import json
 import time
+from enum import Enum
 
 import main
 import formatCode
 
-valueNum: dict = {
-    "LoadCharacter": 5,
-    "SetCharacterTarget": 4,
-    "SetCharacterPosition": 4,
-    "PlayAnimation": 2,
-    "PauseAnimation": 1,
-    "LookAtCharacter": 3,
-    "SetCameraPosition": 0,
-    "SetCameraPositionAt": 3,
-    "SetCameraRotation": 2,
-    "SetTaskName": 1,
-    "Goto": 1,
-    "AddTrigger": 1,
-    "AddTarget": 2,
-    "Jump": 1,
-    "SetScene": 1,
-    "EnterName": 0,
-    "Exit": 1
+class PlotCodeType(Enum):
+    """
+    剧情代码的类型
+    """
+    intType = 1
+    floatType = 2
+    codeType = 3
+    strType = 4
+
+    def __str__(self) -> str:
+        if self == PlotCodeType.intType:
+            return "int"
+        elif self == PlotCodeType.floatType:
+            return "float"
+        elif self == PlotCodeType.codeType:
+            return "code"
+        elif self == PlotCodeType.strType:
+            return "str"
+        else:
+            raise Exception("出现奇怪的类型")
+
+    def __repr__(self) -> str:
+        return str(self)
+
+def isIntType(string: str) -> bool:
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False
+
+def isFloatType(string: str) -> bool:
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
+I: PlotCodeType = PlotCodeType.intType
+F: PlotCodeType = PlotCodeType.floatType
+C: PlotCodeType = PlotCodeType.codeType
+S: PlotCodeType = PlotCodeType.strType
+
+valueNum: dict[str, list[list[PlotCodeType]]] = {
+    "CameraAnimation": [[I, C, C]],
+    "LoadCharacter": [[S, S, F, F, F]],
+    "SetCharacterTarget": [[S, F, F, F]],
+    "SetCharacterPosition": [[S, F, F, F]],
+    "PlayAnimation": [[S, S]],
+    "PauseAnimation": [[S]],
+    "LookAtCharacter": [[S, F, F]],
+    "SetCameraPosition": [[]],
+    "SetCameraPositionAt": [[F, F, F]],
+    "SetCameraRotation": [[F, F]],
+    "SetTaskName": [[S]],
+    "Goto": [[I]],
+    "AddTrigger": [[S, C]],
+    "AddTarget": [[S, F, C]],
+    "Jump": [[S]],
+    "SetScene": [[S]],
+    "EnterName": [[]],
+    "ShowChooses": [[S, S, S]],
+    "Exit": [[]]
 }
 """
-剧情脚本中每个指令的参数数量（出现块的不计入）
+剧情脚本中每个指令的参数
 """
 
 def decode_md_plot(data: str) -> list[str]:
@@ -55,21 +102,107 @@ def decode_md_plot(data: str) -> list[str]:
         i += 1
     return tokens
 
+def split_line(code: str, markdown_file: str) -> list[str]:
+    """
+    分行
+    """
+    tab_level: int = 0
+    last_index: int = 0
+    ret: list[str] = []
+    for i in range(len(code)):
+        if code[i] == ";" and tab_level == 0:
+            ret.append(code[last_index:i])
+            last_index = i + 1
+            continue
+        if code[i] == "{":
+            tab_level += 1
+            continue
+        if code[i] == "}":
+            tab_level -= 1
+            if tab_level < 0:
+                os.utime(markdown_file, (time.time(), time.time()))
+                raise Exception("括号不合理", code)
+            continue
+    if last_index < len(code):
+        ret.append(code[last_index:])
+    return ret
+
+def split_token(code: str, markdown_file: str) -> list[str]:
+    """
+    分词元
+    """
+    ret: list[str] = []
+    tab_level: int = 0
+    last_index: int = 0
+    for i in range(len(code)):
+        if code[i] == " " and tab_level == 0:
+            ret.append(code[last_index:i])
+            last_index = i + 1
+            continue
+        if code[i] == "{":
+            if tab_level == 0:
+                ret.append(code[last_index:i])
+                last_index = i
+            tab_level += 1
+            continue
+        if code[i] == "}":
+            tab_level -= 1
+            if tab_level < 0:
+                os.utime(markdown_file, (time.time(), time.time()))
+                raise Exception("括号不合理", code)
+            continue
+    if last_index < len(code):
+        ret.append(code[last_index:])
+    return ret
+
+def unwrap(code: str, markdown_file: str) -> str:
+    """
+    解开两侧的大括号
+    """
+    if code[0] == "{" and code[-1] == "}":
+        return unwrap(code[1:-1], markdown_file)
+    if code[0] == "{" and code[-1] != "}":
+        os.utime(markdown_file, (time.time(), time.time()))
+        raise Exception("未闭合的括号", code)
+    return code
+
 def check_script(code: str, markdown_file: str) -> None:
     """
     检查剧情脚本
     """
-    for line in code.replace("{", ";").replace("}", ";").split(";"):
-        line: str = line.strip()
-        if line == "":
+    code: str = unwrap(code, markdown_file)
+    lines: list[str] = split_line(code, markdown_file)
+    for line in lines:
+        check_line(line, markdown_file)
+
+def check_line(line: str, markdown_file: str) -> None:
+    """
+    检查剧情脚本
+    """
+    tokens: list[str] = split_token(line, markdown_file)
+    if tokens[0] not in valueNum:
+        os.utime(markdown_file, (time.time(), time.time()))
+        raise Exception("未知指令："+tokens[0])
+    parameterLists: list[list[PlotCodeType]] = valueNum[tokens[0]]
+    for parameters in parameterLists:
+        if len(parameters) + 1 != len(tokens):
             continue
-        tokens: list[str] = line.split(" ")
-        if tokens[0] not in valueNum:
-            os.utime(markdown_file, (time.time(), time.time()))
-            raise Exception("未知指令："+tokens[0])
-        if len(tokens) != valueNum[tokens[0]]+1:
-            os.utime(markdown_file, (time.time(), time.time()))
-            raise Exception("指令参数数量不正确："+tokens[0]+"，"+str(tokens))
+        flag: bool = True
+        for i in range(len(parameters)):
+            if parameters[i] == PlotCodeType.intType and not isIntType(tokens[i+1]):
+                flag = False
+                continue
+            if parameters[i] == PlotCodeType.floatType and not isFloatType(tokens[i+1]):
+                flag = False
+                continue
+            if parameters[i] == PlotCodeType.codeType:
+                check_script(tokens[i+1], markdown_file)
+                continue
+        if flag:
+            break
+    else:
+        os.utime(markdown_file, (time.time(), time.time()))
+        raise Exception("参数错误", tokens, "应为", parameterLists)
 
 def simplify_script(code: str, markdown_file: str) -> str:
     """
@@ -140,65 +273,24 @@ def make_json_file(markdown_file: str, this_plot_dir: str, is_release: bool = Fa
                         actorName: str = tokens[i + 2]
                         caption: str = tokens[i + 3]
                         startCode: str = simplify_script(tokens[i + 4], markdown_file)
-                        endCode: str = simplify_script(tokens[i + 5], markdown_file)
                         json_line = {
                             caption_index: {
                                 "actorName": actorName,
                                 "caption": caption,
                                 "type": captionType,
-                                "startCode": startCode,
-                                "endCode": endCode
+                                "startCode": startCode
                             }
                         }
-                        i += 6
-                    elif captionType == "choose":  # 选择
-                        actorName: str = tokens[i + 2]
-                        caption: str = tokens[i + 3]
-                        startCode: str = simplify_script(tokens[i + 4], markdown_file)
                         i += 5
-                        texts = []
-                        # 读取选项
-                        while True:
-                            # 选项文本
-                            texts.append(tokens[i])
-                            # 选项结果脚本
-                            texts.append(simplify_script(tokens[i + 1], markdown_file))
-                            i += 2
-                            if tokens[i] == "endChoose":
-                                i += 1
-                                break
-                        texts_json: dict = {}
-                        for j in range(len(texts) // 2):
-                            texts_json.update({
-                                j: {
-                                    texts[j * 2]: texts[j * 2 + 1]
-                                }
-                            })
-                        a_json: dict = {
-                            "actorName": actorName,
-                            "caption": caption,
-                            "type": captionType,
-                            "startCode": startCode,
-                        }
-                        a_json.update(texts_json)
-                        json_line = {
-                            caption_index: a_json
-                        }
                     elif captionType == "shot": # 无对话镜头
-                        shotTime: str = str(tokens[i + 2])
-                        # 检测时间是否是正整数
-                        assert shotTime.isdigit() and int(shotTime) > 0, "镜头时间必须是正整数"
-                        startCode: str = simplify_script(tokens[i + 3], markdown_file)
-                        endCode: str = simplify_script(tokens[i + 4], markdown_file)
+                        startCode: str = simplify_script(tokens[i + 2], markdown_file)
                         json_line = {
                             caption_index: {
                                 "type": captionType,
-                                "time": shotTime,
-                                "startCode": startCode,
-                                "endCode": endCode
+                                "startCode": startCode
                             }
                         }
-                        i += 5
+                        i += 3
                     else:
                         os.utime(markdown_file, (time.time(), time.time()))
                         raise Exception("未知对话类型: ", captionType)

@@ -58,7 +58,7 @@ public class BasicTriggerNode {
         return Parse(words);
     }
     public static BasicTriggerNode Parse(string[] words) {
-        BasicTriggerNode left;
+        BasicTriggerNode left = null;
         int nextStart = 1;
         // 分级
         if (words[0] == "(") {
@@ -79,8 +79,9 @@ public class BasicTriggerNode {
                     continue;
                 }
             }
-            // 没有找到同级的下一个括号
-            return defaultNode;
+            if (left == null) { // 没有找到同级的下一个括号
+                return defaultNode;
+            }
         } else {
             // 不是括号，直接解析
             left = new GetValueNode(words[0]);

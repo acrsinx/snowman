@@ -9,6 +9,37 @@ public class Plot {
     /// </summary>
     public static string path = "";
     public static Player player;
+    public struct Todo {
+        public int time;
+        public string script;
+        public Todo(int time, string script) {
+            this.time = time;
+            this.script = script;
+        }
+        public static Todo operator + (Todo todo, string script) {
+            return new Todo() {
+                time = todo.time,
+                script = todo.script + script
+            };
+        }
+        public static void AddTodo(int time, string script) {
+            for (int i = todos.Count - 1; i >= 0; i--) {
+                if (todos[i].time == time) {
+                    todos[i] += script;
+                    return;
+                }
+                if (todos[i].time < time) {
+                    todos.Insert(i, new Todo(time, script));
+                    return;
+                }
+            }
+            todos.Insert(0, new Todo(time, script));
+        }
+    }
+    /// <summary>
+    /// 要定时执行的脚本
+    /// </summary>
+    public static readonly List<Todo> todos = new();
     public static void Check(Ui ui) {
         path = "res://plotJson/plot0/plot0_0.json";
         Open(ui);
@@ -27,6 +58,16 @@ public class Plot {
         }
         return InstanceName[instanceName];
     }
+    public static void CameraAnimation(int lastTime, string startScript, string endScript) {
+        ParseScript(startScript);
+        player.cameraManager.SetPosesAnimationTime(lastTime, () => {
+            ParseScript(endScript);
+        });
+        player.cameraManager.PushCurrentCameraPose();
+        ParseCameraScript(endScript);
+        player.cameraManager.PushCurrentCameraPose();
+        player.cameraManager.PosesAnimation();
+    }
     /// <summary>
     /// 加载角色到场景中
     /// </summary>
@@ -38,6 +79,7 @@ public class Plot {
             Ui.Log("已存在角色：" + instanceName);
             return;
         }
+        TriggerSystem.TriggerNames.Remove(instanceName + "_die");
         GameCharacter gameCharacter;
         switch (characterName) {
             case "snowman": {
@@ -123,13 +165,49 @@ public class Plot {
         switch (word) {
             case "LookAtCharacter":
             case "SetCameraPosition":
-            case "SetCameraPositionAt": {
+            case "SetCameraPositionAt":
+            case "SetCameraRotation": {
                 return true;
             }
             default: {
                 return false;
             }
         }
+    }
+    public static string Unwrap(string script) {
+        if (script[0] == '{' && script[^1] == '}') {
+            return Unwrap(script[1..^1]);
+        }
+        return script;
+    }
+    public static List<string> SplitLine(string script) {
+        script = Unwrap(script);
+        List<string> lines = new();
+        int lastIndex = 0;
+        int tabLevel = 0;
+        for (int i = 0; i < script.Length; i++) {
+            if (script[i] == ';' && tabLevel == 0) {
+                lines.Add(script[lastIndex..i]);
+                lastIndex = i + 1;
+                continue;
+            }
+            if (script[i] == '{') {
+                tabLevel++;
+                continue;
+            }
+            if (script[i] == '}') {
+                tabLevel--;
+                if (tabLevel < 0) {
+                    Ui.Log(path + "语法错误: " + script);
+                    return new List<string>();
+                }
+                continue;
+            }
+        }
+        if (lastIndex < script.Length) {
+            lines.Add(script[lastIndex..]);
+        }
+        return lines;
     }
     /// <summary>
     /// 分词
@@ -181,6 +259,10 @@ public class Plot {
         }
         // 解析核心词
         switch (wordsList[0]) {
+            case "CameraAnimation": {
+                CameraAnimation(int.Parse(wordsList[1]), wordsList[2], wordsList[3]);
+                break;
+            }
             case "LoadCharacter": {
                 LoadCharacter(wordsList[1], wordsList[2], new Vector3(float.Parse(wordsList[3]), float.Parse(wordsList[4]), float.Parse(wordsList[5])));
                 break;
@@ -248,6 +330,23 @@ public class Plot {
                 player.ui.EnterName();
                 break;
             }
+            case "ShowChooses": {
+                switch (wordsList.Count) {
+                    case 2: {
+                        player.ui.ShowCaptionChoose(wordsList[1]);
+                        break;
+                    }
+                    case 3: {
+                        player.ui.ShowCaptionChoose(wordsList[1], wordsList[2]);
+                        break;
+                    }
+                    case 4: {
+                        player.ui.ShowCaptionChoose(wordsList[1], wordsList[2], wordsList[3]);
+                        break;
+                    }
+                }
+                break;
+            }
             case "Exit": {
                 player.PlayerState = State.move;
                 break;
@@ -262,41 +361,14 @@ public class Plot {
         if (script == "" || script == null) {
             return;
         }
-        if (script[0] == '{' && script[^1] == '}') {
-            ParseScript(script[1..^1]);
-            return;
-        }
-        List<string> lines = new();
-        int lastIndex = 0;
-        int tabLevel = 0;
-        for (int i = 0; i < script.Length; i++) {
-            if (script[i] == ';' && tabLevel == 0) {
-                lines.Add(script[lastIndex..i]);
-                lastIndex = i + 1;
-                continue;
-            }
-            if (script[i] == '{') {
-                tabLevel++;
-                continue;
-            }
-            if (script[i] == '}') {
-                tabLevel--;
-                if (tabLevel < 0) {
-                    Ui.Log(path + "语法错误: " + script);
-                    return;
-                }
-                continue;
-            }
-        }
-        if (lastIndex < script.Length) {
-            lines.Add(script[lastIndex..]);
-        }
+        script = Unwrap(script);
+        List<string> lines = SplitLine(script);
         foreach (string line in lines) {
             ParseScriptLine(SplitWord(line));
         }
     }
     public static void ParseCameraScript(string script) {
-        string[] lines = script.Split(';');
+        List<string> lines = SplitLine(script);
         foreach (string line in lines) {
             List<string> wordsList = SplitWord(line);
             if (wordsList.Count == 0) {

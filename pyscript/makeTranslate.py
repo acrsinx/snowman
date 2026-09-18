@@ -147,11 +147,6 @@ def create_localization_template(path: str, is_release: bool = False) -> None:
                 toTranslate[plotJson[str(i)]["caption"]] = ""
             if plotJson[str(i)].__contains__("startCode"):
                 toTranslate.update(find(plotJson[str(i)]["startCode"]))
-            if plotJson[str(i)].__contains__("endCode"):
-                toTranslate.update(find(plotJson[str(i)]["endCode"]))
-            for n in range(3):
-                if str(n) in plotJson[str(i)].keys():
-                    toTranslate[next(iter(plotJson[str(i)][str(n)]))] = ""
     with open(output, "w", encoding="utf-8") as file:
         file.write("|||\n|---|---|\n")
         for key in toTranslate:
@@ -167,6 +162,16 @@ def find(code: str) -> dict[str, str]:
         word = token.split(" ")
         if word[0] in ["SetTaskName"]:
             ret[word[1]] = ""
+        if word[0] == "ShowChooses":
+            if len(word) == 2:
+                ret[word[1]] = ""
+            elif len(word) == 3:
+                ret[word[1]] = ""
+                ret[word[2]] = ""
+            elif len(word) == 4:
+                ret[word[1]] = ""
+                ret[word[2]] = ""
+                ret[word[3]] = ""
     return ret
 
 def create_localization_template_all(is_release: bool = False) -> None:

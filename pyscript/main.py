@@ -34,6 +34,7 @@ if __name__ == '__main__':
     formatCode.format_whole_project()
     # 生成剧本json文件
     makePlotJson.make_json()
+    makePlotJson.make_json()
     # 创建翻译模板
     makeTranslate.create_localization_template_all()
     # 生成翻译json文件

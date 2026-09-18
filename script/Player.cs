@@ -138,12 +138,14 @@ public partial class Player: Node3D {
                     ui.captionContainer.Visible = true;
                     ui.captionLabel.VisibleRatio = 0.0f;
                     ui.leftUp.Visible = false;
+                    ui.captionStartTime = Ui.totalGameTime;
                     break;
                 }
                 case State.shot: {
                     ui.phoneControl.Visible = false;
                     ui.rightUp.Visible = false;
                     ui.leftUp.Visible = false;
+                    ui.captionStartTime = Ui.totalGameTime;
                     break;
                 }
                 case State.name: {

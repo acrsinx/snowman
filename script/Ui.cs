@@ -54,8 +54,8 @@ public partial class Ui: Control {
     /// 游玩总时长，单位为(ms)，注意这可能会溢出，不过谁会玩这么久呢？
     /// </summary>
     public static long totalGameTime = 0;
-    private int captionTime = 0;
-    private long captionStartTime = 0;
+    public int captionTime = 0;
+    public long captionStartTime = 0;
     public CaptionResource[] captions;
     private int captionIndex = 0;
     public int CaptionIndex {
@@ -179,8 +179,22 @@ public partial class Ui: Control {
             }
             infomation.Text = text;
         }
+        long deltaTime = totalGameTime - captionStartTime;
+        while (true) {
+            if (Plot.todos.Count == 0) {
+                break;
+            }
+            if (deltaTime < Plot.todos[0].time) {
+                break;
+            }
+            Plot.ParseScript(Plot.todos[0].script);
+            if (Plot.todos.Count == 0) { // 脚本可能含有跳转，跳转后 Plot.todos 会清零
+                break;
+            }
+            Plot.todos.RemoveAt(0);
+        }
         if (player.PlayerState == State.caption) {
-            if (totalGameTime - captionStartTime <= captionTime) {
+            if (deltaTime <= captionTime) {
                 captionLabel.VisibleRatio = (float) (totalGameTime - captionStartTime) / captionTime;
                 return;
             }
@@ -235,11 +249,6 @@ public partial class Ui: Control {
     /// 跳过对话或开始选择
     /// </summary>
     public void NextCaption() {
-        if (player.PlayerState == State.shot) {
-            // 跳过
-            player.cameraManager.PauseCameraAnimation();
-            Plot.ParseScript(captions[captionIndex].endCode);
-        }
         if (player.PlayerState != State.caption) {
             return;
         }
@@ -248,24 +257,19 @@ public partial class Ui: Control {
             return;
         }
         DisplayServer.TtsStop();
-        if (!captions[captionIndex].canChoose) { // 如果不需要选择，即普通对话，即可跳过
-            player.cameraManager.PauseCameraAnimation();
-            Plot.ParseScript(captions[captionIndex].endCode);
-            return;
-        }
-        if (!chooseButtons[0].Visible) { // 如果还没显示选择按钮
-            ShowCaptionChoose(captionIndex);
-        }
+        player.cameraManager.PauseCameraAnimation();
+        TriggerSystem.SendTriggerCurrent("nextCaption");
+        return;
     }
     public void Choose(int index) {
         if (player.PlayerState != State.caption) { // 如果不在对话态，提前返回
             return;
         }
-        if (captions[captionIndex].canChoose && chooseButtons[0].Visible && index < captions[captionIndex].choose.Length && index >= 0) { // 可选
+        if (chooseButtons[0].Visible && index >= 0) { // 可选
             // 清空选项
             ClearChoose();
             // 执行选择后的脚本
-            Plot.ParseScript(captions[captionIndex].chooseEndCode[index]);
+            TriggerSystem.SendTriggerCurrent("choose" + index.ToString());
         }
     }
     public void ShowCaption(Dictionary dict) {
@@ -280,7 +284,12 @@ public partial class Ui: Control {
         }
     }
     public void ShowCaption(int id) {
+        if (id < 0 || id >= captions.Length) {
+            Log("对话出界", id, captions.Length);
+            return;
+        }
         captionIndex = id;
+        Plot.todos.Clear();
         switch (captions[id].type) {
             case "caption":
             case "choose": {
@@ -293,26 +302,16 @@ public partial class Ui: Control {
             }
         }
         Plot.ParseScript(captions[id].startCode);
-        // 设置相机动画
-        if (captions[id].endCode == null) {
-            return;
-        }
-        player.cameraManager.SetPosesAnimationTime(captions[id].time);
-        player.cameraManager.PushCurrentCameraPose();
-        Plot.ParseCameraScript(captions[id].endCode);
-        player.cameraManager.PushCurrentCameraPose();
-        player.cameraManager.PosesAnimation();
     }
-    public void ShowCaptionChoose(int id) {
+    public void ShowCaptionChoose(params string[] chooses) {
         chooseBox.Visible = true;
-        for (int i = 0; i < captions[captionIndex].choose.Length; i++) {
+        for (int i = 0; i < chooses.Length; i++) {
             chooseButtons[i].Visible = true;
-            chooseButtons[i].Text = FormatCaption(Translation.Translate(captions[id].choose[i], Plot.PlotPathToLocalizationContent(Plot.path)));
+            chooseButtons[i].Text = FormatCaption(Translation.Translate(chooses[i], Plot.PlotPathToLocalizationContent(Plot.path)));
         }
     }
     private void SetCaption(string speakerName, string caption, int time) {
         player.PlayerState = State.caption;
-        captionStartTime = totalGameTime;
         speakerLabel.Text = FormatCaption(Translation.Translate(speakerName, "character"));
         captionLabel.Text = FormatCaption(Translation.Translate(caption, Plot.PlotPathToLocalizationContent(Plot.path)));
         captionTime = time;

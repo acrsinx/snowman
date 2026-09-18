@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bdvrhrrde3p0i"]
+[gd_scene load_steps=21 format=3 uid="uid://bdvrhrrde3p0i"]
 
 [ext_resource type="Material" uid="uid://dp7dkljcbwvkj" path="res://material/stone_snow.tres" id="2_02hm0"]
 [ext_resource type="PackedScene" uid="uid://cby2yh7s0masa" path="res://model/snowdrift.gltf" id="3_bu8r0"]
