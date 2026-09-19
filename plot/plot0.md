@@ -166,10 +166,10 @@ AddTrigger(nextCaption, {
 ```
 AddTrigger(nextCaption, {
     ShowChooses(走！, 我们确实该离开。, 这，这不对吧？);
-    AddTrigger((choose1||choose2), {
+    AddTrigger((choose0||choose1), {
         Goto(1)
     });
-    AddTrigger(choose3, {
+    AddTrigger(choose2, {
         Goto(2)
     })
 })
