@@ -240,6 +240,8 @@ def merge_words(words: list[tuple[str, NoteType, bool]], i: int, delta: int, hav
     """
     合并 words[i:i+delta+1]
     """
+    if i < 0:
+        raise IndexError("出界了")
     words[i] = ("".join([word[0] + (" " if have_space else "") for word in words[i:i+delta]]) + words[i+delta][0], words[i][1], any([word[2] for word in words[i:i+delta+1]]))
     for j in range(delta):
         words.pop(i + 1)
@@ -335,21 +337,22 @@ def combine_parentheses(words: list[tuple[str, NoteType, bool]]) -> None:
         if words[i][0].startswith('('):
             if not (words[i - 1][0].endswith(operator_before_left_parenthesis) or (words[i - 1][0].endswith(operator_tuple) and not words[i - 1][0].endswith(">"))):
                 merge_words(words, i - 1, 1)
-                i -= 1
+                i = max(i-1, 0)
         if words[i][0].endswith('('):
             merge_words(words, i, 1)
-            i -= 1
+            i = max(i-1, 0)
         if words[i][0].endswith(')'):
-            if not words[i + 1][0].startswith("}"):
-                if words[i + 1][0].startswith(operator_after_right_parenthesis):
-                    merge_words(words, i, 1)
-                    i -= 1
-                else:
-                    merge_words(words, i, 1, True)
-                    i -= 1
+            if i+1 < len(words):
+                if not words[i + 1][0].startswith("}"):
+                    if words[i + 1][0].startswith(operator_after_right_parenthesis):
+                        merge_words(words, i, 1)
+                        i = max(i-1, 0)
+                    else:
+                        merge_words(words, i, 1, True)
+                        i = max(i-1, 0)
         if words[i][0].startswith(')'):
             merge_words(words, i - 1, 1)
-            i -= 1
+            i = max(i-1, 0)
         i += 1
 
 def combine_square_brackets(words: list[tuple[str, NoteType, bool]]) -> None:
@@ -396,7 +399,7 @@ def combine_comma(words: list[tuple[str, NoteType, bool]]) -> None:
             merge_words(words, i-1, 1)
         i += 1
 
-def combine_operator(words: list[tuple[str, NoteType, bool]]) -> None:
+def combine_operator(words: list[tuple[str, NoteType, bool]], plot_lang: bool=False) -> None:
     """
     合并运算符
     """
@@ -412,6 +415,11 @@ def combine_operator(words: list[tuple[str, NoteType, bool]]) -> None:
             merge_words(words, i, 1)
         if words[i][0].endswith("-") and words[i][0][:-1].endswith(operator_before_minus_sign):
             merge_words(words, i, 1)
+        if plot_lang and words[i][0] in ("/", "&&", "||"):
+            if i < 1:
+                i += 1
+                continue
+            merge_words(words, i-1, 2)
         i += 1
 
 def find_array_comma(words: list[tuple[str, NoteType]]) -> list[tuple[str, NoteType, bool]]:
@@ -575,7 +583,7 @@ def combine_for_loop(words: list[tuple[str, int]]) -> None:
             words.pop(i+1)
         i += 1
 
-def output(path: str, words: list[tuple[str, NoteType]]):
+def output(words: list[tuple[str, NoteType]], path: str="", f=None, plot_lang: bool=False) -> None:
     """
     输出
     """
@@ -587,15 +595,141 @@ def output(path: str, words: list[tuple[str, NoteType]]):
     combine_square_brackets(words)
     combine_semicolon(words)
     combine_comma(words)
-    combine_operator(words)
-    combine_operator(words)
+    combine_operator(words, plot_lang)
+    combine_operator(words, plot_lang)
     words: list[tuple[str, int]] = combine_to_line(words)
     combine_for_loop(words)
-    with open(path, "w", encoding="utf-8") as f:
+    def deal(words: list[tuple[str, int]], f):
         for i in range(len(words)):
             f.write(words[i][1] * 4 * " " + words[i][0] + "\n")
+    if f is None:
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            deal(words, f)
+    else:
+        deal(words, f)
 
-def format_file(path: str, is_release: bool = False):
+def output_Md(path: str, tokens: list[list[str]]) -> None:
+    """
+    输出markdown
+    """
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        for i in range(len(tokens)):
+            if tokens[i][0] == "line":
+                f.write(" ".join(tokens[i][1:]))
+                f.write("  ")
+            elif tokens[i][0] == "title":
+                f.write(" ".join(tokens[i][1:]))
+            elif tokens[i][0] == "table":
+                f.write("".join(tokens[i][1:]))
+            elif tokens[i][0] == "code":
+                f.write("```")
+                if tokens[i][1] != "None":
+                    f.write(tokens[i][1])
+                f.write("\n")
+                output(split_word(tokens[i][2]), f=f, plot_lang=True)
+                f.write("```")
+            f.write("\n")
+
+def is_half_width(char: str) -> bool:
+    if char.isascii():
+        return True
+    return False
+
+def split_Md_tokens(data: list[str]) -> list[list[str]]:
+    ret: list[list[str]] = []
+    in_code: bool = False
+    code_name: str = ""
+    code: str = ""
+    for line in data:
+        if line.startswith("```"):
+            if in_code:
+                ret.append(["code", "None" if code_name == "" else code_name, code])
+                code = ""
+            else:
+                code_name = line[3:].strip()
+            in_code = not in_code
+            continue
+        if in_code:
+            code += line
+            continue
+        line = line[:-1]
+        tokens: list[str] = []
+        if line.startswith("###"):
+            tokens.append("###")
+            line = line[3:]
+        elif line.startswith("##"):
+            tokens.append("##")
+            line = line[2:]
+        elif line.startswith("#"):
+            tokens.append("#")
+            line = line[1:]
+        elif line.startswith("|"): # 表格
+            split: list[str] = line.split("|")
+            split = [i.strip() for i in split]
+            ret.append(["table", "|".join(split)])
+            continue
+        line = line.strip()
+        if len(line) == 0:
+            if len(tokens) == 0:
+                continue
+            ret.append(["title"] + tokens)
+        last_half_width: bool = is_half_width(line[0])
+        last_start: int = 0
+        in_str: bool = line[0] == "`"
+        in_square_bracket: bool = line[0] == "["
+        for j in range(1, len(line)):
+            if line[j] == "`":
+                if in_str:
+                    tokens.append(line[last_start:j+1])
+                    last_start = j+1
+                else:
+                    tokens.append(line[last_start:j])
+                    last_start = j
+                in_str = not in_str
+                last_half_width = True
+                continue
+            if in_str:
+                continue
+            if line[j] == "[":
+                if line[j-1] != "|":
+                    tokens.append(line[last_start:j])
+                    last_start = j
+                in_square_bracket = True
+                continue
+            if line[j] == "]":
+                in_square_bracket = False
+                last_half_width = True
+                continue
+            if in_square_bracket:
+                continue
+            if line[j] == " ":
+                tokens.append(line[last_start:j])
+                last_start = j+1
+                continue
+            half_width = is_half_width(line[j])
+            if last_half_width == half_width:
+                continue
+            else:
+                tokens.append(line[last_start:j])
+                last_start = j
+            last_half_width = half_width
+        tokens.append(line[last_start:])
+        if len(tokens) == 0:
+            continue
+        ret.append(["title" if tokens[0].startswith("#") else "line"] + tokens)
+    for i in range(len(ret)):
+        ret[i] = [ret[i][j] for j in range(len(ret[i])) if ret[i][j] != ""]
+        if ret[i][0] == "line":
+            pass
+        for j in range(1, len(ret[i])):
+            for k in (":", ",", ".", ";", "?", "!", "，", "。", "？", "！"):
+                if ret[i][j] == k:
+                    ret[i][j-1] += k
+                    ret[i][j] = ""
+        ret[i] = [ret[i][j] for j in range(len(ret[i])) if ret[i][j] != ""]
+    return ret
+
+def format_file(path: str, is_release: bool = False) -> None:
     """
     整理代码
     """
@@ -610,16 +744,33 @@ def format_file(path: str, is_release: bool = False):
         os.makedirs(os.path.dirname(copy_path), exist_ok=True)
     print("整理代码: ", path)
     shutil.copy(path, copy_file)
+    if path.endswith(".cs") or path.endswith(".gdshader"):
+        format_Clike_file(path)
+    elif path.endswith(".md"):
+        format_Md_file(path)
+    # 使副本时间晚于原件
+    time.sleep(0.01)
+    os.utime(copy_file, (time.time(), time.time()))
+
+def format_Clike_file(path: str) -> None:
+    """
+    整理代码，{}风格的
+    """
     with open(path, "r", encoding="utf-8") as f:
         data: str = f.read()
         # 分词
         words: list[tuple[str, NoteType]] = split_word(data)
         # 输出
-        if path.endswith(".cs") or path.endswith(".gdshader"):  # {}类编程语言，如C#、gdshader
-            output(path, words)
-    # 使副本时间晚于原件
-    time.sleep(0.01)
-    os.utime(copy_file, (time.time(), time.time()))
+        output(words, path)
+
+def format_Md_file(path: str) -> None:
+    """
+    整理 Markdown 文件
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        data: list[str] = f.readlines()
+        tokens: list[list[str]] = split_Md_tokens(data)
+        output_Md(path, tokens)
 
 def format_code(base_dir: str, current_dir: str, dir_list: list[str], ignore_list: list[str], is_release: bool = False):
     """

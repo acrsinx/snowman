@@ -73,7 +73,7 @@ def make_translate(path: str, output: str, is_release: bool = False) -> None:
         raise Exception("缺少翻译")
     if not os.path.exists(os.path.dirname(output)):
         os.mkdir(os.path.dirname(output))
-    with open(output, "w", encoding="utf-8") as file:
+    with open(output, "w", encoding="utf-8", newline="\n") as file:
         json.dump(translation_json, file)
 
 def make_translate_all(is_release: bool = False) -> None:
@@ -147,7 +147,7 @@ def create_localization_template(path: str, is_release: bool = False) -> None:
                 toTranslate[plotJson[str(i)]["caption"]] = ""
             if plotJson[str(i)].__contains__("startCode"):
                 toTranslate.update(find(plotJson[str(i)]["startCode"]))
-    with open(output, "w", encoding="utf-8") as file:
+    with open(output, "w", encoding="utf-8", newline="\n") as file:
         file.write("|||\n|---|---|\n")
         for key in toTranslate:
             file.write("|" + key + "||\n")

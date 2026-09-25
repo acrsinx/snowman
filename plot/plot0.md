@@ -1,9 +1,9 @@
-# 版本0剧情
+# 版本 0 剧情
 ## 开场
 `file` `plot0_0.json`  
 引导玩家开战。  
 ### `0`
-`shot`
+`shot`  
 ```
 LoadCharacter(snowdog, dog, (-4, 0, -6));
 LoadCharacter(snowman, snowman1, (-3, 0, -4));
@@ -87,7 +87,7 @@ AddTrigger(nextCaption, {
 ```
 ### `2`
 `caption`  
-`愤怒的雪人`: `可是……`
+`愤怒的雪人`: `可是……`  
 ```
 LookAtCharacter(snowman1, 0.7, 1.2);
 AddTrigger(nextCaption, {

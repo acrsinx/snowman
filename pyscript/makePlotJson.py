@@ -263,7 +263,7 @@ def make_json_file(markdown_file: str, this_plot_dir: str, is_release: bool = Fa
                             break
                     continue
             print("生成json文件: ", fileName)
-            with open(fileName, "w", encoding='utf-8') as file_output:
+            with open(fileName, "w", encoding='utf-8', newline="\n") as file_output:
                 i += 2
                 json_file_data = {}
                 while i < len(tokens) and tokens[i] != "file":
