@@ -27,13 +27,21 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     public Sprite2D mapFlag;
     public Player player;
     public Health health;
+    public enum CharacterType {
+        Snowman,
+        Snowbear,
+        Snowdog,
+        Robot
+    }
+    public CharacterType type;
     public bool isEnemy = false;
     public bool isPlayer = false;
     private long attackStartTime = 0;
-    public GameCharacter(PackedScene character, Player player, Shape3D shape3D, Vector3 offsetPosition, bool isEnemy, bool isPlayer = false) {
+    public GameCharacter(PackedScene character, Player player, Shape3D shape3D, Vector3 offsetPosition, bool isEnemy, CharacterType type, bool isPlayer = false) {
         gameCharacters.Add(this);
         this.character = character.Instantiate<Node3D>();
         this.isEnemy = isEnemy;
+        this.type = type;
         this.isPlayer = isPlayer;
         if (isPlayer) {
             player.AddChild(this);
@@ -97,6 +105,9 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         if (!Attackable()) {
             return false;
         }
+        if (auto != null && !auto.canAttackWhenMoving) {
+            Velocity = Vector3.Zero;
+        }
         CharacterAttack();
         return true;
     }
@@ -159,6 +170,22 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     }
     public Node3D GetCharacterNode() {
         return character;
+    }
+    public int GetID() {
+        int id = 0;
+        foreach (GameCharacter character in gameCharacters) {
+            if (character.type != type) {
+                continue;
+            }
+            if (character == this) {
+                return id;
+            }
+            id++;
+        }
+        return -1;
+    }
+    public Vector3 GetCharacterFront() {
+        return new Vector3(0, 0, -1).Rotated(new(0, 1, 0), character.GlobalRotation.Y);
     }
     public static void SetChildLayer(Node node, uint layer) {
         for (int i = 0; i < node.GetChildCount(); i++) {

@@ -4,6 +4,7 @@ public partial class SnowCover: MeshInstance3D {
     public Player player;
     public SubViewport snowCoverTexture;
     public MultiMeshInstance2D snowmanStamp;
+    public MultiMeshInstance2D snowbearStamp;
     private PlaneMesh mesh = null;
     public void Init(Player player) {
         this.player = player;
@@ -12,25 +13,45 @@ public partial class SnowCover: MeshInstance3D {
         UpdateMesh();
         snowCoverTexture = player.root.GetNode<SubViewport>("snowCover");
         snowmanStamp = snowCoverTexture.GetChild<MultiMeshInstance2D>(1);
-        snowmanStamp.Multimesh.InstanceCount = 4;
+        snowmanStamp.Multimesh = new() {
+            InstanceCount = 4,
+            Mesh = new QuadMesh() {
+                Size = new Vector2(16, 16)
+            }
+        };
+        snowbearStamp = snowCoverTexture.GetChild<MultiMeshInstance2D>(2);
+        snowbearStamp.Multimesh = new() {
+            InstanceCount = 2,
+            Mesh = new QuadMesh() {
+                Size = new Vector2(16, 16)
+            }
+        };
     }
     /// <summary>
     /// 雪地印
     /// </summary>
-    public void Stamp(GameCharacter character, int id) {
-        if (!character.IsOnFloor()) {
-            return;
+    public void Stamp(GameCharacter character, Transform2D transform2D) {
+        switch (character.type) {
+            case GameCharacter.CharacterType.Snowman: {
+                snowmanStamp.Multimesh.SetInstanceTransform2D(character.GetID(), transform2D);
+                break;
+            }
+            case GameCharacter.CharacterType.Snowbear: {
+                snowbearStamp.Multimesh.SetInstanceTransform2D(character.GetID(), transform2D);
+                break;
+            }
         }
-        if (!IsOnSnowCover(character.GlobalPosition)) {
-            return;
-        }
-        if (character.Velocity.X == 0 && character.Velocity.Z == 0) {
-            return;
-        }
-        float x = character.Velocity.Z;
-        float y = -character.Velocity.X;
+    }
+    public static Transform2D GetStampTransform2D(Player player, Vector3 position, float scale, Vector3 velocity = default) {
         float size = Map.mapSizes[player.ui.currentScene];
-        snowmanStamp.Multimesh.SetInstanceTransform2D(id, new Transform2D(MathF.Atan2(y, x), player.ui.settingPanel.gameInformation.SnowCoverSize / size * new Vector2(character.GlobalPosition.X, character.GlobalPosition.Z)).ScaledLocal(Tool.Vector2(0.06f * player.ui.settingPanel.gameInformation.SnowCoverSize / size)));
+        float direction = 0;
+        if (velocity != default) {
+            float x = velocity.Z;
+            float y = -velocity.X;
+            direction = MathF.Atan2(y, x);
+        }
+        return new Transform2D(direction, player.ui.settingPanel.gameInformation.SnowCoverSize / size * new Vector2(position.X, position.Z))
+        .ScaledLocal(Tool.Vector2(scale * player.ui.settingPanel.gameInformation.SnowCoverSize / size));
     }
     public void RefreshSnowCover() {
         UpdateMesh();

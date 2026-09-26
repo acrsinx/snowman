@@ -262,7 +262,6 @@ public partial class Player: Node3D {
             float factor = maxSpeed / lengthXZ;
             character.Velocity = new Vector3(character.Velocity.X * factor, character.Velocity.Y, character.Velocity.Z * factor);
         }
-        snowCover?.Stamp(character, 0);
         // 移动
         character.MoveAndSlide();
         cameraManager.UpdateCamera();

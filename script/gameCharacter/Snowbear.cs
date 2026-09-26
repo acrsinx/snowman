@@ -3,14 +3,16 @@ public partial class Snowbear: GameCharacter {
     public static readonly PackedScene SnowbearScene = GD.Load<PackedScene>("res://model/snowbear.glb");
     public Snowbear(Player player): base(SnowbearScene, player, new SphereShape3D() {
         Radius = 0.5f
-    }, new Vector3(0, 0.5f, 0), true) {
+    }, new Vector3(0, 0.5f, 0), true, CharacterType.Snowbear) {
         PlotCharacter.AddAnimationPlayer(this, "fourFeet");
         auto = new AutoCharacterManager(this, player);
         auto.afterAttack += () => {
+            Vector3 coodinate = character.GlobalPosition + GetCharacterFront()*0.6f;
             // 产生声波
             SoundWave soundWave = new(player, GlobalPosition) {
-                GlobalPosition = character.GlobalPosition
+                GlobalPosition = coodinate
             };
+            player.snowCover.Stamp(this, SnowCover.GetStampTransform2D(player, coodinate, 0.12f));
             GetPlotCharacter().PauseAnimation();
         };
         health.MaxHealth = 100;

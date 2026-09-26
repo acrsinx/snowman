@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using Godot;
 public partial class Snowman: GameCharacter {
     public static readonly PackedScene SnowmanScene = ResourceLoader.Load<PackedScene>("res://model/snowman.glb");
@@ -7,12 +7,10 @@ public partial class Snowman: GameCharacter {
     public static readonly Vector3 gravity = new(0, -9.8f, 0);
     public static RayCast3D checkCast;
     public static ObjectPool snowballPool = new(32, SnowballMesh);
-    private int snowmanID;
-    private static readonly List<Snowman> snowmen = new();
     public Snowman(Player player, bool isPlayer = true): base(SnowmanScene, player, new CapsuleShape3D() {
         Radius = 0.3f,
         Height = 0.9f
-    }, new Vector3(0, 0.5f, 0), false, isPlayer) {
+    }, new Vector3(0, 0.5f, 0), false, CharacterType.Snowman, isPlayer) {
         if (checkCast == null) { // 第一次初始化雪人
             checkCast = new() {
                 CollisionMask = 0b10
@@ -20,8 +18,6 @@ public partial class Snowman: GameCharacter {
             player.root.AddChild(checkCast);
             player.root.AddChild(snowballPool.instances);
         }
-        snowmen.Add(this);
-        snowmanID = snowmen.Count - 1;
         Position = new Vector3(0, 0.1f, 0);
         if (isPlayer) {
             player.cameraManager.cameraMarker.Reparent(this, false);
@@ -52,8 +48,7 @@ public partial class Snowman: GameCharacter {
         snowballPool.instances.Multimesh.SetInstanceTransform(id, snowballTransform);
         // 设置速度
         float rx = isPlayer?player.cameraManager.cameraMarker.Rotation.X:Tool.RandomFloat(0.5f, 0.5001f);
-        float ry = character.GlobalRotation.Y;
-        Vector3 direction = new Vector3(0, 0, -1).Rotated(new(0, 1, 0), ry).Rotated(new(1, 0, 0), rx) + new Vector3(0, 0.5f, 0);
+        Vector3 direction = GetCharacterFront().Rotated(new(1, 0, 0), rx) + new Vector3(0, 0.5f, 0);
         snowballPool.Velocities[id] = Velocity + direction * 10;
         Vector3 impuse = direction.Normalized() * 10;
         // I = mv => v = I/m
@@ -61,6 +56,10 @@ public partial class Snowman: GameCharacter {
     }
     public override void _PhysicsProcess(double delta) {
         base._PhysicsProcess(delta);
+        Transform2D? transform = ToStamp(this);
+        if (transform != null) {
+            player.snowCover?.Stamp(this, transform.Value);
+        }
         if (isPlayer) {
             PhysicsProcess((float) delta);
         }
@@ -70,7 +69,6 @@ public partial class Snowman: GameCharacter {
         if (auto == null) {
             return;
         }
-        player.snowCover?.Stamp(this, snowmanID);
     }
     public static void PhysicsProcess(float fDelta) {
         for (int i = 0; i < snowballPool.Count; i++) {
@@ -102,5 +100,17 @@ public partial class Snowman: GameCharacter {
             // 设置雪球位置
             snowballPool.instances.Multimesh.SetInstanceTransform(i, snowballTransform);
         }
+    }
+    public static Transform2D? ToStamp(GameCharacter character) {
+        if (!character.IsOnFloor()) {
+            return null;
+        }
+        if (!SnowCover.IsOnSnowCover(character.GlobalPosition)) {
+            return null;
+        }
+        if (character.Velocity.X == 0 && character.Velocity.Z == 0) {
+            return null;
+        }
+        return SnowCover.GetStampTransform2D(character.player, character.GlobalPosition, 0.06f, character.Velocity);
     }
 }
