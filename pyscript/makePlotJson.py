@@ -58,6 +58,8 @@ valueNum: dict[str, list[list[PlotCodeType]]] = {
     "CameraAnimation": [[I, C, C]],
     "LoadCharacter": [[S, S, F, F, F]],
     "SetCharacterTarget": [[S, F, F, F]],
+    "LetCharacterAuto": [[S]],
+    "LetCharacterAttack": [[S]],
     "SetCharacterPosition": [[S, F, F, F]],
     "PlayAnimation": [[S, S]],
     "PauseAnimation": [[S]],
@@ -291,6 +293,17 @@ def make_json_file(markdown_file: str, this_plot_dir: str, is_release: bool = Fa
                             }
                         }
                         i += 3
+                    elif captionType == "text": # 黑底白字文本
+                        text: str = tokens[i + 2]
+                        startCode: str = simplify_script(tokens[i + 3], markdown_file)
+                        json_line = {
+                            caption_index: {
+                                "text": text,
+                                "type": captionType,
+                                "startCode": startCode
+                            }
+                        }
+                        i += 4
                     else:
                         os.utime(markdown_file, (time.time(), time.time()))
                         raise Exception("未知对话类型: ", captionType)

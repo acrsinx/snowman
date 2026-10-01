@@ -9,6 +9,8 @@ public partial class Ui: Control {
     public PanelContainer captionContainer;
     public Label speakerLabel;
     public Label captionLabel;
+    public ColorRect textBackground;
+    public Label textWhite;
     public VBoxContainer chooseBox;
     public Button[] chooseButtons;
     public Control phoneControl;
@@ -89,6 +91,8 @@ public partial class Ui: Control {
         captionContainer = GetNode<PanelContainer>("CaptionContainer");
         speakerLabel = GetNode<Label>("CaptionContainer/VBoxContainer/SpeakerLabel");
         captionLabel = GetNode<Label>("CaptionContainer/VBoxContainer/CaptionLabel");
+        textBackground = GetNode<ColorRect>("TextBackground");
+        textWhite = GetNode<Label>("TextWhite");
         chooseBox = GetNode<VBoxContainer>("choose");
         chooseButtons = new Button[3];
         chooseButtons[0] = GetNode<Button>("choose/Button");
@@ -114,6 +118,8 @@ public partial class Ui: Control {
             Log("找不到灯光。");
         }
         settingPanel.gameInformation.light = light;
+        textBackground.Visible = false;
+        textWhite.Visible = false;
         healthBar.Visible = false;
         packagePanel.Init(this);
         loadPanel.Init(this);
@@ -249,17 +255,12 @@ public partial class Ui: Control {
     /// 跳过对话或开始选择
     /// </summary>
     public void NextCaption() {
-        if (player.PlayerState != State.caption) {
-            return;
-        }
-        if (totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完，让文字直接显示完
+        if (captions[captionIndex].type == "caption" && totalGameTime - captionStartTime < captionTime) { // 如果文字还没显示完，让文字直接显示完
             captionStartTime = totalGameTime - captionTime;
             return;
         }
         DisplayServer.TtsStop();
-        player.cameraManager.PauseCameraAnimation();
         TriggerSystem.SendTriggerCurrent("nextCaption");
-        return;
     }
     public void Choose(int index) {
         if (player.PlayerState != State.caption) { // 如果不在对话态，提前返回
@@ -280,6 +281,7 @@ public partial class Ui: Control {
                 captions[i] = new(this, (Dictionary) dict[i.ToString()], i);
                 i++;
             }
+            captionIndex = -1;
             ShowCaption(0);
         }
     }
@@ -288,11 +290,13 @@ public partial class Ui: Control {
             Log("对话出界", id, captions.Length);
             return;
         }
-        captionIndex = id;
         Plot.todos.Clear();
+        if (captionIndex != -1 && captions[captionIndex].type == "text" && captions[id].type != "text" && textWhite.Visible) {
+            FadeText();
+        }
+        captionIndex = id;
         switch (captions[id].type) {
-            case "caption":
-            case "choose": {
+            case "caption": {
                 SetCaption(captions[id].actorName, captions[id].caption, captions[id].time);
                 break;
             }
@@ -300,8 +304,33 @@ public partial class Ui: Control {
                 player.PlayerState = State.shot;
                 break;
             }
+            case "text": {
+                player.PlayerState = State.text;
+                break;
+            }
         }
         Plot.ParseScript(captions[id].startCode);
+    }
+    public void ShowText() {
+        textBackground.Color = new Color(0x0A0A14FF);
+        textWhite.Text = FormatCaption(Translation.Translate(captions[captionIndex].caption, Plot.PlotPathToLocalizationContent(Plot.path))) + "\n\n";
+        textWhite.LabelSettings.FontColor = new Color(0x0A0A14FF);
+        Tween tween = CreateTween();
+        tween.TweenProperty(textWhite.LabelSettings, "font_color", new Color(0xE1E1F5FF), 1.0f);
+        Plot.Todo.AddTodo(2000, "Goto(1)");
+    }
+    private void FadeText() {
+        if (!textBackground.Visible) {
+            return;
+        }
+        Tween tween = CreateTween();
+        tween.SetParallel();
+        tween.TweenProperty(textBackground, "color", new Color(0x0A0A1400), 1.0f);
+        tween.TweenProperty(textWhite.LabelSettings, "font_color", new Color(0xE1E1F500), 1.0f);
+        tween.Finished += () => {
+            textBackground.Visible = false;
+            textWhite.Visible = false;
+        };
     }
     public void ShowCaptionChoose(params string[] chooses) {
         chooseBox.Visible = true;

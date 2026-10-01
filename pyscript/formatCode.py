@@ -44,7 +44,7 @@ operator_after_right_square_bracket: tuple = (".", ";")
 前面加右方括号不空格的
 """
 
-operator_combine_right: tuple = ("?", "!", ".", "::", "^")
+operator_combine_right: tuple = ("?.", "!", ".", "::", "^")
 """
 右结合的符号
 """
@@ -410,6 +410,8 @@ def combine_operator(words: list[tuple[str, NoteType, bool]], plot_lang: bool=Fa
         if i >= len(words) - 1:
             break
         if words[i + 1][0].startswith(operator_combine_left):
+            merge_words(words, i, 1)
+        if words[i + 1][0] == "?":
             merge_words(words, i, 1)
         if words[i][0] == "-" and words[i-1][0].endswith(operator_before_minus_sign):
             merge_words(words, i, 1)

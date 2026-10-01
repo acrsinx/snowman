@@ -112,6 +112,13 @@ public class Plot {
         auto.targetPosition = target;
         auto.ForceToGo = true;
     }
+    public static void LetCharacterAuto(string instanceName) {
+        AutoCharacterManager auto = ((GameCharacter) GetPlotCharacter(instanceName)).auto;
+        auto.ForceToGo = false;
+    }
+    public static void LetCharacterAttack(string instanceName) {
+        ((GameCharacter) GetPlotCharacter(instanceName)).Attack();
+    }
     public static void SetCharacterPosition(string instanceName, Vector3 position) {
         GameCharacter character = (GameCharacter) GetPlotCharacter(instanceName);
         character.Position = position;
@@ -271,6 +278,14 @@ public class Plot {
                 SetCharacterTarget(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
                 break;
             }
+            case "LetCharacterAuto": {
+                LetCharacterAuto(wordsList[1]);
+                break;
+            }
+            case "LetCharacterAttack": {
+                LetCharacterAttack(wordsList[1]);
+                break;
+            }
             case "SetCharacterPosition": {
                 SetCharacterPosition(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
                 break;
@@ -304,6 +319,7 @@ public class Plot {
                 break;
             }
             case "Goto": {
+                player.cameraManager.PauseCameraAnimation();
                 player.ui.ShowCaption(player.ui.CaptionIndex + int.Parse(wordsList[1]));
                 break;
             }
@@ -348,6 +364,7 @@ public class Plot {
                 break;
             }
             case "Exit": {
+                player.cameraManager.PauseCameraAnimation();
                 player.PlayerState = State.move;
                 break;
             }

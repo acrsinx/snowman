@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://cfuse5s8ctik2"]
+[gd_scene load_steps=25 format=3 uid="uid://cfuse5s8ctik2"]
 
 [ext_resource type="PackedScene" uid="uid://dr0rgcmstsa67" path="res://scene/sunLight.tscn" id="1_vrbr4"]
 [ext_resource type="Environment" uid="uid://ufrg2ux2wxys" path="res://config/default_env.tres" id="2_s0cah"]
@@ -63,12 +63,6 @@ shader_parameter/height = SubResource("ViewportTexture_6eokv")
 shader_parameter/noise = ExtResource("11_6qi4a")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_sf45c"]
-
-[sub_resource type="QuadMesh" id="QuadMesh_btpyb"]
-size = Vector2(300, 300)
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_xmaw8"]
-viewport_path = NodePath("snowCover")
 
 [node name="Node" type="Node"]
 
@@ -169,8 +163,3 @@ layers = 8
 material_override = SubResource("ShaderMaterial_cao2t")
 mesh = SubResource("PlaneMesh_sf45c")
 script = ExtResource("12_q5udi")
-
-[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
-position = Vector2(957, 210)
-mesh = SubResource("QuadMesh_btpyb")
-texture = SubResource("ViewportTexture_xmaw8")

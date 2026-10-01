@@ -1,10 +1,12 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 public partial class SnowCover: MeshInstance3D {
     public Player player;
     public SubViewport snowCoverTexture;
     public MultiMeshInstance2D snowmanStamp;
     public MultiMeshInstance2D snowbearStamp;
+    public readonly List<int[]> snowbearToClear = new();
     private PlaneMesh mesh = null;
     public void Init(Player player) {
         this.player = player;
@@ -27,6 +29,22 @@ public partial class SnowCover: MeshInstance3D {
             }
         };
     }
+    public override void _Process(double delta) {
+        if (snowbearToClear.Count == 0) {
+            return;
+        }
+        for (int i = 0; i < snowbearToClear.Count; i++) {
+            int times = snowbearToClear[i][1];
+            if (times != 0) {
+                snowbearToClear[i][1]--;
+                continue;
+            }
+            int id = snowbearToClear[i][0];
+            snowbearStamp.Multimesh.SetInstanceTransform2D(id, Tool.ZeroTransform2D);
+            snowbearToClear.RemoveAt(i);
+            i--;
+        }
+    }
     /// <summary>
     /// 雪地印
     /// </summary>
@@ -37,7 +55,12 @@ public partial class SnowCover: MeshInstance3D {
                 break;
             }
             case GameCharacter.CharacterType.Snowbear: {
-                snowbearStamp.Multimesh.SetInstanceTransform2D(character.GetID(), transform2D);
+                int id = character.GetID();
+                snowbearStamp.Multimesh.SetInstanceTransform2D(id, transform2D);
+                snowbearToClear.Add(new int[] {
+                    id,
+                    3
+                });
                 break;
             }
         }
@@ -50,8 +73,7 @@ public partial class SnowCover: MeshInstance3D {
             float y = -velocity.X;
             direction = MathF.Atan2(y, x);
         }
-        return new Transform2D(direction, player.ui.settingPanel.gameInformation.SnowCoverSize / size * new Vector2(position.X, position.Z))
-        .ScaledLocal(Tool.Vector2(scale * player.ui.settingPanel.gameInformation.SnowCoverSize / size));
+        return new Transform2D(direction, player.ui.settingPanel.gameInformation.SnowCoverSize / size * new Vector2(position.X, position.Z)).ScaledLocal(Tool.Vector2(scale * player.ui.settingPanel.gameInformation.SnowCoverSize / size));
     }
     public void RefreshSnowCover() {
         UpdateMesh();
@@ -76,6 +98,9 @@ public partial class SnowCover: MeshInstance3D {
         }
         for (int i = 0; i < snowmanStamp.Multimesh.InstanceCount; i++) {
             snowmanStamp.Multimesh.SetInstanceTransform2D(i, Tool.ZeroTransform2D);
+        }
+        for (int i = 0; i < snowbearStamp.Multimesh.InstanceCount; i++) {
+            snowbearStamp.Multimesh.SetInstanceTransform2D(i, Tool.ZeroTransform2D);
         }
     }
     public static bool IsOnSnowCover(Vector3 globalPosition) {

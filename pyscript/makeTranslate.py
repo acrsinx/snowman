@@ -145,6 +145,8 @@ def create_localization_template(path: str, is_release: bool = False) -> None:
         for i in range(len(plotJson)):
             if plotJson[str(i)].__contains__("caption"):
                 toTranslate[plotJson[str(i)]["caption"]] = ""
+            if plotJson[str(i)].__contains__("text"):
+                toTranslate[plotJson[str(i)]["text"]] = ""
             if plotJson[str(i)].__contains__("startCode"):
                 toTranslate.update(find(plotJson[str(i)]["startCode"]))
     with open(output, "w", encoding="utf-8", newline="\n") as file:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://d1ag14jieptrf"]
+[gd_scene load_steps=10 format=3 uid="uid://d1ag14jieptrf"]
 
 [ext_resource type="Theme" uid="uid://brwqadtig5tg1" path="res://config/mainTheme.tres" id="1_qh1ee"]
 [ext_resource type="Script" path="res://script/Ui.cs" id="2_mqx4e"]
@@ -10,6 +10,10 @@
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4og0v"]
 radius = 64.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_3uo3d"]
+font_size = 35
+shadow_size = 0
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -284,3 +288,24 @@ offset_bottom = 300.0
 visible = false
 layout_mode = 1
 script = ExtResource("6_apcne")
+
+[node name="TextBackground" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextWhite" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_3uo3d")
+horizontal_alignment = 1
+vertical_alignment = 1

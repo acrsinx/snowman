@@ -3,12 +3,27 @@
 `file` `plot0_0.json`  
 引导玩家开战。  
 ### `0`
+`text` `雪历一百六十三年，斯诺镇……`  
+```
+AddTrigger(nextCaption, {
+    Goto(1)
+})
+```
+### `1`
 `shot`  
 ```
 LoadCharacter(snowdog, dog, (-4, 0, -6));
 LoadCharacter(snowman, snowman1, (-3, 0, -4));
 LoadCharacter(snowman, snowman2, (-4, 0, -4));
 LoadCharacter(snowman, snowman3, (-5, 0, -4));
+LoadCharacter(snowbear, bear1, (-3, 0, 6));
+LoadCharacter(snowbear, bear2, (-4, 0, 4));
+SetCharacterTarget(snowman1, (-3, 0, -4));
+SetCharacterTarget(snowman2, (-4, 0, -4));
+SetCharacterTarget(snowman3, (-5, 0, -4));
+SetCharacterTarget(bear1, (5, 0, 3));
+SetCharacterTarget(bear2, (3, 0, 4));
+LetCharacterAttack(bear1);
 SetCharacterPosition(Player, (-4, 0, -2));
 CameraAnimation(2000, {
     SetCameraPositionAt((0, 1, 0));
@@ -17,9 +32,9 @@ CameraAnimation(2000, {
     SetCameraPositionAt((0, 2.5, 0));
     SetCameraRotation(-5, 180);
     Goto(1)
-});
+})
 ```
-### `1`
+### `2`
 `caption`  
 `雪狗`: `这雪熊又来侵扰斯诺镇了！`  
 ```
@@ -34,13 +49,11 @@ AddTrigger(nextCaption, {
     Goto(1)
 })
 ```
-### `2`
+### `3`
 `caption`  
 `雪狗`: `雪人们，开战！`  
 ```
 SetCameraPosition();
-LoadCharacter(snowbear, bear1, (5, 1, 6));
-LoadCharacter(snowbear, bear2, (3, 1, 4));
 SetTaskName(击败雪熊。);
 AddTrigger(bear1_die&&bear2_die, {
     SetTaskName(到雪狗处集合。);
@@ -56,6 +69,11 @@ AddTrigger(bear1_die&&bear2_die, {
     })
 });
 AddTrigger(nextCaption, {
+    LetCharacterAuto(snowman1);
+    LetCharacterAuto(snowman2);
+    LetCharacterAuto(snowman3);
+    LetCharacterAuto(bear1);
+    LetCharacterAuto(bear2);
     PauseAnimation(dog);
     Exit()
 })

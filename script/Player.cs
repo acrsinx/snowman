@@ -148,6 +148,23 @@ public partial class Player: Node3D {
                     ui.captionStartTime = Ui.totalGameTime;
                     break;
                 }
+                case State.text: {
+                    if (ui.textWhite.Visible) { // 上一个镜头也是 text
+                        Tween tween0 = CreateTween();
+                        tween0.TweenProperty(ui.textWhite.LabelSettings, "font_color", new Color(0xE1E1F500), 1.0f);
+                        tween0.Finished += ui.ShowText;
+                        return;
+                    }
+                    ui.phoneControl.Visible = false;
+                    ui.rightUp.Visible = false;
+                    ui.captionContainer.Visible = false;
+                    ui.leftUp.Visible = false;
+                    ui.captionStartTime = Ui.totalGameTime;
+                    ui.textBackground.Visible = true;
+                    ui.textWhite.Visible = true;
+                    ui.ShowText();
+                    break;
+                }
                 case State.name: {
                     ui.phoneControl.Visible = false;
                     ui.rightUp.Visible = false;

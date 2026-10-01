@@ -26,6 +26,11 @@ public class CaptionResource: object {
                 time = caption.Length * 200;
                 break;
             }
+            case "text": { // 文本
+                caption = (string) dict["text"];
+                time = 3000;
+                break;
+            }
         }
     }
 }

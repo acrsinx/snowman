@@ -19,6 +19,7 @@ public class AutoCharacterManager: object {
             if (value) {
                 state = State.Walk;
             }
+            state = State.Idle;
             forceToGo = value;
         }
     }
@@ -42,11 +43,11 @@ public class AutoCharacterManager: object {
         this.player = player;
     }
     private bool IsCloseToTarget() {
-        if (target != null && !forceToGo) {
-            return character.GlobalPosition.DistanceTo(target.GlobalPosition) <= character.GetAttackRange();
-        }
         if (forceToGo) {
-            return character.GlobalPosition.DistanceTo(targetPosition) <= 0.5f;
+            return character.GlobalPosition.DistanceTo(targetPosition) <= 0.3f;
+        }
+        if (target != null) {
+            return character.GlobalPosition.DistanceTo(target.GlobalPosition) <= character.GetAttackRange();
         }
         return false;
     }
@@ -54,11 +55,20 @@ public class AutoCharacterManager: object {
         character.agent.TargetPosition = targetPosition + Tool.RandomVector3(new Vector3(random, 0, random));
     }
     public void PhysicsProcess(float fDelta) {
-        if (player.PlayerState != global::State.move) {
-            return;
+        switch (player.PlayerState) {
+            case global::State.move:
+            case global::State.caption:
+            case global::State.shot: {
+                break;
+            }
+            default: {
+                return;
+            }
         }
         switch (state) {
             case State.Stop: {
+                character.Velocity -= character.Velocity * (1 - fDelta);
+                character.AnimationPlayer?.Stop();
                 break;
             }
             case State.Idle: {
@@ -101,6 +111,10 @@ public class AutoCharacterManager: object {
                     state = State.StartAttack;
                     return;
                 }
+                if (forceToGo && IsCloseToTarget()) {
+                    state = State.Stop;
+                    return;
+                }
                 Move(fDelta);
                 break;
             }
@@ -116,14 +130,6 @@ public class AutoCharacterManager: object {
                 break;
             }
             case State.Attacking: {
-                if (!character.IsOnFloor()) { // 在空中
-                    state = State.Idle;
-                    break;
-                }
-                if (forceToGo) { // 强制移动
-                    state = State.Walk;
-                    break;
-                }
                 if (character.Attackable()) { // 可以再次攻击，即攻击缓冲时间结束
                     afterAttack.Invoke();
                     state = State.Idle;

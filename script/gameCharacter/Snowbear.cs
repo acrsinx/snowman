@@ -7,7 +7,7 @@ public partial class Snowbear: GameCharacter {
         PlotCharacter.AddAnimationPlayer(this, "fourFeet");
         auto = new AutoCharacterManager(this, player);
         auto.afterAttack += () => {
-            Vector3 coodinate = character.GlobalPosition + GetCharacterFront()*0.6f;
+            Vector3 coodinate = character.GlobalPosition + GetCharacterFront() * 0.6f;
             // 产生声波
             SoundWave soundWave = new(player, GlobalPosition) {
                 GlobalPosition = coodinate

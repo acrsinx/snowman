@@ -99,7 +99,7 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
         auto?.PhysicsProcess((float) delta);
     }
     public bool Attackable() {
-        return Ui.totalGameTime - attackStartTime > GetAttackWaitTime() && player.PlayerState == State.move;
+        return Ui.totalGameTime - attackStartTime > GetAttackWaitTime();
     }
     public bool Attack() {
         if (!Attackable()) {

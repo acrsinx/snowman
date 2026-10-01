@@ -3,6 +3,7 @@ public enum State {
     ui,
     caption,
     shot,
+    text,
     setting,
     package,
     load,
