@@ -48,10 +48,12 @@ public class CameraManager: object {
     private Vector3 markerRotation1;
     private Vector3 cameraPosition1;
     private Vector3 cameraRotation1;
+    private float cameraFOV1;
     private Vector3 markerPosition2;
     private Vector3 markerRotation2;
     private Vector3 cameraPosition2;
     private Vector3 cameraRotation2;
+    private float cameraFOV2;
     private long animationStartTime;
     private Tool.Void end;
     public CameraManager(Camera3D camera, ShapeCast3D cameraCast, Player player, Marker3D cameraMarker) {
@@ -112,6 +114,9 @@ public class CameraManager: object {
     /// <param name="y">y 角度制</param>
     public void SetCameraRotation(float x, float y) {
         camera.GlobalRotation = new Vector3(Mathf.DegToRad(x), Mathf.DegToRad(y), 0);
+    }
+    public void SetCameraFOV(float fov) {
+        camera.Fov = fov;
     }
     /// <summary>
     /// 玩家移动时回正相机
@@ -189,6 +194,7 @@ public class CameraManager: object {
         cameraMarker.GlobalRotation = Tool.Mix(markerRotation1, markerRotation2, factor);
         camera.GlobalPosition = Tool.Mix(cameraPosition1, cameraPosition2, factor);
         camera.GlobalRotation = Tool.Mix(cameraRotation1, cameraRotation2, factor);
+        camera.Fov = Tool.Mix(cameraFOV1, cameraFOV2, factor);
     }
     /// <summary>
     /// 处理相机穿模
@@ -295,6 +301,7 @@ public class CameraManager: object {
                 markerRotation1 = cameraMarker.GlobalRotation;
                 cameraPosition1 = camera.GlobalPosition;
                 cameraRotation1 = camera.GlobalRotation;
+                cameraFOV1 = camera.Fov;
                 pushState = PushState.pushed1;
                 break;
             }
@@ -303,6 +310,7 @@ public class CameraManager: object {
                 markerRotation2 = cameraMarker.GlobalRotation;
                 cameraPosition2 = camera.GlobalPosition;
                 cameraRotation2 = camera.GlobalRotation;
+                cameraFOV2 = camera.Fov;
                 pushState = PushState.playing;
                 animationStartTime = Ui.totalGameTime;
                 break;

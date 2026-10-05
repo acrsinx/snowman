@@ -112,6 +112,9 @@ public class Plot {
         auto.targetPosition = target;
         auto.ForceToGo = true;
     }
+    public static void LockCharacter(string instanceName) {
+        ((GameCharacter) GetPlotCharacter(instanceName)).auto.Stop();
+    }
     public static void LetCharacterAuto(string instanceName) {
         AutoCharacterManager auto = ((GameCharacter) GetPlotCharacter(instanceName)).auto;
         auto.ForceToGo = false;
@@ -123,6 +126,9 @@ public class Plot {
         GameCharacter character = (GameCharacter) GetPlotCharacter(instanceName);
         character.Position = position;
         character.Rotation = Vector3.Zero;
+    }
+    public static void SetCharacterRotation(string instanceName, float rotation) {
+        ((GameCharacter) GetPlotCharacter(instanceName)).GlobalRotation = new Vector3(0, Mathf.DegToRad(rotation), 0);
     }
     /// <summary>
     /// 添加角色到实例列表中
@@ -173,7 +179,8 @@ public class Plot {
             case "LookAtCharacter":
             case "SetCameraPosition":
             case "SetCameraPositionAt":
-            case "SetCameraRotation": {
+            case "SetCameraRotation":
+            case "SetCameraFOV": {
                 return true;
             }
             default: {
@@ -182,6 +189,9 @@ public class Plot {
         }
     }
     public static string Unwrap(string script) {
+        if (script.Length < 2) {
+            return script;
+        }
         if (script[0] == '{' && script[^1] == '}') {
             return Unwrap(script[1..^1]);
         }
@@ -278,6 +288,10 @@ public class Plot {
                 SetCharacterTarget(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
                 break;
             }
+            case "LockCharacter": {
+                LockCharacter(wordsList[1]);
+                break;
+            }
             case "LetCharacterAuto": {
                 LetCharacterAuto(wordsList[1]);
                 break;
@@ -288,6 +302,10 @@ public class Plot {
             }
             case "SetCharacterPosition": {
                 SetCharacterPosition(wordsList[1], new Vector3(float.Parse(wordsList[2]), float.Parse(wordsList[3]), float.Parse(wordsList[4])));
+                break;
+            }
+            case "SetCharacterRotation": {
+                SetCharacterRotation(wordsList[1], float.Parse(wordsList[2]));
                 break;
             }
             case "PlayAnimation": {
@@ -312,6 +330,10 @@ public class Plot {
             }
             case "SetCameraRotation": {
                 player.cameraManager.SetCameraRotation(float.Parse(wordsList[1]), float.Parse(wordsList[2]));
+                break;
+            }
+            case "SetCameraFOV": {
+                player.cameraManager.SetCameraFOV(float.Parse(wordsList[1]));
                 break;
             }
             case "SetTaskName": {

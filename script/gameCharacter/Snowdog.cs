@@ -3,7 +3,8 @@ public partial class Snowdog: GameCharacter {
     public static readonly PackedScene SnowdogScene = GD.Load<PackedScene>("res://model/snowdog.glb");
     public Snowdog(Player player): base(SnowdogScene, player, new SphereShape3D() {
         Radius = 0.25f
-    }, new Vector3(0, 0.5f, 0), false, CharacterType.Snowdog) {
+    }, new Vector3(0, 0.25f, 0), false, CharacterType.Snowdog) {
+        auto = new AutoCharacterManager(this, player);
         PlotCharacter.AddAnimationPlayer(this, "fourFeet");
         health.MaxHealth = 100;
         health.SetFullHealth();

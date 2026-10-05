@@ -30,11 +30,4 @@ public partial class Snowbear: GameCharacter {
         GetPlotCharacter().PauseAnimation();
         GetPlotCharacter().PlayAnimation("fourFeet/attack");
     }
-    public override void PlayWalkAnimation() {
-        if (GetPlotCharacter().GetAnimationName() == "fourFeet/walk") {
-            return;
-        }
-        GetPlotCharacter().PauseAnimation();
-        GetPlotCharacter().PlayAnimation("fourFeet/walk");
-    }
 }

@@ -65,6 +65,9 @@ public class Tool: object {
     public static Vector3 Mix(Vector3 a, Vector3 b, float factor) {
         return a * (1 - factor) + b * factor;
     }
+    public static float Mix(float a, float b, float factor) {
+        return a * (1 - factor) + b * factor;
+    }
     /// <summary>
     /// 将文件大小转换为字符串
     /// </summary>

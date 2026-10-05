@@ -157,7 +157,19 @@ public partial class GameCharacter: CharacterBody3D, HaveCharacter, PlotCharacte
     public virtual void CharacterAttack() {
         attackStartTime = Ui.totalGameTime;
     }
-    public virtual void PlayWalkAnimation() {
+    public void PlayWalkAnimation() {
+        if (GetPlotCharacter().GetAnimationName() == "fourFeet/walk") {
+            return;
+        }
+        GetPlotCharacter().PauseAnimation();
+        GetPlotCharacter().PlayAnimation("fourFeet/walk");
+    }
+    public void PlayIdleAnimation() {
+        if (GetPlotCharacter().GetAnimationName() == "fourFeet/idle") {
+            return;
+        }
+        GetPlotCharacter().PauseAnimation();
+        GetPlotCharacter().PlayAnimation("fourFeet/idle");
     }
     public void Die() {
         mapFlag.QueueFree();

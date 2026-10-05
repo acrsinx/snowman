@@ -13,8 +13,10 @@ public class CaptionResource: object {
         this.ui = ui;
         // 类型
         type = (string) dict["type"];
-        // 始代码
-        startCode = (string) dict["startCode"];
+        if (type != "text") {
+            // 始代码
+            startCode = (string) dict["startCode"];
+        }
         // 判断类型
         switch (type) {
             case "caption": { // 普通对话

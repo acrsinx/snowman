@@ -41,6 +41,10 @@ public class AutoCharacterManager: object {
     public AutoCharacterManager(GameCharacter character, Player player) {
         this.character = character;
         this.player = player;
+        if (character.AnimationPlayer == null) {
+            return;
+        }
+        character.AnimationPlayer.PlaybackDefaultBlendTime = 1.0f;
     }
     private bool IsCloseToTarget() {
         if (forceToGo) {
@@ -68,7 +72,6 @@ public class AutoCharacterManager: object {
         switch (state) {
             case State.Stop: {
                 character.Velocity -= character.Velocity * (1 - fDelta);
-                character.AnimationPlayer?.Stop();
                 break;
             }
             case State.Idle: {
@@ -113,6 +116,7 @@ public class AutoCharacterManager: object {
                 }
                 if (forceToGo && IsCloseToTarget()) {
                     state = State.Stop;
+                    character.PlayIdleAnimation();
                     return;
                 }
                 Move(fDelta);
@@ -159,5 +163,8 @@ public class AutoCharacterManager: object {
     }
     public void Attack() {
         state = State.Attacking;
+    }
+    public void Stop() {
+        state = State.Stop;
     }
 }

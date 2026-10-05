@@ -44,6 +44,9 @@ public interface PlotCharacter {
         if (!CheckAnimationPlayer()) {
             return;
         }
+        if (!AnimationPlayer.HasAnimation(animationName)) {
+            return;
+        }
         AnimationPlayer.Play(animationName);
     }
     public void PauseAnimation() {

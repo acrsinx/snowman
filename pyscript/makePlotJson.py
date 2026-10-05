@@ -58,15 +58,18 @@ valueNum: dict[str, list[list[PlotCodeType]]] = {
     "CameraAnimation": [[I, C, C]],
     "LoadCharacter": [[S, S, F, F, F]],
     "SetCharacterTarget": [[S, F, F, F]],
+    "LockCharacter": [[S]],
     "LetCharacterAuto": [[S]],
     "LetCharacterAttack": [[S]],
     "SetCharacterPosition": [[S, F, F, F]],
+    "SetCharacterRotation": [[S, F]],
     "PlayAnimation": [[S, S]],
     "PauseAnimation": [[S]],
     "LookAtCharacter": [[S, F, F]],
     "SetCameraPosition": [[]],
     "SetCameraPositionAt": [[F, F, F]],
     "SetCameraRotation": [[F, F]],
+    "SetCameraFOV": [[F]],
     "SetTaskName": [[S]],
     "Goto": [[I]],
     "AddTrigger": [[S, C]],
@@ -161,6 +164,8 @@ def unwrap(code: str, markdown_file: str) -> str:
     """
     解开两侧的大括号
     """
+    if len(code) < 2:
+        return code
     if code[0] == "{" and code[-1] == "}":
         return unwrap(code[1:-1], markdown_file)
     if code[0] == "{" and code[-1] != "}":
@@ -295,15 +300,13 @@ def make_json_file(markdown_file: str, this_plot_dir: str, is_release: bool = Fa
                         i += 3
                     elif captionType == "text": # 黑底白字文本
                         text: str = tokens[i + 2]
-                        startCode: str = simplify_script(tokens[i + 3], markdown_file)
                         json_line = {
                             caption_index: {
                                 "text": text,
-                                "type": captionType,
-                                "startCode": startCode
+                                "type": captionType
                             }
                         }
-                        i += 4
+                        i += 3
                     else:
                         os.utime(markdown_file, (time.time(), time.time()))
                         raise Exception("未知对话类型: ", captionType)
